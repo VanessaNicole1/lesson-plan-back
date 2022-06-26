@@ -1,5 +1,5 @@
-export interface Student {
-  id: string;
+export class CreateStudentDto {
+  address: string;
   name: string;
   lastName: string;
   email: string;
