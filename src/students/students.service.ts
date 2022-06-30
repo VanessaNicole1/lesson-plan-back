@@ -25,9 +25,13 @@ export class StudentsService {
     return student;
   }
 
-  async getStudents() {
-    return 1;
-  }
+  // async getStudents(gradeId) {
+  //   return this.studentsRepository.find({
+  //     where: {
+  //       grade: gradeId,
+  //     },
+  //   });
+  // }
 
   async createStudent(createStudentDto: CreateStudentDto) {
     const { address, name, lastName, email } = createStudentDto;
@@ -45,6 +49,9 @@ export class StudentsService {
   }
 
   async deleteStudent(id: string): Promise<void> {
-    const student = this.getStudentById(id);
+    const result = await this.studentsRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`El estudiante con ${id} no existe`);
+    }
   }
 }

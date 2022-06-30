@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Grade } from '../grade/grade.entity';
 
 @Entity()
 export class Student {
@@ -16,4 +17,8 @@ export class Student {
 
   @Column()
   email: string;
+
+  @ManyToOne(() => Grade, (grade) => grade.students)
+  @JoinColumn({ name: 'grade_id' })
+  grade: Grade;
 }
