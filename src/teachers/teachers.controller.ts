@@ -3,30 +3,31 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { StudentsService } from './students.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { createReadStream } from 'fs';
 import * as csvParser from 'csv-parser';
 import { Helpers } from '../helpers/helpers';
-import { UpdateStudentDto } from './dto/update-student-dto';
-import { Student } from '../../dist/students/student.model';
+import { TeachersService } from './teachers.service';
+import { Teacher } from './teacher.entity';
+import { UpdateTeacherDto } from './dto/update-teacher-dto';
 
-@Controller('students')
-export class StudentsController {
-  constructor(private studentsService: StudentsService) {}
+@Controller('teachers')
+export class TeachersController {
+  constructor(private teacherService: TeachersService) {}
 
   @Get('/:id')
-  getStudentById(@Param('id') id: string): Promise<Student> {
-    return this.studentsService.getStudentById(id);
+  getTeacherById(@Param('id') id: string): Promise<Teacher> {
+    return this.teacherService.getTeacherById(id);
   }
 
   // @Get('/all/:id')
-  // getstudentList(@Param('id') id: string): Promise<Student[]> {
+  // getTeachersList(@Param('id') id: string): Promise<Teacher[]> {
   //   return this.studentsService.getStudents(id);
   // }
 
@@ -35,11 +36,11 @@ export class StudentsController {
     FileInterceptor('doc', {
       storage: diskStorage({
         destination: './files-csv',
-        filename: Helpers.editFileName,
+        filename: Helpers.editFileNameTeacher,
       }),
     }),
   )
-  createStudent(@UploadedFile() file) {
+  createTeachers(@UploadedFile() file) {
     const fileName = file.originalname;
     const results = [];
     createReadStream(`files-csv/${fileName}`)
@@ -48,21 +49,22 @@ export class StudentsController {
       .on('end', () => {
         for (let i = 0; i < results.length; i++) {
           const element = results[i];
-          return this.studentsService.createStudent(element);
+          return this.teacherService.createTeacher(element);
         }
       });
     return {
       statusCode: 200,
-      body: 'Los estudiantes han sido creados con exito',
+      body: 'Los profesores han sido creados con éxito',
     };
   }
 
   @Delete('/:id')
-  deleteStudent(@Param('id') id: string): Promise<void> {
-    return this.studentsService.deleteStudent(id);
+  deleteTeacher(@Param('id') id: string): Promise<void> {
+    return this.teacherService.deleteTeacher(id);
   }
 
-  updateStudent(updateStudentDto: UpdateStudentDto) {
-    return this.studentsService.updateStudent(updateStudentDto);
+  @Patch()
+  updateStudent(updateTeacherDto: UpdateTeacherDto) {
+    return this.teacherService.updateStudent(updateTeacherDto);
   }
 }
