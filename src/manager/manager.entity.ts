@@ -1,25 +1,22 @@
 import {
   Column,
   Entity,
-  PrimaryGeneratedColumn,
   OneToOne,
+  PrimaryGeneratedColumn,
   JoinColumn,
 } from 'typeorm';
 import { Degree } from '../degree/degree.entity';
 
 @Entity()
-export class Period {
+export class Manager {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
-  name: string;
+  email: string;
 
   @Column()
-  startDate: Date;
-
-  @Column()
-  endDate: Date;
+  password: string;
 
   @OneToOne(() => Degree)
   @JoinColumn({ name: 'degree_id' })

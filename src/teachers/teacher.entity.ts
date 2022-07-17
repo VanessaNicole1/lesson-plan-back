@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { LessonPlan } from '../lesson-plan/lesson-plan.entity';
 
 @Entity()
 export class Teacher {
@@ -16,4 +17,10 @@ export class Teacher {
 
   @Column()
   email: string;
+
+  @Column()
+  password: string;
+
+  @OneToMany(() => LessonPlan, (plan) => plan.teacher)
+  plans: LessonPlan[];
 }
