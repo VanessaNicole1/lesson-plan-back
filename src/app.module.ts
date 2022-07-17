@@ -6,6 +6,8 @@ import { TeachersModule } from './teachers/teachers.module';
 import { SubjectsModule } from './subjects/subjects.module';
 import { PeriodsModule } from './period/period.module';
 import { GradesModule } from './grade/grade.module';
+import { ManagerModule } from './manager/manager.module';
+import { LessonPlanModule } from './lesson-plan/lesson-plan.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { GradesModule } from './grade/grade.module';
     PeriodsModule,
     DegreesModule,
     GradesModule,
+    ManagerModule,
+    LessonPlanModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',

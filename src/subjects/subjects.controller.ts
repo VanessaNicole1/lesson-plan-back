@@ -27,7 +27,7 @@ export class SubjectsController {
   // }
 
   @Post()
-  createTeachers(@Body() createSujectDto: CreateSubjectDto) {
+  createSubject(@Body() createSujectDto: CreateSubjectDto) {
     return this.subjectService.createSubject(createSujectDto);
   }
 
@@ -37,7 +37,7 @@ export class SubjectsController {
   }
 
   @Patch()
-  updateStudent(updateSubjectDto: UpdateSubjectDto) {
+  updateSubject(updateSubjectDto: UpdateSubjectDto) {
     return this.subjectService.updateSubject(updateSubjectDto);
   }
 }

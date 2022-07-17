@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Grade } from '../grade/grade.entity';
 
 @Entity()
 export class Degree {
@@ -7,4 +14,8 @@ export class Degree {
 
   @Column()
   name: string;
+
+  @ManyToMany(() => Grade)
+  @JoinTable()
+  Grades: Grade[];
 }
