@@ -25,18 +25,10 @@ export class TeachersService {
     return teacher;
   }
 
-  // async getTeachers(gradeId) {
-  //   return this.teachersRepository.find({
-  //     where: {
-  //       grade: gradeId,
-  //     },
-  //   });
-  // }
-
   async createTeacher(createTeacherDto: CreateTeacherDto) {
-    const { address, name, lastName, email } = createTeacherDto;
+    const { identifier, name, lastName, email } = createTeacherDto;
     const teacher = this.teachersRepository.create({
-      address,
+      identifier,
       name,
       lastName,
       email,
@@ -44,8 +36,35 @@ export class TeachersService {
     await this.teachersRepository.save(teacher);
   }
 
-  async updateStudent(updateTeacherDto: UpdateTeacherDto) {
-    return updateTeacherDto;
+  async updateTeacher(id: string, updateTeacherDto: UpdateTeacherDto) {
+    const teacherExist = await this.teachersRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!teacherExist) throw new NotFoundException('Docente no existe');
+    if (updateTeacherDto.identifier === '') {
+      updateTeacherDto.identifier = teacherExist.identifier;
+    }
+    if (updateTeacherDto.name === '') {
+      updateTeacherDto.name = teacherExist.identifier;
+    }
+    if (updateTeacherDto.lastName === '') {
+      updateTeacherDto.lastName = teacherExist.lastName;
+    }
+    if (updateTeacherDto.email === '') {
+      updateTeacherDto.email = teacherExist.email;
+    }
+    await this.teachersRepository.update(id, updateTeacherDto);
+    return await this.teachersRepository.findOne({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async findAll(): Promise<Teacher[]> {
+    return await this.teachersRepository.find();
   }
 
   async deleteTeacher(id: string): Promise<void> {

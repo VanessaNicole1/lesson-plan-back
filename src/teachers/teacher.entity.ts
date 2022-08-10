@@ -7,7 +7,7 @@ export class Teacher {
   id: string;
 
   @Column()
-  address: string;
+  identifier: string;
 
   @Column()
   name: string;
