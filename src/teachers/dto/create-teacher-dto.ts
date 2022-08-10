@@ -1,5 +1,5 @@
 export class CreateTeacherDto {
-  address: string;
+  identifier: string;
   name: string;
   lastName: string;
   email: string;

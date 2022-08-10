@@ -1,10 +1,11 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
   Param,
-  Patch,
   Post,
+  Put,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -26,10 +27,10 @@ export class TeachersController {
     return this.teacherService.getTeacherById(id);
   }
 
-  // @Get('/all/:id')
-  // getTeachersList(@Param('id') id: string): Promise<Teacher[]> {
-  //   return this.studentsService.getStudents(id);
-  // }
+  @Get()
+  findAllTeachers() {
+    return this.teacherService.findAll();
+  }
 
   @Post()
   @UseInterceptors(
@@ -63,8 +64,11 @@ export class TeachersController {
     return this.teacherService.deleteTeacher(id);
   }
 
-  @Patch()
-  updateStudent(updateTeacherDto: UpdateTeacherDto) {
-    return this.teacherService.updateStudent(updateTeacherDto);
+  @Put(':id')
+  updateTeacher(
+    @Param('id') id: string,
+    @Body() updateTeacherDto: UpdateTeacherDto,
+  ) {
+    return this.teacherService.updateTeacher(id, updateTeacherDto);
   }
 }
