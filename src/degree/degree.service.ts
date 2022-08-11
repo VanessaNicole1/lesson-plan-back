@@ -33,14 +33,28 @@ export class DegreeService {
     await this.degreesRepository.save(degree);
   }
 
-  async updateDegree(updateDegreeDto: UpdateDegreeDto) {
-    return updateDegreeDto;
-  }
-
   async deleteDegree(id: string): Promise<void> {
     const result = await this.degreesRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`La carrera con ${id} no existe`);
     }
+  }
+
+  async updateDegree(id: string, updateDegreeDto: UpdateDegreeDto) {
+    const degreeExist = await this.degreesRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!degreeExist) throw new NotFoundException('Docente no existe');
+    if (updateDegreeDto.name === '') {
+      updateDegreeDto.name = degreeExist.name;
+    }
+    await this.degreesRepository.update(id, updateDegreeDto);
+    return await this.degreesRepository.findOne({
+      where: {
+        id,
+      },
+    });
   }
 }
