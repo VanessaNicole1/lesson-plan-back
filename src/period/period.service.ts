@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Period } from './period.entity';
 import { CreatePeriodDto } from './dto/create-period-dto';
+import { UpdatePeriodDto } from './dto/update-period-dto';
 
 @Injectable()
 export class PeriodsService {
@@ -24,6 +25,10 @@ export class PeriodsService {
     return period;
   }
 
+  async getAllPeriod(): Promise<Period[]> {
+    return await this.periodsRepository.find();
+  }
+
   async createPeriod(createPeriodDto: CreatePeriodDto) {
     const { name, startDate, endDate } = createPeriodDto;
     const period = this.periodsRepository.create({
@@ -34,8 +39,28 @@ export class PeriodsService {
     await this.periodsRepository.save(period);
   }
 
-  async updatePeriod(updatePeriodDto: CreatePeriodDto) {
-    return updatePeriodDto;
+  async updatePeriod(id: string, updatePeriodDto: UpdatePeriodDto) {
+    const periodExist = await this.periodsRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!periodExist) throw new NotFoundException('Docente no existe');
+    if (updatePeriodDto.name === '') {
+      updatePeriodDto.name = periodExist.name;
+    }
+    if (updatePeriodDto.startDate.toString() === '') {
+      updatePeriodDto.startDate = periodExist.startDate;
+    }
+    if (updatePeriodDto.endDate.toString() === '') {
+      updatePeriodDto.endDate = periodExist.endDate;
+    }
+    await this.periodsRepository.update(id, updatePeriodDto);
+    return await this.periodsRepository.findOne({
+      where: {
+        id,
+      },
+    });
   }
 
   async deletePeriod(id: string): Promise<void> {

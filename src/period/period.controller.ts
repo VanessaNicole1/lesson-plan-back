@@ -1,7 +1,16 @@
 import { PeriodsService } from './period.service';
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { Period } from './period.entity';
 import { CreatePeriodDto } from './dto/create-period-dto';
+import { UpdatePeriodDto } from './dto/update-period-dto';
 
 @Controller('periods')
 export class PeriodsController {
@@ -10,6 +19,11 @@ export class PeriodsController {
   @Get('/:id')
   getPeriodById(@Param('id') id: string): Promise<Period> {
     return this.periodsService.getPeriodById(id);
+  }
+
+  @Get()
+  getAllTeachers() {
+    return this.periodsService.getAllPeriod();
   }
 
   @Post()
@@ -22,7 +36,11 @@ export class PeriodsController {
     return this.periodsService.deletePeriod(id);
   }
 
-  updatePeriod(updatePeriodDto: CreatePeriodDto) {
-    return this.periodsService.updatePeriod(updatePeriodDto);
+  @Put(':id')
+  updateTeacher(
+    @Param('id') id: string,
+    @Body() updatePeriodDto: UpdatePeriodDto,
+  ) {
+    return this.periodsService.updatePeriod(id, updatePeriodDto);
   }
 }
