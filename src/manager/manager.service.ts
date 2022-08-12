@@ -32,7 +32,28 @@ export class ManagerService {
     await this.managerRepository.save(manager);
   }
 
-  async updateManager(updateManagerDto: CreateorUpdateManagerDto) {
-    return updateManagerDto;
+  async updateManager(id: string, updateManagerDto: CreateorUpdateManagerDto) {
+    const managerExist = await this.managerRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!managerExist) throw new NotFoundException('Director no existe');
+    if (updateManagerDto.email === '') {
+      updateManagerDto.email = managerExist.email;
+    }
+    await this.managerRepository.update(id, updateManagerDto);
+    return await this.managerRepository.findOne({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async deleteManager(id: string): Promise<void> {
+    const result = await this.managerRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`El director con ${id} no existe`);
+    }
   }
 }
