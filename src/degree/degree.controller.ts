@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { DegreeService } from './degree.service';
 import { Degree } from './degree.entity';
 import { CreateDegreeDto } from './dto/create-degree-dto';
@@ -23,7 +23,11 @@ export class DegreesController {
     return this.degreesService.deleteDegree(id);
   }
 
-  updatePeriod(updateDegreeDto: UpdateDegreeDto) {
-    return this.degreesService.updateDegree(updateDegreeDto);
+  @Put(':id')
+  updateTeacher(
+    @Param('id') id: string,
+    @Body() updateDegreeDto: UpdateDegreeDto,
+  ) {
+    return this.degreesService.updateDegree(id, updateDegreeDto);
   }
 }
