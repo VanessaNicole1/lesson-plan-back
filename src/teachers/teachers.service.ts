@@ -47,7 +47,7 @@ export class TeachersService {
       updateTeacherDto.identifier = teacherExist.identifier;
     }
     if (updateTeacherDto.name === '') {
-      updateTeacherDto.name = teacherExist.identifier;
+      updateTeacherDto.name = teacherExist.name;
     }
     if (updateTeacherDto.lastName === '') {
       updateTeacherDto.lastName = teacherExist.lastName;
