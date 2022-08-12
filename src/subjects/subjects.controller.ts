@@ -10,6 +10,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
 } from '@nestjs/common';
 
 @Controller('subjects')
@@ -21,10 +22,10 @@ export class SubjectsController {
     return this.subjectService.getSubjectById(id);
   }
 
-  // @Get('/all/:id')
-  // getSubjectsList(@Param('id') id: string): Promise<Subject[]> {
-  //   return this.subjectService.getSubjects(id);
-  // }
+  @Get()
+  findAllTeachers() {
+    return this.subjectService.getAllSubjects();
+  }
 
   @Post()
   createSubject(@Body() createSujectDto: CreateSubjectDto) {
@@ -36,8 +37,11 @@ export class SubjectsController {
     return this.subjectService.deleteSubject(id);
   }
 
-  @Patch()
-  updateSubject(updateSubjectDto: UpdateSubjectDto) {
-    return this.subjectService.updateSubject(updateSubjectDto);
+  @Put(':id')
+  updateSubject(
+    @Param('id') id: string,
+    @Body() updateSubjectDto: UpdateSubjectDto,
+  ) {
+    return this.subjectService.updateSubject(id, updateSubjectDto);
   }
 }

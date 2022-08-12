@@ -25,13 +25,9 @@ export class SubjectsService {
     return subject;
   }
 
-  // async getSubjects(gradeId) {
-  //   return this.subjectsRepository.find({
-  //     where: {
-  //       grade: gradeId,
-  //     },
-  //   });
-  // }
+  async getAllSubjects(): Promise<Subject[]> {
+    return await this.subjectsRepository.find();
+  }
 
   async createSubject(createSubjectDto: CreateSubjectDto) {
     const { name } = createSubjectDto;
@@ -41,8 +37,24 @@ export class SubjectsService {
     await this.subjectsRepository.save(subject);
   }
 
-  async updateSubject(updateSubjectDto: UpdateSubjectDto) {
-    return updateSubjectDto;
+  async updateSubject(id: string, updateSubjectDto: UpdateSubjectDto) {
+    const subjectExist = await this.subjectsRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!subjectExist) throw new NotFoundException('Materia no existe');
+    //const { name } = updateSubjectDto;
+    if (updateSubjectDto.name === '') {
+      updateSubjectDto.name = subjectExist.name;
+    }
+    console.log(' SUBJECT DTO: ', updateSubjectDto);
+    await this.subjectsRepository.update(id, updateSubjectDto);
+    return await this.subjectsRepository.findOne({
+      where: {
+        id,
+      },
+    });
   }
 
   async deleteSubject(id: string): Promise<void> {
