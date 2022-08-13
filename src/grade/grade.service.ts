@@ -29,6 +29,22 @@ export class GradeService {
     return await this.gradesRepository.find();
   }
 
+  async getGradeByNameAndParallel(
+    number: number,
+    parallel: string,
+  ): Promise<any> {
+    const grade = await this.gradesRepository.findOne({
+      where: {
+        number,
+        parallel,
+      },
+    });
+    if (!grade) {
+      throw new NotFoundException(`El curso ${number}${parallel} no existe`);
+    }
+    return grade;
+  }
+
   async createGrade(createGradeDto: CreateGradeDto) {
     const { number, parallel } = createGradeDto;
     const grade = this.gradesRepository.create({

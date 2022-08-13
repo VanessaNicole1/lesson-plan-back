@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateGradeDto } from 'src/grade/dto/create-grade-dto';
+import { GradeService } from 'src/grade/grade.service';
 import { Repository } from 'typeorm';
 import { CreateStudentDto } from './dto/create-student-dto';
 import { UpdateStudentDto } from './dto/update-student-dto';
@@ -33,14 +35,26 @@ export class StudentsService {
   //   });
   // }
 
-  async createStudent(createStudentDto: CreateStudentDto) {
-    const { address, name, lastName, email } = createStudentDto;
+  async createStudent(
+    createStudentDto: CreateStudentDto,
+    createGradeDto: CreateGradeDto,
+    gradeService: GradeService,
+  ) {
+    const { address, name, lastName, email, password } = createStudentDto;
+    const { number, parallel } = createGradeDto;
+    let gradeExist = gradeService.getGradeByNameAndParallel(number, parallel);
+    if (!gradeExist) {
+      gradeService.createGrade(createGradeDto);
+      gradeExist = gradeService.getGradeByNameAndParallel(number, parallel);
+    }
     const student = this.studentsRepository.create({
       address,
       name,
       lastName,
       email,
+      password,
     });
+    //student.grade.id = gradeExist;
     await this.studentsRepository.save(student);
   }
 

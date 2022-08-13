@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { CreateGradeDto } from './dto/create-grade-dto';
 import { UpdateGradeDto } from './dto/update-grade-dto';
 import { Grade } from './grade.entity';
@@ -9,7 +17,7 @@ export class GradesController {
   constructor(private gradeService: GradeService) {}
 
   @Get('/:id')
-  getDegreeById(@Param('id') id: string): Promise<Grade> {
+  getGradeById(@Param('id') id: string): Promise<Grade> {
     return this.gradeService.getGradeById(id);
   }
 
@@ -17,6 +25,15 @@ export class GradesController {
   getAllGrades() {
     return this.gradeService.getAllGrade();
   }
+
+  @Get('/:number/:parallel')
+  getGradeByNameAndParallel(
+    @Param('number') number: number,
+    @Param('parallel') parallel: string,
+  ) {
+    return this.gradeService.getGradeByNameAndParallel(number, parallel);
+  }
+
 
   @Post()
   createGrade(@Body() createGradeDto: CreateGradeDto) {
