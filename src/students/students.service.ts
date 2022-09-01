@@ -1,5 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateGradeDto } from 'src/grade/dto/create-grade-dto';
+import { GradeService } from 'src/grade/grade.service';
 import { Repository } from 'typeorm';
 import { CreateStudentDto } from './dto/create-student-dto';
 import { UpdateStudentDto } from './dto/update-student-dto';
@@ -10,6 +12,8 @@ export class StudentsService {
   constructor(
     @InjectRepository(Student)
     private studentsRepository: Repository<Student>,
+    @Inject(GradeService)
+    private gradeService: GradeService,
   ) {}
 
   async getStudentById(id: string): Promise<Student> {
@@ -34,13 +38,23 @@ export class StudentsService {
   // }
 
   async createStudent(createStudentDto: CreateStudentDto) {
-    const { address, name, lastName, email } = createStudentDto;
+    const { address, name, lastName, email, password, number, parallel } = createStudentDto;
+    const createGradeData: CreateGradeDto = {
+      number,
+      parallel,
+    };
+    let gradeExist = await this.gradeService.verifyGradeExist(number, parallel);
+    if (!gradeExist) {
+      gradeExist = await this.gradeService.createGrade(createGradeData);
+    }
     const student = this.studentsRepository.create({
       address,
       name,
       lastName,
       email,
+      password,
     });
+    student.grade = gradeExist;
     await this.studentsRepository.save(student);
   }
 

@@ -42,13 +42,15 @@ export class StudentsController {
   createStudent(@UploadedFile() file) {
     const fileName = file.originalname;
     const results = [];
+    //let students = [];
+    //let grades = [];
     createReadStream(`files-csv/${fileName}`)
       .pipe(csvParser())
       .on('data', (data) => results.push(data))
       .on('end', () => {
         for (let i = 0; i < results.length; i++) {
-          const element = results[i];
-          return this.studentsService.createStudent(element);
+          const elements = results[i];
+          this.studentsService.createStudent(elements);
         }
       });
     return {
