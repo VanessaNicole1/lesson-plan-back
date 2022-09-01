@@ -34,7 +34,6 @@ export class GradesController {
     return this.gradeService.getGradeByNameAndParallel(number, parallel);
   }
 
-
   @Post()
   createGrade(@Body() createGradeDto: CreateGradeDto) {
     return this.gradeService.createGrade(createGradeDto);

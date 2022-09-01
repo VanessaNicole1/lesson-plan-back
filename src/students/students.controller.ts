@@ -15,14 +15,10 @@ import * as csvParser from 'csv-parser';
 import { Helpers } from '../helpers/helpers';
 import { UpdateStudentDto } from './dto/update-student-dto';
 import { Student } from '../../dist/students/student.model';
-import { GradeService } from 'src/grade/grade.service';
 
 @Controller('students')
 export class StudentsController {
-  constructor(
-    private studentsService: StudentsService,
-    private readonly gradeService: GradeService,
-  ) {}
+  constructor(private studentsService: StudentsService) {}
 
   @Get('/:id')
   getStudentById(@Param('id') id: string): Promise<Student> {
@@ -52,15 +48,9 @@ export class StudentsController {
       .pipe(csvParser())
       .on('data', (data) => results.push(data))
       .on('end', () => {
-        console.log('R: ', results);
         for (let i = 0; i < results.length; i++) {
           const elements = results[i];
-          console.log('est: ', i);
-          return this.studentsService.createStudent(
-            elements,
-            elements,
-            this.gradeService,
-          );
+          this.studentsService.createStudent(elements);
         }
       });
     return {

@@ -4,5 +4,6 @@ export class CreateStudentDto {
   lastName: string;
   email: string;
   password: string;
-  grade_id: string;
+  number: number;
+  parallel: string;
 }

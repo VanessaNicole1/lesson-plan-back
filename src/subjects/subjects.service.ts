@@ -48,7 +48,6 @@ export class SubjectsService {
     if (updateSubjectDto.name === '') {
       updateSubjectDto.name = subjectExist.name;
     }
-    console.log(' SUBJECT DTO: ', updateSubjectDto);
     await this.subjectsRepository.update(id, updateSubjectDto);
     return await this.subjectsRepository.findOne({
       where: {
