@@ -25,11 +25,6 @@ export class StudentsController {
     return this.studentsService.getStudentById(id);
   }
 
-  // @Get('/all/:id')
-  // getstudentList(@Param('id') id: string): Promise<Student[]> {
-  //   return this.studentsService.getStudents(id);
-  // }
-
   @Post()
   @UseInterceptors(
     FileInterceptor('doc', {
@@ -42,8 +37,6 @@ export class StudentsController {
   createStudent(@UploadedFile() file) {
     const fileName = file.originalname;
     const results = [];
-    //let students = [];
-    //let grades = [];
     createReadStream(`files-csv/${fileName}`)
       .pipe(csvParser())
       .on('data', (data) => results.push(data))

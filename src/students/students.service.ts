@@ -2,6 +2,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateGradeDto } from 'src/grade/dto/create-grade-dto';
 import { GradeService } from 'src/grade/grade.service';
+import { Helpers } from 'src/helpers/helpers';
 import { Repository } from 'typeorm';
 import { CreateStudentDto } from './dto/create-student-dto';
 import { UpdateStudentDto } from './dto/update-student-dto';
@@ -29,16 +30,22 @@ export class StudentsService {
     return student;
   }
 
-  // async getStudents(gradeId) {
-  //   return this.studentsRepository.find({
-  //     where: {
-  //       grade: gradeId,
-  //     },
-  //   });
-  // }
+  async getStudentByEmail(email: string): Promise<Student> {
+    const student = await this.studentsRepository.findOne({
+      where: {
+        email,
+      },
+    });
+
+    if (!student) {
+      throw new NotFoundException(`EL estudiante con email ${email} no existe`);
+    }
+    return student;
+  }
 
   async createStudent(createStudentDto: CreateStudentDto) {
-    const { address, name, lastName, email, password, number, parallel } = createStudentDto;
+    const { address, name, lastName, email, number, parallel } =
+      createStudentDto;
     const createGradeData: CreateGradeDto = {
       number,
       parallel,
@@ -47,6 +54,7 @@ export class StudentsService {
     if (!gradeExist) {
       gradeExist = await this.gradeService.createGrade(createGradeData);
     }
+    const password = Helpers.generatePassword();
     const student = this.studentsRepository.create({
       address,
       name,

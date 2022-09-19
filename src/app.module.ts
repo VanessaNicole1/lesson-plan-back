@@ -8,6 +8,7 @@ import { PeriodsModule } from './period/period.module';
 import { GradesModule } from './grade/grade.module';
 import { ManagerModule } from './manager/manager.module';
 import { LessonPlanModule } from './lesson-plan/lesson-plan.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { LessonPlanModule } from './lesson-plan/lesson-plan.module';
     GradesModule,
     ManagerModule,
     LessonPlanModule,
+    UsersModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -29,6 +31,7 @@ import { LessonPlanModule } from './lesson-plan/lesson-plan.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    UsersModule,
   ],
 })
 export class AppModule {}
