@@ -44,7 +44,6 @@ export class SubjectsService {
       },
     });
     if (!subjectExist) throw new NotFoundException('Materia no existe');
-    //const { name } = updateSubjectDto;
     if (updateSubjectDto.name === '') {
       updateSubjectDto.name = subjectExist.name;
     }

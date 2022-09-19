@@ -9,5 +9,6 @@ import { GradesModule } from 'src/grade/grade.module';
   imports: [TypeOrmModule.forFeature([Student]), GradesModule],
   controllers: [StudentsController],
   providers: [StudentsService],
+  exports: [StudentsService],
 })
 export class StudentsModule {}
