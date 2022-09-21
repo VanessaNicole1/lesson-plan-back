@@ -29,13 +29,9 @@ export class StudentsService {
     return student;
   }
 
-  // async getStudents(gradeId) {
-  //   return this.studentsRepository.find({
-  //     where: {
-  //       grade: gradeId,
-  //     },
-  //   });
-  // }
+  async getAllStudents(): Promise<Student[]> {
+    return await this.studentsRepository.find();
+  }
 
   async createStudent(createStudentDto: CreateStudentDto) {
     const { address, name, lastName, email, password, number, parallel } = createStudentDto;

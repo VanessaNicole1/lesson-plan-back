@@ -25,10 +25,10 @@ export class StudentsController {
     return this.studentsService.getStudentById(id);
   }
 
-  // @Get('/all/:id')
-  // getstudentList(@Param('id') id: string): Promise<Student[]> {
-  //   return this.studentsService.getStudents(id);
-  // }
+  @Get()
+  findAllStudents() {
+    return this.studentsService.getAllStudents();
+  }
 
   @Post()
   @UseInterceptors(
