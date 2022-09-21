@@ -11,7 +11,14 @@ import {
   Patch,
   Post,
   Put,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { Helpers } from 'src/helpers/helpers';
+import { createReadStream } from 'fs';
+import csvParser from 'csv-parser';
 
 @Controller('subjects')
 export class SubjectsController {
@@ -28,8 +35,30 @@ export class SubjectsController {
   }
 
   @Post()
-  createSubject(@Body() createSujectDto: CreateSubjectDto) {
-    return this.subjectService.createSubject(createSujectDto);
+  @UseInterceptors(
+    FileInterceptor('doc', {
+      storage: diskStorage({
+        destination: './files-csv',
+        filename: Helpers.editFileName,
+      }),
+    }),
+  )
+  createSubject(@UploadedFile() file) {
+    const fileName = file.originalname;
+    const results = [];
+    createReadStream(`files-csv/${fileName}`)
+      .pipe(csvParser())
+      .on('data', (data) => results.push(data))
+      .on('end', () => {
+        for (let i = 0; i < results.length; i++) {
+          const element = results[i];
+          return this.subjectService.createSubject(element);
+        }
+      });
+    return {
+      statusCode: 200,
+      body: 'Los estudiantes han sido creados con exito',
+    };
   }
 
   @Delete('/:id')

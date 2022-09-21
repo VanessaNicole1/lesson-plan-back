@@ -25,6 +25,12 @@ export class StudentsController {
     return this.studentsService.getStudentById(id);
   }
 
+
+  @Get()
+  findAllStudents() {
+    return this.studentsService.getAllStudents();
+  }
+
   @Post()
   @UseInterceptors(
     FileInterceptor('doc', {
