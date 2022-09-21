@@ -30,7 +30,7 @@ export class SubjectsController {
   }
 
   @Get()
-  findAllTeachers() {
+  findAllSubjects() {
     return this.subjectService.getAllSubjects();
   }
 

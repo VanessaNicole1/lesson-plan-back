@@ -25,6 +25,7 @@ export class StudentsController {
     return this.studentsService.getStudentById(id);
   }
 
+
   @Get()
   findAllStudents() {
     return this.studentsService.getAllStudents();
@@ -42,8 +43,6 @@ export class StudentsController {
   createStudent(@UploadedFile() file) {
     const fileName = file.originalname;
     const results = [];
-    //let students = [];
-    //let grades = [];
     createReadStream(`files-csv/${fileName}`)
       .pipe(csvParser())
       .on('data', (data) => results.push(data))
