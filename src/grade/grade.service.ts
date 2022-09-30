@@ -45,6 +45,24 @@ export class GradeService {
     return grade;
   }
 
+  async getSubjectsByGrade(id: string) {
+    const data = await this.gradesRepository.find({
+      relations: ['subjects'],
+    });
+    for (let i = 0; i < data.length; i++) {
+      const grade_id = data[i].id;
+      if (id === grade_id) {
+        const grades_subject = data[i];
+        if (grades_subject.subjects.length < 0) {
+          throw new NotFoundException(
+            `El ciclo con ${id} no tiene materias registradas`,
+          );
+        }
+        return grades_subject;
+      }
+    }
+  }
+
   async verifyGradeExist(number: number, parallel: string) {
     const grade = await this.gradesRepository.findOne({
       where: {
@@ -65,7 +83,7 @@ export class GradeService {
     return grade;
   }
 
-  async updateTeacher(id: string, updateGradeDto: UpdateGradeDto) {
+  async updateGrade(id: string, updateGradeDto: UpdateGradeDto) {
     const gradeExist = await this.gradesRepository.findOne({
       where: {
         id,
@@ -78,12 +96,13 @@ export class GradeService {
     if (updateGradeDto.parallel === '') {
       updateGradeDto.parallel = gradeExist.parallel;
     }
-    await this.gradesRepository.update(id, updateGradeDto);
-    return await this.gradesRepository.findOne({
-      where: {
-        id,
-      },
+    const { subjects } = updateGradeDto;
+    const data = await this.gradesRepository.preload({
+      id,
+      ...updateGradeDto,
+      subjects,
     });
+    return this.gradesRepository.save(data);
   }
 
   async deleteGrade(id: string): Promise<void> {
