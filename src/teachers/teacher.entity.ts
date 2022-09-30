@@ -1,4 +1,12 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Subject } from 'src/subjects/subject.entity';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { LessonPlan } from '../lesson-plan/lesson-plan.entity';
 
 @Entity()
@@ -23,4 +31,16 @@ export class Teacher {
 
   @OneToMany(() => LessonPlan, (plan) => plan.teacher)
   plans: LessonPlan[];
+
+  @ManyToMany(() => Subject, (subject) => subject.teachers)
+  @JoinTable({
+    name: 'subject_teacher',
+    joinColumn: {
+      name: 'teacher_id',
+    },
+    inverseJoinColumn: {
+      name: 'subject_id',
+    },
+  })
+  subjects: Subject[];
 }
