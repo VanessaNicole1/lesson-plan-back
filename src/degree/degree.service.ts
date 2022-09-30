@@ -25,6 +25,24 @@ export class DegreeService {
     return degree;
   }
 
+  async getGradesByDegree(id: string) {
+    const data = await this.degreesRepository.find({
+      relations: ['grades'],
+    });
+    for (let i = 0; i < data.length; i++) {
+      const degree_id = data[i].id;
+      if (id === degree_id) {
+        const degree_grades = data[i];
+        if (degree_grades.grades.length < 0) {
+          throw new NotFoundException(
+            `El profesor con ${id} no tiene materias registradas`,
+          );
+        }
+        return degree_grades;
+      }
+    }
+  }
+
   async createDegree(createPeriodDto: CreateDegreeDto) {
     const { name } = createPeriodDto;
     const degree = this.degreesRepository.create({
@@ -50,11 +68,13 @@ export class DegreeService {
     if (updateDegreeDto.name === '') {
       updateDegreeDto.name = degreeExist.name;
     }
-    await this.degreesRepository.update(id, updateDegreeDto);
-    return await this.degreesRepository.findOne({
-      where: {
-        id,
-      },
+
+    const { grades } = updateDegreeDto;
+    const data = await this.degreesRepository.preload({
+      id,
+      ...updateDegreeDto,
+      grades,
     });
+    return this.degreesRepository.save(data);
   }
 }

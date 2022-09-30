@@ -27,7 +27,7 @@ export class TeachersController {
     return this.teacherService.getTeacherById(id);
   }
 
-  @Get('/subjects/:id')
+  @Get('/:id/subjects')
   getSubjectsByTeacher(@Param('id') id: string) {
     return this.teacherService.getSubjectsByTeacher(id);
   }
