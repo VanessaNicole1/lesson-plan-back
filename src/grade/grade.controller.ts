@@ -21,6 +21,11 @@ export class GradesController {
     return this.gradeService.getGradeById(id);
   }
 
+  @Get('/:id/subjects')
+  getSubjectsByTeacher(@Param('id') id: string) {
+    return this.gradeService.getSubjectsByGrade(id);
+  }
+
   @Get()
   getAllGrades() {
     return this.gradeService.getAllGrade();
@@ -49,6 +54,6 @@ export class GradesController {
     @Param('id') id: string,
     @Body() updateGradeDto: UpdateGradeDto,
   ) {
-    return this.gradeService.updateTeacher(id, updateGradeDto);
+    return this.gradeService.updateGrade(id, updateGradeDto);
   }
 }

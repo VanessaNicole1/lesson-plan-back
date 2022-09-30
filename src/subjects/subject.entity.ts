@@ -1,3 +1,4 @@
+import { Grade } from 'src/grade/grade.entity';
 import { Teacher } from 'src/teachers/teacher.entity';
 import {
   Column,
@@ -5,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   ManyToMany,
+  ManyToOne,
 } from 'typeorm';
 import { LessonPlan } from '../lesson-plan/lesson-plan.entity';
 
@@ -21,4 +23,7 @@ export class Subject {
 
   @ManyToMany(() => Teacher, (teacher) => teacher.subjects)
   teachers: Teacher[];
+
+  @ManyToOne(() => Grade, (grade) => grade.subjects)
+  grade: Grade;
 }

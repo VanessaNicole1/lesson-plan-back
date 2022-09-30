@@ -1,4 +1,5 @@
 import { Degree } from 'src/degree/degree.entity';
+import { Subject } from 'src/subjects/subject.entity';
 import {
   Column,
   Entity,
@@ -24,4 +25,7 @@ export class Grade {
 
   @ManyToOne(() => Degree, (degree) => degree.grades)
   degree: Degree;
+
+  @OneToMany(() => Subject, (subject) => subject.grade)
+  subjects: Subject[];
 }
