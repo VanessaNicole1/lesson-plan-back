@@ -32,6 +32,7 @@ export class StudentsService {
 
   async getAllStudents(): Promise<Student[]> {
     return await this.studentsRepository.find();
+  }
   async getStudentByEmail(email: string): Promise<Student> {
     const student = await this.studentsRepository.findOne({
       where: {
@@ -43,7 +44,6 @@ export class StudentsService {
       throw new NotFoundException(`EL estudiante con email ${email} no existe`);
     }
     return student;
-
   }
 
   async createStudent(createStudentDto: CreateStudentDto) {
