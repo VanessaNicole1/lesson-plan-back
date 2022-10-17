@@ -4,12 +4,14 @@ import { Repository } from 'typeorm';
 import { Teacher } from './teacher.entity';
 import { CreateTeacherDto } from './dto/create-teacher-dto';
 import { UpdateTeacherDto } from './dto/update-teacher-dto';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class TeachersService {
   constructor(
     @InjectRepository(Teacher)
     private teachersRepository: Repository<Teacher>,
+    private readonly mailerService: MailerService,
   ) {}
 
   async getTeacherById(id: string): Promise<Teacher> {
