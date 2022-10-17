@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { DegreeService } from './degree.service';
 import { Degree } from './degree.entity';
 import { CreateDegreeDto } from './dto/create-degree-dto';
