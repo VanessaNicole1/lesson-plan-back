@@ -8,9 +8,9 @@ import { PeriodsModule } from './period/period.module';
 import { GradesModule } from './grade/grade.module';
 import { ManagerModule } from './manager/manager.module';
 import { LessonPlanModule } from './lesson-plan/lesson-plan.module';
-import { UsersModule } from './users/users.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { UserModule } from './user/users.module';
 
 @Module({
   imports: [
@@ -46,7 +46,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     GradesModule,
     ManagerModule,
     LessonPlanModule,
-    UsersModule,
+    UserModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -57,7 +57,6 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
       autoLoadEntities: true,
       synchronize: true,
     }),
-    UsersModule,
   ],
 })
 export class AppModule {}

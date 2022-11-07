@@ -1,6 +1,6 @@
 export class CreateTeacherDto {
-  identifier: string;
   name: string;
   lastName: string;
   email: string;
+  password: string;
 }

@@ -1,10 +1,12 @@
+import { User } from 'src/user/user-entity';
 import { Subject } from 'src/subjects/subject.entity';
 import {
-  Column,
-  Entity,
   JoinTable,
   ManyToMany,
   OneToMany,
+  Entity,
+  OneToOne,
+  JoinColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { LessonPlan } from '../lesson-plan/lesson-plan.entity';
@@ -13,21 +15,6 @@ import { LessonPlan } from '../lesson-plan/lesson-plan.entity';
 export class Teacher {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
-  @Column()
-  identifier: string;
-
-  @Column()
-  name: string;
-
-  @Column()
-  lastName: string;
-
-  @Column()
-  email: string;
-
-  @Column()
-  password: string;
 
   @OneToMany(() => LessonPlan, (plan) => plan.teacher)
   plans: LessonPlan[];
@@ -43,4 +30,8 @@ export class Teacher {
     },
   })
   subjects: Subject[];
+
+  @OneToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }

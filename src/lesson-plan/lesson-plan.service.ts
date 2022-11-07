@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ParseBoolPipe } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan-dto';
@@ -10,7 +10,7 @@ export class LessonPlanService {
   constructor(
     @InjectRepository(LessonPlan)
     private LessonPlanRepository: Repository<LessonPlan>,
-  ) { }
+  ) {}
 
   async getLessonPlanById(id: string): Promise<LessonPlan> {
     const lessonPlan = await this.LessonPlanRepository.findOne({

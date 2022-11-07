@@ -14,7 +14,7 @@ import { createReadStream } from 'fs';
 import * as csvParser from 'csv-parser';
 import { Helpers } from '../helpers/helpers';
 import { UpdateStudentDto } from './dto/update-student-dto';
-import { Student } from '../../dist/students/student.model';
+import { Student } from './student.entity';
 
 @Controller('students')
 export class StudentsController {
@@ -24,7 +24,6 @@ export class StudentsController {
   getStudentById(@Param('id') id: string): Promise<Student> {
     return this.studentsService.getStudentById(id);
   }
-
 
   @Get()
   findAllStudents() {
@@ -41,7 +40,14 @@ export class StudentsController {
     }),
   )
   createStudent(@UploadedFile() file) {
+    if (!file) {
+      return {
+        statusCode: 400,
+        body: 'El archivo es requerido',
+      };
+    }
     const fileName = file.originalname;
+
     const results = [];
     createReadStream(`files-csv/${fileName}`)
       .pipe(csvParser())

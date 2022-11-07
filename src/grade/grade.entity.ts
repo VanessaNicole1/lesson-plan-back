@@ -15,7 +15,7 @@ export class Grade {
   id: string;
 
   @Column()
-  number: number;
+  numberParallel: number;
 
   @Column()
   parallel: string;
