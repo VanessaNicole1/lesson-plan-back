@@ -1,14 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Manager } from './manager.entity';
 import { CreateorUpdateManagerDto } from './dto/create-update-manager.dto';
+import { UserService } from 'src/user/users.service';
 
 @Injectable()
 export class ManagerService {
   constructor(
     @InjectRepository(Manager)
     private managerRepository: Repository<Manager>,
+    @Inject(UserService)
+    private userService: UserService,
   ) {}
 
   async getManagerById(id: string): Promise<Manager> {
@@ -25,11 +28,11 @@ export class ManagerService {
   }
 
   async createManager(createManagerDto: CreateorUpdateManagerDto) {
-    const { email } = createManagerDto;
-    const manager = this.managerRepository.create({
-      email,
-    });
+    const user = await this.userService.createUser(createManagerDto);
+    const manager = this.managerRepository.create({});
+    manager.user = user;
     await this.managerRepository.save(manager);
+    return { message: 'Manager created successfully' };
   }
 
   async updateManager(id: string, updateManagerDto: CreateorUpdateManagerDto) {
@@ -39,10 +42,9 @@ export class ManagerService {
       },
     });
     if (!managerExist) throw new NotFoundException('Director no existe');
-    if (updateManagerDto.email === '') {
-      updateManagerDto.email = managerExist.email;
-    }
-    await this.managerRepository.update(id, updateManagerDto);
+
+    const user = await this.userService.getUserById(managerExist.user.id);
+    await this.userService.updateUser(user.id, updateManagerDto);
     return await this.managerRepository.findOne({
       where: {
         id,

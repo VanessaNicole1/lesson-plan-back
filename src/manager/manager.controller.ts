@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Patch, Post, Put } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ManagerService } from './manager.service';
 import { Manager } from './manager.entity';
 import { Body } from '@nestjs/common';

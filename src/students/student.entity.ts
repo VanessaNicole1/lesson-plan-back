@@ -1,8 +1,9 @@
+import { User } from 'src/user/user-entity';
 import {
-  Column,
-  Entity,
   JoinColumn,
   ManyToOne,
+  Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Grade } from '../grade/grade.entity';
@@ -12,22 +13,11 @@ export class Student {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  address: string;
-
-  @Column()
-  name: string;
-
-  @Column()
-  lastName: string;
-
-  @Column()
-  email: string;
-
-  @Column()
-  password: string;
-
   @ManyToOne(() => Grade, (grade) => grade.students)
   @JoinColumn({ name: 'grade_id' })
   grade: Grade;
+
+  @OneToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }

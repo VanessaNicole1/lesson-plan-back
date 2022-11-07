@@ -1,17 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Teacher } from './teacher.entity';
 import { CreateTeacherDto } from './dto/create-teacher-dto';
 import { UpdateTeacherDto } from './dto/update-teacher-dto';
-import { MailerService } from '@nestjs-modules/mailer';
+import { UserService } from 'src/user/users.service';
 
 @Injectable()
 export class TeachersService {
   constructor(
     @InjectRepository(Teacher)
     private teachersRepository: Repository<Teacher>,
-    private readonly mailerService: MailerService,
+    @Inject(UserService)
+    private userService: UserService,
   ) {}
 
   async getTeacherById(id: string): Promise<Teacher> {
@@ -47,14 +48,11 @@ export class TeachersService {
   }
 
   async createTeacher(createTeacherDto: CreateTeacherDto) {
-    const { identifier, name, lastName, email } = createTeacherDto;
-    const teacher = this.teachersRepository.create({
-      identifier,
-      name,
-      lastName,
-      email,
-    });
+    const user = await this.userService.createUser(createTeacherDto);
+    const teacher = this.teachersRepository.create({});
+    teacher.user = user;
     await this.teachersRepository.save(teacher);
+    return { message: 'Teacher created successfully' };
   }
 
   async updateTeacher(id: string, updateTeacherDto: UpdateTeacherDto) {
@@ -64,25 +62,14 @@ export class TeachersService {
       },
     });
     if (!teacherExist) throw new NotFoundException('Docente no existe');
-    if (updateTeacherDto.identifier === '') {
-      updateTeacherDto.identifier = teacherExist.identifier;
-    }
-    if (updateTeacherDto.name === '') {
-      updateTeacherDto.name = teacherExist.name;
-    }
-    if (updateTeacherDto.lastName === '') {
-      updateTeacherDto.lastName = teacherExist.lastName;
-    }
-    if (updateTeacherDto.email === '') {
-      updateTeacherDto.email = teacherExist.email;
-    }
-    const { subjects } = updateTeacherDto;
-    const data = await this.teachersRepository.preload({
-      id,
-      ...updateTeacherDto,
-      subjects,
+
+    const user = await this.userService.getUserById(teacherExist.user.id);
+    await this.userService.updateUser(user.id, updateTeacherDto);
+    return await this.teachersRepository.findOne({
+      where: {
+        id,
+      },
     });
-    return this.teachersRepository.save(data);
   }
 
   async findAll(): Promise<Teacher[]> {

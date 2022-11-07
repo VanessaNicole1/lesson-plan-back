@@ -30,17 +30,19 @@ export class GradeService {
   }
 
   async getGradeByNameAndParallel(
-    number: number,
+    numberParallel: number,
     parallel: string,
   ): Promise<Grade> {
     const grade = await this.gradesRepository.findOne({
       where: {
-        number,
+        numberParallel,
         parallel,
       },
     });
     if (!grade) {
-      throw new NotFoundException(`El curso ${number}${parallel} no existe`);
+      throw new NotFoundException(
+        `El curso ${numberParallel}${parallel} no existe`,
+      );
     }
     return grade;
   }
@@ -63,10 +65,10 @@ export class GradeService {
     }
   }
 
-  async verifyGradeExist(number: number, parallel: string) {
+  async verifyGradeExist(numberParallel: number, parallel: string) {
     const grade = await this.gradesRepository.findOne({
       where: {
-        number,
+        numberParallel,
         parallel,
       },
     });
@@ -74,9 +76,9 @@ export class GradeService {
   }
 
   async createGrade(createGradeDto: CreateGradeDto): Promise<Grade> {
-    const { number, parallel } = createGradeDto;
+    const { numberParallel, parallel } = createGradeDto;
     const grade = this.gradesRepository.create({
-      number,
+      numberParallel,
       parallel,
     });
     await this.gradesRepository.save(grade);
@@ -91,7 +93,7 @@ export class GradeService {
     });
     if (!gradeExist) throw new NotFoundException('Curso no existe');
     if (updateGradeDto.number.toString() === '') {
-      updateGradeDto.number = gradeExist.number;
+      updateGradeDto.number = gradeExist.numberParallel;
     }
     if (updateGradeDto.parallel === '') {
       updateGradeDto.parallel = gradeExist.parallel;

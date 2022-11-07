@@ -2,7 +2,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateGradeDto } from 'src/grade/dto/create-grade-dto';
 import { GradeService } from 'src/grade/grade.service';
-import { Helpers } from 'src/helpers/helpers';
+import { UserService } from 'src/user/users.service';
 import { Repository } from 'typeorm';
 import { CreateStudentDto } from './dto/create-student-dto';
 import { UpdateStudentDto } from './dto/update-student-dto';
@@ -15,6 +15,8 @@ export class StudentsService {
     private studentsRepository: Repository<Student>,
     @Inject(GradeService)
     private gradeService: GradeService,
+    @Inject(UserService)
+    private userService: UserService,
   ) {}
 
   async getStudentById(id: string): Promise<Student> {
@@ -33,40 +35,27 @@ export class StudentsService {
   async getAllStudents(): Promise<Student[]> {
     return await this.studentsRepository.find();
   }
-  async getStudentByEmail(email: string): Promise<Student> {
-    const student = await this.studentsRepository.findOne({
-      where: {
-        email,
-      },
-    });
-
-    if (!student) {
-      throw new NotFoundException(`EL estudiante con email ${email} no existe`);
-    }
-    return student;
-  }
 
   async createStudent(createStudentDto: CreateStudentDto) {
-    const { address, name, lastName, email, number, parallel } =
-      createStudentDto;
-    const createGradeData: CreateGradeDto = {
-      number,
+    const { numberParallel, parallel } = createStudentDto;
+
+    let gradeExist = await this.gradeService.verifyGradeExist(
+      numberParallel,
       parallel,
-    };
-    let gradeExist = await this.gradeService.verifyGradeExist(number, parallel);
+    );
     if (!gradeExist) {
-      gradeExist = await this.gradeService.createGrade(createGradeData);
+      const newGrade: CreateGradeDto = {
+        numberParallel,
+        parallel,
+      };
+      gradeExist = await this.gradeService.createGrade(newGrade);
     }
-    const password = Helpers.generatePassword();
-    const student = this.studentsRepository.create({
-      address,
-      name,
-      lastName,
-      email,
-      password,
-    });
+    const user = await this.userService.createUser(createStudentDto);
+    const student = this.studentsRepository.create({});
     student.grade = gradeExist;
+    student.user = user;
     await this.studentsRepository.save(student);
+    return { message: 'Student created successfully' };
   }
 
   async updateStudent(updateStudentDto: UpdateStudentDto) {
