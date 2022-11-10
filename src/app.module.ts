@@ -11,9 +11,15 @@ import { LessonPlanModule } from './lesson-plan/lesson-plan.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { UserModule } from './user/users.module';
+import { RoleModule } from './role/role.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.development.env',
+    }),
     MailerModule.forRootAsync({
       useFactory: () => ({
         transport: {
@@ -47,6 +53,7 @@ import { UserModule } from './user/users.module';
     ManagerModule,
     LessonPlanModule,
     UserModule,
+    RoleModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',

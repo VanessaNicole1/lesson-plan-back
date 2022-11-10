@@ -5,6 +5,7 @@ import { Teacher } from './teacher.entity';
 import { CreateTeacherDto } from './dto/create-teacher-dto';
 import { UpdateTeacherDto } from './dto/update-teacher-dto';
 import { UserService } from 'src/user/users.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TeachersService {
@@ -13,6 +14,7 @@ export class TeachersService {
     private teachersRepository: Repository<Teacher>,
     @Inject(UserService)
     private userService: UserService,
+    private config: ConfigService,
   ) {}
 
   async getTeacherById(id: string): Promise<Teacher> {
@@ -48,7 +50,8 @@ export class TeachersService {
   }
 
   async createTeacher(createTeacherDto: CreateTeacherDto) {
-    const user = await this.userService.createUser(createTeacherDto);
+    const type = this.config.get('TEACHER_TYPE');
+    const user = await this.userService.createUser(createTeacherDto, type);
     const teacher = this.teachersRepository.create({});
     teacher.user = user;
     await this.teachersRepository.save(teacher);
