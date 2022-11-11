@@ -1,4 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateGradeDto } from 'src/grade/dto/create-grade-dto';
 import { GradeService } from 'src/grade/grade.service';
@@ -17,6 +18,7 @@ export class StudentsService {
     private gradeService: GradeService,
     @Inject(UserService)
     private userService: UserService,
+    private config: ConfigService,
   ) {}
 
   async getStudentById(id: string): Promise<Student> {
@@ -37,6 +39,7 @@ export class StudentsService {
   }
 
   async createStudent(createStudentDto: CreateStudentDto) {
+    const type = this.config.get('STUDENT_TYPE');
     const { numberParallel, parallel } = createStudentDto;
 
     let gradeExist = await this.gradeService.verifyGradeExist(
@@ -50,7 +53,7 @@ export class StudentsService {
       };
       gradeExist = await this.gradeService.createGrade(newGrade);
     }
-    const user = await this.userService.createUser(createStudentDto);
+    const user = await this.userService.createUser(createStudentDto, type);
     const student = this.studentsRepository.create({});
     student.grade = gradeExist;
     student.user = user;

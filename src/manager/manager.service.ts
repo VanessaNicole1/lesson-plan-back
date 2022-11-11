@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Manager } from './manager.entity';
 import { CreateorUpdateManagerDto } from './dto/create-update-manager.dto';
 import { UserService } from 'src/user/users.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ManagerService {
@@ -12,6 +13,7 @@ export class ManagerService {
     private managerRepository: Repository<Manager>,
     @Inject(UserService)
     private userService: UserService,
+    private config: ConfigService,
   ) {}
 
   async getManagerById(id: string): Promise<Manager> {
@@ -28,7 +30,8 @@ export class ManagerService {
   }
 
   async createManager(createManagerDto: CreateorUpdateManagerDto) {
-    const user = await this.userService.createUser(createManagerDto);
+    const type = this.config.get('MANAGER_TYPE');
+    const user = await this.userService.createUser(createManagerDto, type);
     const manager = this.managerRepository.create({});
     manager.user = user;
     await this.managerRepository.save(manager);

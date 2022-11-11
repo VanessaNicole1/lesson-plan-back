@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Helpers } from 'src/helpers/helpers';
-import { CreateorUpdateManagerDto } from 'src/manager/dto/create-update-manager.dto';
+import { RoleService } from 'src/role/role.service';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -12,6 +12,8 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @Inject(RoleService)
+    private roleService: RoleService,
   ) {}
 
   async getUserById(id: string): Promise<User> {
@@ -27,7 +29,8 @@ export class UserService {
     return user;
   }
 
-  async createUser(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: CreateUserDto, type: string) {
+    const role = await this.roleService.getRoleByType(type);
     const { email, name, lastName } = createUserDto;
     const password = Helpers.generatePassword();
     const user = this.userRepository.create({
@@ -36,6 +39,7 @@ export class UserService {
       name,
       lastName,
     });
+    user.roles = [role];
     const currentUser = await this.userRepository.save(user);
     return this.getUserById(currentUser.id);
   }
