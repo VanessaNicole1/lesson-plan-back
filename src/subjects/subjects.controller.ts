@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -18,6 +19,10 @@ import { diskStorage } from 'multer';
 import { Helpers } from 'src/helpers/helpers';
 import { createReadStream } from 'fs';
 import csvParser from 'csv-parser';
+import { AuthGuard } from '@nestjs/passport';
+import { ValidManager } from 'src/auth/valid-manager.guard';
+import { Roles } from 'src/auth/enums/decorators/roles.decorator';
+import { Role } from 'src/auth/enums/role.enum';
 
 @Controller('subjects')
 export class SubjectsController {
@@ -29,11 +34,15 @@ export class SubjectsController {
   }
 
   @Get()
-  findAllSubjects() {
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
+  getAllSubjects() {
     return this.subjectService.getAllSubjects();
   }
 
   @Post()
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
   @UseInterceptors(
     FileInterceptor('doc', {
       storage: diskStorage({
@@ -61,11 +70,15 @@ export class SubjectsController {
   }
 
   @Delete('/:id')
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
   deleteSubject(@Param('id') id: string): Promise<void> {
     return this.subjectService.deleteSubject(id);
   }
 
   @Put(':id')
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
   updateSubject(
     @Param('id') id: string,
     @Body() updateSubjectDto: UpdateSubjectDto,

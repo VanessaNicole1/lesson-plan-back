@@ -1,6 +1,13 @@
 import { Role } from 'src/role/role.entity';
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
-
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import * as bcrypt from 'bcrypt';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -18,6 +25,17 @@ export class User {
   @Column()
   password: string;
 
-  @ManyToMany((type) => Role, (role) => role.users)
+  @ManyToMany(() => Role, (role) => role.users)
+  @JoinTable()
   roles: Role[];
+
+  @BeforeInsert()
+  async hashPassword() {
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+
+  async validatePassword(password: string): Promise<boolean> {
+    return await bcrypt.compareSync(password, this.password);
+  }
 }

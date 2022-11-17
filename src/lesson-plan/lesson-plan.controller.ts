@@ -42,7 +42,7 @@ export class LessonPlanController {
   }
 
   @Put(':id')
-  updateTeacher(
+  updateLessonPlan(
     @Param('id') id: string,
     @Body() updateLessonPlanDto: UpdateLessonPlanDto,
   ) {

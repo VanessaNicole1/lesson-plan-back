@@ -13,6 +13,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { UserModule } from './user/users.module';
 import { RoleModule } from './role/role.module';
 import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { ConfigModule } from '@nestjs/config';
     LessonPlanModule,
     UserModule,
     RoleModule,
+    AuthModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',

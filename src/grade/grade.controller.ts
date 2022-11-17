@@ -6,7 +6,12 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Roles } from 'src/auth/enums/decorators/roles.decorator';
+import { Role } from 'src/auth/enums/role.enum';
+import { ValidManager } from 'src/auth/valid-manager.guard';
 import { CreateGradeDto } from './dto/create-grade-dto';
 import { UpdateGradeDto } from './dto/update-grade-dto';
 import { Grade } from './grade.entity';
@@ -22,11 +27,13 @@ export class GradesController {
   }
 
   @Get('/:id/subjects')
-  getSubjectsByTeacher(@Param('id') id: string) {
+  getSubjectsByGrade(@Param('id') id: string) {
     return this.gradeService.getSubjectsByGrade(id);
   }
 
   @Get()
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
   getAllGrades() {
     return this.gradeService.getAllGrade();
   }
@@ -40,20 +47,23 @@ export class GradesController {
   }
 
   @Post()
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
   createGrade(@Body() createGradeDto: CreateGradeDto) {
     return this.gradeService.createGrade(createGradeDto);
   }
 
   @Delete('/:id')
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
   deleteGrade(@Param('id') id: string): Promise<void> {
     return this.gradeService.deleteGrade(id);
   }
 
   @Put(':id')
-  updateTeacher(
-    @Param('id') id: string,
-    @Body() updateGradeDto: UpdateGradeDto,
-  ) {
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
+  updateGrade(@Param('id') id: string, @Body() updateGradeDto: UpdateGradeDto) {
     return this.gradeService.updateGrade(id, updateGradeDto);
   }
 }

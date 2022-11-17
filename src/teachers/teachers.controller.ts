@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -17,6 +18,10 @@ import { Helpers } from '../helpers/helpers';
 import { TeachersService } from './teachers.service';
 import { Teacher } from './teacher.entity';
 import { UpdateTeacherDto } from './dto/update-teacher-dto';
+import { AuthGuard } from '@nestjs/passport';
+import { ValidManager } from 'src/auth/valid-manager.guard';
+import { Role } from 'src/auth/enums/role.enum';
+import { Roles } from 'src/auth/enums/decorators/roles.decorator';
 
 @Controller('teachers')
 export class TeachersController {
@@ -33,11 +38,15 @@ export class TeachersController {
   }
 
   @Get()
-  findAllTeachers() {
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
+  getAllTeachers() {
     return this.teacherService.findAll();
   }
 
   @Post()
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
   @UseInterceptors(
     FileInterceptor('doc', {
       storage: diskStorage({
@@ -65,11 +74,15 @@ export class TeachersController {
   }
 
   @Delete('/:id')
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
   deleteTeacher(@Param('id') id: string): Promise<void> {
     return this.teacherService.deleteTeacher(id);
   }
 
   @Put(':id')
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
   updateTeacher(
     @Param('id') id: string,
     @Body() updateTeacherDto: UpdateTeacherDto,
