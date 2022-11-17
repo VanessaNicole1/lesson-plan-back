@@ -17,14 +17,36 @@ export class UserService {
   ) {}
 
   async getUserById(id: string): Promise<User> {
+    if (!id) {
+      throw new NotFoundException(`El usuario no existe`);
+    }
     const user = await this.userRepository.findOne({
       where: {
         id,
+      },
+      relations: {
+        roles: true,
       },
     });
 
     if (!user) {
       throw new NotFoundException(`El usuario con ${id} no existe`);
+    }
+    return user;
+  }
+
+  async getUserByName(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: {
+        email,
+      },
+      relations: {
+        roles: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`El usuario no existe`);
     }
     return user;
   }
@@ -65,5 +87,13 @@ export class UserService {
       ...updateUserDto,
     });
     return this.userRepository.save(data);
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await this.userRepository.find();
+  }
+
+  async deleteUser(id: string) {
+    return id;
   }
 }

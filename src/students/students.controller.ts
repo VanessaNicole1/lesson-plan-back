@@ -4,7 +4,9 @@ import {
   Get,
   Param,
   Post,
+  Put,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { StudentsService } from './students.service';
@@ -15,6 +17,10 @@ import * as csvParser from 'csv-parser';
 import { Helpers } from '../helpers/helpers';
 import { UpdateStudentDto } from './dto/update-student-dto';
 import { Student } from './student.entity';
+import { AuthGuard } from '@nestjs/passport';
+import { ValidManager } from 'src/auth/valid-manager.guard';
+import { Roles } from 'src/auth/enums/decorators/roles.decorator';
+import { Role } from 'src/auth/enums/role.enum';
 
 @Controller('students')
 export class StudentsController {
@@ -26,11 +32,15 @@ export class StudentsController {
   }
 
   @Get()
-  findAllStudents() {
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
+  getAllStudents() {
     return this.studentsService.getAllStudents();
   }
 
   @Post()
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
   @UseInterceptors(
     FileInterceptor('doc', {
       storage: diskStorage({
@@ -65,10 +75,15 @@ export class StudentsController {
   }
 
   @Delete('/:id')
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
   deleteStudent(@Param('id') id: string): Promise<void> {
     return this.studentsService.deleteStudent(id);
   }
 
+  @Put('/:id')
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
   updateStudent(updateStudentDto: UpdateStudentDto) {
     return this.studentsService.updateStudent(updateStudentDto);
   }

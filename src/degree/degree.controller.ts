@@ -6,16 +6,23 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { DegreeService } from './degree.service';
 import { Degree } from './degree.entity';
 import { CreateDegreeDto } from './dto/create-degree-dto';
 import { UpdateDegreeDto } from './dto/update-degree-dto';
+import { AuthGuard } from '@nestjs/passport';
+import { ValidManager } from 'src/auth/valid-manager.guard';
+import { Roles } from 'src/auth/enums/decorators/roles.decorator';
+import { Role } from 'src/auth/enums/role.enum';
 
-@Controller('degress')
+@Controller('degree')
 export class DegreesController {
   constructor(private degreesService: DegreeService) {}
 
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
   @Get('/:id')
   getDegreeById(@Param('id') id: string): Promise<Degree> {
     return this.degreesService.getDegreeById(id);
@@ -27,17 +34,21 @@ export class DegreesController {
   }
 
   @Post()
-  createPeriod(@Body() createDegreeDto: CreateDegreeDto) {
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
+  createDegree(@Body() createDegreeDto: CreateDegreeDto) {
     return this.degreesService.createDegree(createDegreeDto);
   }
 
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
   @Delete('/:id')
-  deletePeriod(@Param('id') id: string): Promise<void> {
+  deleteDegree(@Param('id') id: string): Promise<void> {
     return this.degreesService.deleteDegree(id);
   }
 
   @Put(':id')
-  updateTeacher(
+  updateDegree(
     @Param('id') id: string,
     @Body() updateDegreeDto: UpdateDegreeDto,
   ) {
