@@ -1,8 +1,12 @@
+import { LessonPlanToStudent } from 'src/students/lessonPlanToStudent.entity';
+import { Student } from 'src/students/student.entity';
 import {
   Column,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Subject } from '../subjects/subject.entity';
@@ -35,4 +39,13 @@ export class LessonPlan {
   @ManyToOne(() => Teacher, (teacher) => teacher.plans)
   @JoinColumn({ name: 'teacher_id' })
   teacher: Teacher;
+
+  @ManyToMany(() => Student, (student) => student.lessonPlans)
+  students: Student[];
+
+  @OneToMany(
+    () => LessonPlanToStudent,
+    (lessonPlanToStudent) => lessonPlanToStudent.lessonPlan,
+  )
+  lessonPlanToStudent: LessonPlanToStudent[];
 }

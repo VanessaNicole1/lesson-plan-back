@@ -5,6 +5,7 @@ import { GradeService } from 'src/grade/grade.service';
 import { Helpers } from 'src/helpers/helpers';
 import { Repository } from 'typeorm';
 import { CreateStudentDto } from './dto/create-student-dto';
+import { RatedStudentLessonPlan } from './dto/rated-student-lessonPlan.dto';
 import { UpdateStudentDto } from './dto/update-student-dto';
 import { Student } from './student.entity';
 
@@ -78,5 +79,18 @@ export class StudentsService {
     if (result.affected === 0) {
       throw new NotFoundException(`El estudiante con ${id} no existe`);
     }
+  }
+
+  async ratedLessonPlan(
+    id: string,
+    ratedStudentLessonPlanDto: RatedStudentLessonPlan,
+  ) {
+    const { lessonPlans } = ratedStudentLessonPlanDto;
+    const data = await this.studentsRepository.preload({
+      id,
+      ...ratedStudentLessonPlanDto,
+      lessonPlans,
+    });
+    return this.studentsRepository.save(data);
   }
 }

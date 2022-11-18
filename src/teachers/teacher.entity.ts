@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { LessonPlan } from '../lesson-plan/lesson-plan.entity';
+import { TeacherToSubject } from './teacherToSubject.entity';
 
 @Entity()
 export class Teacher {
@@ -32,14 +33,22 @@ export class Teacher {
   @OneToMany(() => LessonPlan, (plan) => plan.teacher)
   plans: LessonPlan[];
 
+  @OneToMany(
+    () => TeacherToSubject,
+    (teacherToSubject) => teacherToSubject.teacher,
+  )
+  teacherToSubject: TeacherToSubject[];
+
   @ManyToMany(() => Subject, (subject) => subject.teachers)
   @JoinTable({
     name: 'subject_teacher',
     joinColumn: {
-      name: 'teacher_id',
+      name: 'teacherId',
+      referencedColumnName: 'id',
     },
     inverseJoinColumn: {
-      name: 'subject_id',
+      name: 'subjectId',
+      referencedColumnName: 'id',
     },
   })
   subjects: Subject[];

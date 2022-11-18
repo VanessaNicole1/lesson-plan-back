@@ -25,23 +25,14 @@ export class TeachersService {
     return teacher;
   }
 
-  async getSubjectsByTeacher(id) {
+  async getSubjectsByTeacher(id: string) {
     const data = await this.teachersRepository.find({
       relations: ['subjects'],
+      where: {
+        id: id,
+      },
     });
-
-    for (let i = 0; i < data.length; i++) {
-      const teacher_id = data[i].id;
-      if (id === teacher_id) {
-        const teacher_subjects = data[i];
-        if (teacher_subjects.subjects.length < 0) {
-          throw new NotFoundException(
-            `El profesor con ${id} no tiene materias registradas`,
-          );
-        }
-        return teacher_subjects;
-      }
-    }
+    return data;
   }
 
   async createTeacher(createTeacherDto: CreateTeacherDto) {
@@ -74,7 +65,15 @@ export class TeachersService {
     if (updateTeacherDto.email === '') {
       updateTeacherDto.email = teacherExist.email;
     }
-    const { subjects } = updateTeacherDto;
+    let { subjects } = updateTeacherDto;
+    const teacher = await this.getSubjectsByTeacher(teacherExist.id);
+    const teachersSubjects = teacher[0].subjects;
+    console.log('Teacher SUbjects:', teachersSubjects, typeof teachersSubjects);
+    console.log('Subjecs:', subjects, typeof subjects);
+    if (teachersSubjects.length > 0) {
+      subjects = subjects.concat(teachersSubjects);
+      console.log('NEW SUBJECT:', subjects, typeof subjects);
+    }
     const data = await this.teachersRepository.preload({
       id,
       ...updateTeacherDto,

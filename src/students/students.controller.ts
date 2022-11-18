@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -15,6 +16,7 @@ import * as csvParser from 'csv-parser';
 import { Helpers } from '../helpers/helpers';
 import { UpdateStudentDto } from './dto/update-student-dto';
 import { Student } from '../../dist/students/student.model';
+import { RatedStudentLessonPlan } from './dto/rated-student-lessonPlan.dto';
 
 @Controller('students')
 export class StudentsController {
@@ -25,10 +27,17 @@ export class StudentsController {
     return this.studentsService.getStudentById(id);
   }
 
-
   @Get()
   findAllStudents() {
     return this.studentsService.getAllStudents();
+  }
+
+  @Post('/lessonPlan/:id')
+  ratedStudentLessonPlan(
+    @Param('id') id: string,
+    @Body() ratedStudentLessonPlan: RatedStudentLessonPlan,
+  ) {
+    return this.studentsService.ratedLessonPlan(id, ratedStudentLessonPlan);
   }
 
   @Post()
