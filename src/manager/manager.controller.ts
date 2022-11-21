@@ -26,9 +26,7 @@ export class ManagerController {
   getManagerById(@Param('id') id: string): Promise<Manager> {
     return this.managerService.getManagerById(id);
   }
-
-  @UseGuards(AuthGuard('jwt'), ValidManager)
-  @Roles(Role.Manager)
+  
   @Post()
   createManager(@Body() createManagerDto: CreateorUpdateManagerDto) {
     return this.managerService.createManager(createManagerDto);
