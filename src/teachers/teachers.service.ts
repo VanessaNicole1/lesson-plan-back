@@ -18,6 +18,9 @@ export class TeachersService {
   ) {}
 
   async getTeacherById(id: string): Promise<Teacher> {
+    if (!id) {
+      throw new NotFoundException(`El docente no existe`);
+    }
     const teacher = await this.teachersRepository.findOne({
       where: {
         id,
@@ -25,12 +28,15 @@ export class TeachersService {
     });
 
     if (!teacher) {
-      throw new NotFoundException(`El profesor con ${id} no existe`);
+      throw new NotFoundException(`El docente con ${id} no existe`);
     }
     return teacher;
   }
 
-  async getSubjectsByTeacher(id) {
+  async getSubjectsByTeacher(id: string) {
+    if (!id) {
+      throw new NotFoundException(`El docente no existe`);
+    }
     const data = await this.teachersRepository.find({
       relations: ['subjects'],
     });
@@ -41,7 +47,7 @@ export class TeachersService {
         const teacher_subjects = data[i];
         if (teacher_subjects.subjects.length < 0) {
           throw new NotFoundException(
-            `El profesor con ${id} no tiene materias registradas`,
+            `El docente con ${id} no tiene materias registradas`,
           );
         }
         return teacher_subjects;
@@ -55,10 +61,13 @@ export class TeachersService {
     const teacher = this.teachersRepository.create({});
     teacher.user = user;
     await this.teachersRepository.save(teacher);
-    return { message: 'Teacher created successfully' };
+    return { message: 'Docente creado con éxito' };
   }
 
   async updateTeacher(id: string, updateTeacherDto: UpdateTeacherDto) {
+    if (!id) {
+      throw new NotFoundException(`El docente no existe`);
+    }
     const teacherExist = await this.teachersRepository.findOne({
       where: {
         id,
@@ -80,9 +89,12 @@ export class TeachersService {
   }
 
   async deleteTeacher(id: string): Promise<void> {
+    if (!id) {
+      throw new NotFoundException(`El docente no existe`);
+    }
     const result = await this.teachersRepository.delete(id);
     if (result.affected === 0) {
-      throw new NotFoundException(`El profesor con ${id} no existe`);
+      throw new NotFoundException(`El docente con ${id} no existe`);
     }
   }
 }

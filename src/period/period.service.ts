@@ -13,6 +13,9 @@ export class PeriodsService {
   ) {}
 
   async getPeriodById(id: string): Promise<Period> {
+    if (!id) {
+      throw new NotFoundException(`El periodo no existe`);
+    }
     const period = await this.periodsRepository.findOne({
       where: {
         id,
@@ -40,6 +43,9 @@ export class PeriodsService {
   }
 
   async updatePeriod(id: string, updatePeriodDto: UpdatePeriodDto) {
+    if (!id) {
+      throw new NotFoundException(`El periodo no existe`);
+    }
     const periodExist = await this.periodsRepository.findOne({
       where: {
         id,
@@ -64,6 +70,9 @@ export class PeriodsService {
   }
 
   async deletePeriod(id: string): Promise<void> {
+    if (!id) {
+      throw new NotFoundException(`El periodo no existe`);
+    }
     const result = await this.periodsRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`El periodo con ${id} no existe`);

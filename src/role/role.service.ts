@@ -12,6 +12,9 @@ export class RoleService {
   ) {}
 
   async getRoleById(id: string): Promise<Role> {
+    if (!id) {
+      throw new NotFoundException(`El rol no existe`);
+    }
     const role = await this.roleRepository.findOne({
       where: {
         id,
@@ -38,6 +41,9 @@ export class RoleService {
   }
 
   async getRoleByType(type: string) {
+    if (!type) {
+      throw new NotFoundException(`El rol no existe`);
+    }
     const role = await this.roleRepository.findOne({
       where: {
         type,

@@ -17,6 +17,9 @@ export class ManagerService {
   ) {}
 
   async getManagerById(id: string): Promise<Manager> {
+    if (!id) {
+      throw new NotFoundException(`El director no existe`);
+    }
     const manager = await this.managerRepository.findOne({
       where: {
         id,
@@ -39,6 +42,9 @@ export class ManagerService {
   }
 
   async updateManager(id: string, updateManagerDto: CreateorUpdateManagerDto) {
+    if (!id) {
+      throw new NotFoundException(`El director no existe`);
+    }
     const managerExist = await this.managerRepository.findOne({
       where: {
         id,
@@ -56,6 +62,9 @@ export class ManagerService {
   }
 
   async deleteManager(id: string): Promise<void> {
+    if (!id) {
+      throw new NotFoundException(`El director no existe`);
+    }
     const result = await this.managerRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`El director con ${id} no existe`);

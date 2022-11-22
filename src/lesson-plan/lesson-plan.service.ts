@@ -13,6 +13,9 @@ export class LessonPlanService {
   ) {}
 
   async getLessonPlanById(id: string): Promise<LessonPlan> {
+    if (!id) {
+      throw new NotFoundException(`El plan de clase no existe`);
+    }
     const lessonPlan = await this.LessonPlanRepository.findOne({
       where: {
         id,
@@ -25,21 +28,27 @@ export class LessonPlanService {
     return lessonPlan;
   }
 
-  async getAllLessonPlanByTeacher(teacher_id: string): Promise<LessonPlan[]> {
+  async getAllLessonPlanByTeacher(teacherId: string): Promise<LessonPlan[]> {
+    if (!teacherId) {
+      throw new NotFoundException(`El plan de clase no existe`);
+    }
     return await this.LessonPlanRepository.find({
       where: {
         teacher: {
-          id: teacher_id,
+          id: teacherId,
         },
       },
     });
   }
 
-  async getAllLessonPlanBySubject(subject_id: string): Promise<LessonPlan[]> {
+  async getAllLessonPlanBySubject(subjectId: string): Promise<LessonPlan[]> {
+    if (!subjectId) {
+      throw new NotFoundException(`El plan de clase no existe`);
+    }
     return await this.LessonPlanRepository.find({
       where: {
         subject: {
-          id: subject_id,
+          id: subjectId,
         },
       },
     });
@@ -58,6 +67,9 @@ export class LessonPlanService {
   }
 
   async updateLessonPlan(id: string, updateLessonPlan: UpdateLessonPlanDto) {
+    if (!id) {
+      throw new NotFoundException(`El plan de clase no existe`);
+    }
     const lessonPlanExist = await this.LessonPlanRepository.findOne({
       where: {
         id,
@@ -89,6 +101,9 @@ export class LessonPlanService {
   }
 
   async deleteLessonPlan(id: string): Promise<void> {
+    if (!id) {
+      throw new NotFoundException(`El plan de clase no existe`);
+    }
     const result = await this.LessonPlanRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`El plan de clases con ${id} no existe`);

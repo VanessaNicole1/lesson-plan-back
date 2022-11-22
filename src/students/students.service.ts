@@ -22,6 +22,9 @@ export class StudentsService {
   ) {}
 
   async getStudentById(id: string): Promise<Student> {
+    if (!id) {
+      throw new NotFoundException(`El estudiante no existe`);
+    }
     const student = await this.studentsRepository.findOne({
       where: {
         id,
@@ -66,6 +69,9 @@ export class StudentsService {
   }
 
   async deleteStudent(id: string): Promise<void> {
+    if (!id) {
+      throw new NotFoundException(`El estudiante no existe`);
+    }
     const result = await this.studentsRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`El estudiante con ${id} no existe`);
