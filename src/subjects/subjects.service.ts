@@ -13,6 +13,9 @@ export class SubjectsService {
   ) {}
 
   async getSubjectById(id: string): Promise<Subject> {
+    if (!id) {
+      throw new NotFoundException(`La materia no existe`);
+    }
     const subject = await this.subjectsRepository.findOne({
       where: {
         id,
@@ -38,6 +41,9 @@ export class SubjectsService {
   }
 
   async updateSubject(id: string, updateSubjectDto: UpdateSubjectDto) {
+    if (!id) {
+      throw new NotFoundException(`La materia no existe`);
+    }
     const subjectExist = await this.subjectsRepository.findOne({
       where: {
         id,
@@ -56,6 +62,9 @@ export class SubjectsService {
   }
 
   async deleteSubject(id: string): Promise<void> {
+    if (!id) {
+      throw new NotFoundException(`La materia no existe`);
+    }
     const result = await this.subjectsRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`La materia con ${id} no existe`);

@@ -13,6 +13,9 @@ export class DegreeService {
   ) {}
 
   async getDegreeById(id: string): Promise<Degree> {
+    if (!id) {
+      throw new NotFoundException(`La carrera no existe`);
+    }
     const degree = await this.degreesRepository.findOne({
       where: {
         id,
@@ -26,6 +29,9 @@ export class DegreeService {
   }
 
   async getGradesByDegree(id: string) {
+    if (!id) {
+      throw new NotFoundException(`La carrera no existe`);
+    }
     const data = await this.degreesRepository.find({
       relations: ['grades'],
     });
@@ -52,6 +58,9 @@ export class DegreeService {
   }
 
   async deleteDegree(id: string): Promise<void> {
+    if (!id) {
+      throw new NotFoundException(`La carrera no existe`);
+    }
     const result = await this.degreesRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`La carrera con ${id} no existe`);
@@ -59,6 +68,9 @@ export class DegreeService {
   }
 
   async updateDegree(id: string, updateDegreeDto: UpdateDegreeDto) {
+    if (!id) {
+      throw new NotFoundException(`La carrera no existe`);
+    }
     const degreeExist = await this.degreesRepository.findOne({
       where: {
         id,

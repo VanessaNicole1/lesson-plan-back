@@ -36,6 +36,9 @@ export class UserService {
   }
 
   async getUserByName(email: string): Promise<User> {
+    if (!email) {
+      throw new NotFoundException(`El usuario no existe`);
+    }
     const user = await this.userRepository.findOne({
       where: {
         email,
@@ -67,6 +70,9 @@ export class UserService {
   }
 
   async updateUser(id: string, updateUserDto: UpdateUserDto) {
+    if (!id) {
+      throw new NotFoundException(`El id es necesario`);
+    }
     const userExist = await this.userRepository.findOne({
       where: {
         id,
@@ -94,6 +100,9 @@ export class UserService {
   }
 
   async deleteUser(id: string) {
+    if (!id) {
+      throw new NotFoundException(`El id es necesario`);
+    }
     return id;
   }
 }
