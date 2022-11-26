@@ -41,7 +41,7 @@ export class UserService {
     }
     const user = await this.userRepository.findOne({
       where: {
-        email,
+        email: email,
       },
       relations: {
         roles: true,
@@ -93,6 +93,25 @@ export class UserService {
       ...updateUserDto,
     });
     return this.userRepository.save(data);
+  }
+
+  async updateRefreshToken(id: string, refreshToken: string) {
+    if (!id) {
+      throw new NotFoundException(`El id es necesario`);
+    }
+    const userExist = await this.userRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!userExist) throw new NotFoundException('El usuario no existe');
+
+    await this.userRepository.update(id, { refreshToken: refreshToken });
+    return await this.userRepository.findOne({
+      where: {
+        id,
+      },
+    });
   }
 
   async getAllUsers(): Promise<User[]> {
