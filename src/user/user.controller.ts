@@ -4,6 +4,7 @@ import { Role } from 'src/auth/enums/role.enum';
 import { Roles } from 'src/auth/roles.decorator';
 import { ValidManager } from 'src/auth/valid-manager.guard';
 import { ValidUser } from 'src/auth/valid-user.guard';
+import { GetUserDto } from './dto/get-user-dto';
 import { User } from './user-entity';
 import { UserService } from './users.service';
 
@@ -13,7 +14,7 @@ export class UserController {
 
   @Get('/:id')
   @UseGuards(AuthGuard('jwt'), ValidUser)
-  @Roles(Role.Manager, Role.Student, Role.Student)
+  @Roles(Role.Manager, Role.Student, Role.Teacher)
   getUserById(@Param('id') id: string): Promise<User> {
     return this.userService.getUserById(id);
   }

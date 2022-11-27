@@ -29,7 +29,7 @@ export class DegreesController {
   }
 
   @Get('/:id/grades')
-  getSubjectsByTeacher(@Param('id') id: string) {
+  getGradesByDegree(@Param('id') id: string) {
     return this.degreesService.getGradesByDegree(id);
   }
 
@@ -40,14 +40,16 @@ export class DegreesController {
     return this.degreesService.createDegree(createDegreeDto);
   }
 
+  @Delete('/:id')
   @UseGuards(AuthGuard('jwt'), ValidManager)
   @Roles(Role.Manager)
-  @Delete('/:id')
   deleteDegree(@Param('id') id: string): Promise<void> {
     return this.degreesService.deleteDegree(id);
   }
 
   @Put(':id')
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
   updateDegree(
     @Param('id') id: string,
     @Body() updateDegreeDto: UpdateDegreeDto,

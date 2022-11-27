@@ -41,7 +41,7 @@ export class DegreeService {
         const degree_grades = data[i];
         if (degree_grades.grades.length < 0) {
           throw new NotFoundException(
-            `El profesor con ${id} no tiene materias registradas`,
+            `La carrera con ${id} no tiene materias registradas`,
           );
         }
         return degree_grades;

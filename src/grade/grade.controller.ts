@@ -22,11 +22,15 @@ export class GradesController {
   constructor(private gradeService: GradeService) {}
 
   @Get('/:id')
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
   getGradeById(@Param('id') id: string): Promise<Grade> {
     return this.gradeService.getGradeById(id);
   }
 
   @Get('/:id/subjects')
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
   getSubjectsByGrade(@Param('id') id: string) {
     return this.gradeService.getSubjectsByGrade(id);
   }
