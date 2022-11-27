@@ -26,7 +26,7 @@ export class ManagerController {
   getManagerById(@Param('id') id: string): Promise<Manager> {
     return this.managerService.getManagerById(id);
   }
-  
+
   @Post()
   createManager(@Body() createManagerDto: CreateorUpdateManagerDto) {
     return this.managerService.createManager(createManagerDto);

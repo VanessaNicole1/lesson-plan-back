@@ -21,12 +21,15 @@ import { AuthGuard } from '@nestjs/passport';
 import { ValidManager } from 'src/auth/valid-manager.guard';
 import { Roles } from 'src/auth/enums/decorators/roles.decorator';
 import { Role } from 'src/auth/enums/role.enum';
+import { ValidUser } from 'src/auth/valid-user.guard';
 
 @Controller('students')
 export class StudentsController {
   constructor(private studentsService: StudentsService) {}
 
   @Get('/:id')
+  @UseGuards(AuthGuard('jwt'), ValidUser)
+  @Roles(Role.Manager, Role.Student)
   getStudentById(@Param('id') id: string): Promise<Student> {
     return this.studentsService.getStudentById(id);
   }

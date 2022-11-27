@@ -6,7 +6,12 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Role } from 'src/auth/enums/role.enum';
+import { Roles } from 'src/auth/roles.decorator';
+import { ValidUser } from 'src/auth/valid-user.guard';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan-dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan-dto';
 import { LessonPlan } from './lesson-plan.entity';
@@ -22,6 +27,8 @@ export class LessonPlanController {
   }
 
   @Get('/teacher/:teacher_id')
+  @UseGuards(AuthGuard('jwt'), ValidUser)
+  @Roles(Role.Manager, Role.Teacher)
   getAllLessonPlanByTeacher(@Param('teacher_id') teacher_id: string) {
     return this.lessonPlanService.getAllLessonPlanByTeacher(teacher_id);
   }

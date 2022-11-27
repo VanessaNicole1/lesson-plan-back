@@ -66,7 +66,7 @@ export class GradeService {
         const grades_subject = data[i];
         if (grades_subject.subjects.length < 0) {
           throw new NotFoundException(
-            `El ciclo con ${id} no tiene materias registradas`,
+            `El curso con ${id} no tiene materias registradas`,
           );
         }
         return grades_subject;

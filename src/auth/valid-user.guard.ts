@@ -13,29 +13,28 @@ export class ValidUser implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-
-    const student = this.config.get('STUDENT_TYPE');
-    const teacher = this.config.get('TEACHER_TYPE');
     const request = context.switchToHttp().getRequest();
-    const id = request.params.id;
     const currentUser: User = request.user;
     const roles = currentUser.roles;
     const rolesType = roles.map((role) => role.type);
+    const id = request.params.id;
 
-    if (requiredRoles.includes(student)) {
-      if (!rolesType.includes(student)) {
-        return false;
-      }
+    const student = this.config.get('STUDENT_TYPE');
+    const teacher = this.config.get('TEACHER_TYPE');
+    const manager = this.config.get('MANAGER_TYPE');
+
+    if (rolesType.includes(manager) && requiredRoles.includes(manager)) {
+      return true;
+    }
+
+    if (rolesType.includes(student) && requiredRoles.includes(student)) {
       if (currentUser.id !== id) {
         return false;
       }
       return true;
     }
 
-    if (requiredRoles.includes(teacher)) {
-      if (!rolesType.includes(teacher)) {
-        return false;
-      }
+    if (rolesType.includes(teacher) && requiredRoles.includes(teacher)) {
       if (currentUser.id !== id) {
         return false;
       }

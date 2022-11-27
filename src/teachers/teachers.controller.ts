@@ -22,17 +22,22 @@ import { AuthGuard } from '@nestjs/passport';
 import { ValidManager } from 'src/auth/valid-manager.guard';
 import { Role } from 'src/auth/enums/role.enum';
 import { Roles } from 'src/auth/enums/decorators/roles.decorator';
+import { ValidUser } from 'src/auth/valid-user.guard';
 
 @Controller('teachers')
 export class TeachersController {
   constructor(private teacherService: TeachersService) {}
 
-  @Get('/:id')
+  @Get(':id')
+  @UseGuards(AuthGuard('jwt'), ValidUser)
+  @Roles(Role.Manager, Role.Teacher)
   getTeacherById(@Param('id') id: string): Promise<Teacher> {
     return this.teacherService.getTeacherById(id);
   }
 
   @Get('/:id/subjects')
+  @UseGuards(AuthGuard('jwt'), ValidUser)
+  @Roles(Role.Manager, Role.Teacher)
   getSubjectsByTeacher(@Param('id') id: string) {
     return this.teacherService.getSubjectsByTeacher(id);
   }

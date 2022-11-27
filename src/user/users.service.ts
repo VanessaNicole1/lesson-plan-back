@@ -22,7 +22,7 @@ export class UserService {
     }
     const user = await this.userRepository.findOne({
       where: {
-        id,
+        id: id,
       },
       relations: {
         roles: true,
