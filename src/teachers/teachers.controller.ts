@@ -69,7 +69,7 @@ export class TeachersController {
   @UseGuards(AuthGuard('jwt'), ValidManager)
   @Roles(Role.Manager)
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
+  createTeachers(@UploadedFile() file: Express.Multer.File) {
     const columns = ['name', 'lastName', 'email'];
     const data = file.buffer.toString();
     const results = Helpers.validateCsv(data, columns);
