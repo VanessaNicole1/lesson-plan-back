@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -11,9 +13,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { createReadStream } from 'fs';
-import * as csvParser from 'csv-parser';
 import { Helpers } from '../helpers/helpers';
 import { TeachersService } from './teachers.service';
 import { Teacher } from './teacher.entity';
@@ -49,35 +48,6 @@ export class TeachersController {
     return this.teacherService.findAll();
   }
 
-  @Post()
-  @UseGuards(AuthGuard('jwt'), ValidManager)
-  @Roles(Role.Manager)
-  @UseInterceptors(
-    FileInterceptor('doc', {
-      storage: diskStorage({
-        destination: './files-csv',
-        filename: Helpers.editFileNameTeacher,
-      }),
-    }),
-  )
-  createTeachers(@UploadedFile() file) {
-    const fileName = file.originalname;
-    const results = [];
-    createReadStream(`files-csv/${fileName}`)
-      .pipe(csvParser())
-      .on('data', (data) => results.push(data))
-      .on('end', () => {
-        for (let i = 0; i < results.length; i++) {
-          const element = results[i];
-          return this.teacherService.createTeacher(element);
-        }
-      });
-    return {
-      statusCode: 200,
-      body: 'Los profesores han sido creados con éxito',
-    };
-  }
-
   @Delete('/:id')
   @UseGuards(AuthGuard('jwt'), ValidManager)
   @Roles(Role.Manager)
@@ -93,5 +63,50 @@ export class TeachersController {
     @Body() updateTeacherDto: UpdateTeacherDto,
   ) {
     return this.teacherService.updateTeacher(id, updateTeacherDto);
+  }
+
+  @Post('upload')
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
+  @UseInterceptors(FileInterceptor('file'))
+  createTeachers(@UploadedFile() file: Express.Multer.File) {
+    const columns = ['name', 'lastName', 'email'];
+    const data = file.buffer.toString();
+    const results = Helpers.validateCsv(data, columns);
+    const emails = [];
+    const duplicateEmails = [];
+    for (let i = 0; i < results.length; i++) {
+      const { name, lastName, email } = results[i];
+
+      if (name === '' || lastName === '' || email === '') {
+        throw new HttpException(
+          {
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'No pueden existir valores vacios en las columnas',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+      if (emails.includes(email)) {
+        duplicateEmails.push(email);
+      } else {
+        emails.push(email);
+      }
+    }
+    if (duplicateEmails.length > 0) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `Los siguientes correos están repetidos ${duplicateEmails.join(
+            ',',
+          )}`,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+    for (let i = 0; i < results.length; i++) {
+      const element = results[i];
+      this.teacherService.createTeacher(element);
+    }
   }
 }
