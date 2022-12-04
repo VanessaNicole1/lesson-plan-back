@@ -54,7 +54,11 @@ export class UserService {
     return user;
   }
 
-  async createUser(createUserDto: CreateUserDto, type: string) {
+  async createUser(
+    createUserDto: CreateUserDto,
+    type: string,
+    secondType: string = null,
+  ) {
     const role = await this.roleService.getRoleByType(type);
     const { email, name, lastName } = createUserDto;
     const password = Helpers.generatePassword();
@@ -65,6 +69,10 @@ export class UserService {
       lastName,
     });
     user.roles = [role];
+    if (secondType) {
+      const secondRole = await this.roleService.getRoleByType(secondType);
+      user.roles.push(secondRole);
+    }
     const currentUser = await this.userRepository.save(user);
     return this.getUserById(currentUser.id);
   }
