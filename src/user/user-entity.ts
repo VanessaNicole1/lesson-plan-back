@@ -1,4 +1,4 @@
-import { Role } from 'src/role/role.entity';
+import { Role } from 'src/modules/role/role.entity';
 import {
   BeforeInsert,
   Column,

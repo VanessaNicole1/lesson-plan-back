@@ -3,9 +3,9 @@ import { StudentsController } from './students.controller';
 import { StudentsService } from './students.service';
 import { Student } from './student.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { GradesModule } from 'src/grade/grade.module';
+import { GradesModule } from 'src/modules/grade/grade.module';
 import { UserModule } from 'src/user/users.module';
-import { RoleModule } from 'src/role/role.module';
+import { RoleModule } from 'src/modules/role/role.module';
 
 @Module({
   imports: [

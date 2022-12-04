@@ -1,4 +1,4 @@
-import { Grade } from 'src/grade/grade.entity';
+import { Grade } from 'src/modules/grade/grade.entity';
 
 export class UpdateDegreeDto {
   name: string;

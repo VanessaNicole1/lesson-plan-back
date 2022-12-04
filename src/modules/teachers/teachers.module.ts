@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Teacher } from './teacher.entity';
 import { TeachersController } from './teachers.controller';
 import { UserModule } from 'src/user/users.module';
-import { RoleModule } from 'src/role/role.module';
+import { RoleModule } from 'src/modules/role/role.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Teacher]), UserModule, RoleModule],

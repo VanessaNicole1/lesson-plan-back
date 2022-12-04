@@ -1,5 +1,5 @@
-import { Grade } from 'src/grade/grade.entity';
-import { Teacher } from 'src/teachers/teacher.entity';
+import { Grade } from 'src/modules/grade/grade.entity';
+import { Teacher } from 'src/modules/teachers/teacher.entity';
 import {
   Column,
   Entity,

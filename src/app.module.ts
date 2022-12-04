@@ -1,19 +1,19 @@
-import { DegreesModule } from './degree/degree.module';
+import { DegreesModule } from './modules/degree/degree.module';
 import { Module } from '@nestjs/common';
-import { StudentsModule } from './students/students.module';
+import { StudentsModule } from './modules/students/students.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TeachersModule } from './teachers/teachers.module';
-import { SubjectsModule } from './subjects/subjects.module';
-import { PeriodsModule } from './period/period.module';
-import { GradesModule } from './grade/grade.module';
-import { ManagerModule } from './manager/manager.module';
-import { LessonPlanModule } from './lesson-plan/lesson-plan.module';
+import { TeachersModule } from './modules/teachers/teachers.module';
+import { SubjectsModule } from './modules/subjects/subjects.module';
+import { PeriodsModule } from './modules/period/period.module';
+import { GradesModule } from './modules/grade/grade.module';
+import { ManagerModule } from './modules/manager/manager.module';
+import { LessonPlanModule } from './modules/lesson-plan/lesson-plan.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { UserModule } from './user/users.module';
-import { RoleModule } from './role/role.module';
+import { RoleModule } from './modules/role/role.module';
 import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [

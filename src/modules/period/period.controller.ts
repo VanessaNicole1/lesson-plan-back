@@ -13,9 +13,9 @@ import { Period } from './period.entity';
 import { CreatePeriodDto } from './dto/create-period-dto';
 import { UpdatePeriodDto } from './dto/update-period-dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ValidManager } from 'src/auth/valid-manager.guard';
-import { Roles } from 'src/auth/enums/decorators/roles.decorator';
-import { Role } from 'src/auth/enums/role.enum';
+import { ValidManager } from 'src/modules/auth/valid-manager.guard';
+import { Roles } from 'src/modules/auth/enums/decorators/roles.decorator';
+import { Role } from 'src/modules/auth/enums/role.enum';
 
 @Controller('periods')
 export class PeriodsController {

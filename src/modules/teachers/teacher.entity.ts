@@ -1,5 +1,5 @@
 import { User } from 'src/user/user-entity';
-import { Subject } from 'src/subjects/subject.entity';
+import { Subject } from 'src/modules/subjects/subject.entity';
 import {
   JoinTable,
   ManyToMany,

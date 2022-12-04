@@ -13,15 +13,15 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Helpers } from '../helpers/helpers';
+import { Helpers } from '../../helpers/helpers';
 import { TeachersService } from './teachers.service';
 import { Teacher } from './teacher.entity';
 import { UpdateTeacherDto } from './dto/update-teacher-dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ValidManager } from 'src/auth/valid-manager.guard';
-import { Role } from 'src/auth/enums/role.enum';
-import { Roles } from 'src/auth/enums/decorators/roles.decorator';
-import { ValidUser } from 'src/auth/valid-user.guard';
+import { ValidManager } from 'src/modules/auth/valid-manager.guard';
+import { Role } from 'src/modules/auth/enums/role.enum';
+import { Roles } from 'src/modules/auth/enums/decorators/roles.decorator';
+import { ValidUser } from 'src/modules/auth/valid-user.guard';
 
 @Controller('teachers')
 export class TeachersController {

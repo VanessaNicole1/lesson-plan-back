@@ -4,7 +4,7 @@ import { Manager } from './manager.entity';
 import { ManagerController } from './manager.controller';
 import { ManagerService } from './manager.service';
 import { UserModule } from 'src/user/users.module';
-import { RoleModule } from 'src/role/role.module';
+import { RoleModule } from 'src/modules/role/role.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Manager]), UserModule, RoleModule],

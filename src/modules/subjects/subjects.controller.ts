@@ -20,9 +20,9 @@ import { Helpers } from 'src/helpers/helpers';
 import { createReadStream } from 'fs';
 import csvParser from 'csv-parser';
 import { AuthGuard } from '@nestjs/passport';
-import { ValidManager } from 'src/auth/valid-manager.guard';
-import { Roles } from 'src/auth/enums/decorators/roles.decorator';
-import { Role } from 'src/auth/enums/role.enum';
+import { ValidManager } from 'src/modules/auth/valid-manager.guard';
+import { Roles } from 'src/modules/auth/enums/decorators/roles.decorator';
+import { Role } from 'src/modules/auth/enums/role.enum';
 
 @Controller('subjects')
 export class SubjectsController {

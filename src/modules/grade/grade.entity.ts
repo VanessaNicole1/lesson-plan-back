@@ -1,5 +1,5 @@
-import { Degree } from 'src/degree/degree.entity';
-import { Subject } from 'src/subjects/subject.entity';
+import { Degree } from 'src/modules/degree/degree.entity';
+import { Subject } from 'src/modules/subjects/subject.entity';
 import {
   Column,
   Entity,

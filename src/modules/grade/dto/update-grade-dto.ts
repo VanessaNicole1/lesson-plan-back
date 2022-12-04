@@ -1,4 +1,4 @@
-import { Subject } from 'src/subjects/subject.entity';
+import { Subject } from 'src/modules/subjects/subject.entity';
 
 export class UpdateGradeDto {
   number: number;

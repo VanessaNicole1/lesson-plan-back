@@ -12,9 +12,9 @@ import { Manager } from './manager.entity';
 import { Body } from '@nestjs/common';
 import { CreateorUpdateManagerDto } from './dto/create-update-manager.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ValidManager } from 'src/auth/valid-manager.guard';
-import { Roles } from 'src/auth/roles.decorator';
-import { Role } from 'src/auth/enums/role.enum';
+import { ValidManager } from 'src/modules/auth/valid-manager.guard';
+import { Roles } from 'src/modules/auth/roles.decorator';
+import { Role } from 'src/modules/auth/enums/role.enum';
 
 @Controller('manager')
 export class ManagerController {

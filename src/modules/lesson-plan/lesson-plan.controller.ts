@@ -9,9 +9,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Role } from 'src/auth/enums/role.enum';
-import { Roles } from 'src/auth/roles.decorator';
-import { ValidUser } from 'src/auth/valid-user.guard';
+import { Role } from 'src/modules/auth/enums/role.enum';
+import { Roles } from 'src/modules/auth/roles.decorator';
+import { ValidUser } from 'src/modules/auth/valid-user.guard';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan-dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan-dto';
 import { LessonPlan } from './lesson-plan.entity';

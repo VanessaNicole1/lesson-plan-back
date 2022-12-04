@@ -13,9 +13,9 @@ import { Degree } from './degree.entity';
 import { CreateDegreeDto } from './dto/create-degree-dto';
 import { UpdateDegreeDto } from './dto/update-degree-dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ValidManager } from 'src/auth/valid-manager.guard';
-import { Roles } from 'src/auth/enums/decorators/roles.decorator';
-import { Role } from 'src/auth/enums/role.enum';
+import { ValidManager } from 'src/modules/auth/valid-manager.guard';
+import { Roles } from 'src/modules/auth/enums/decorators/roles.decorator';
+import { Role } from 'src/modules/auth/enums/role.enum';
 
 @Controller('degree')
 export class DegreesController {

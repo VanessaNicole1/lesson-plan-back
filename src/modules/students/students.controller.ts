@@ -13,14 +13,14 @@ import {
 } from '@nestjs/common';
 import { StudentsService } from './students.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Helpers } from '../helpers/helpers';
+import { Helpers } from '../../helpers/helpers';
 import { UpdateStudentDto } from './dto/update-student-dto';
 import { Student } from './student.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { ValidManager } from 'src/auth/valid-manager.guard';
-import { Roles } from 'src/auth/enums/decorators/roles.decorator';
-import { Role } from 'src/auth/enums/role.enum';
-import { ValidUser } from 'src/auth/valid-user.guard';
+import { ValidManager } from 'src/modules/auth/valid-manager.guard';
+import { Roles } from 'src/modules/auth/enums/decorators/roles.decorator';
+import { Role } from 'src/modules/auth/enums/role.enum';
+import { ValidUser } from 'src/modules/auth/valid-user.guard';
 
 @Controller('students')
 export class StudentsController {
