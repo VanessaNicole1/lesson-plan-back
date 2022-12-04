@@ -75,8 +75,11 @@ export class AuthService {
       expiresIn: '7d',
     });
     await this.updateRefreshToken(user.id, refreshToken);
+    delete user.password;
+    delete user.refreshToken;
     return {
       accessToken: this.jwtService.sign(payload),
+      user: user,
       refreshToken: refreshToken,
     };
   }
