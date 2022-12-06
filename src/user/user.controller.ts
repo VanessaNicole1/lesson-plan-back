@@ -14,7 +14,7 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get('myAccount')
+  @Get('my-account')
   getMyAccount(@GetUser() user) {
     return user;
   }

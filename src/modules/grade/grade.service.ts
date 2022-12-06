@@ -89,12 +89,15 @@ export class GradeService {
 
   async createGrade(createGradeDto: CreateGradeDto): Promise<Grade> {
     const { numberParallel, parallel } = createGradeDto;
+    const currentGrade = await this.verifyGradeExist(numberParallel, parallel);
+    if (currentGrade) {
+      return currentGrade;
+    }
     const grade = this.gradesRepository.create({
       numberParallel,
       parallel,
     });
-    await this.gradesRepository.save(grade);
-    return grade;
+    return await this.gradesRepository.save(grade);
   }
 
   async updateGrade(id: string, updateGradeDto: UpdateGradeDto) {

@@ -45,17 +45,11 @@ export class StudentsService {
     const type = this.config.get('STUDENT_TYPE');
     const { numberParallel, parallel } = createStudentDto;
 
-    let gradeExist = await this.gradeService.verifyGradeExist(
+    const gradeExist = await this.gradeService.createGrade({
       numberParallel,
       parallel,
-    );
-    if (!gradeExist) {
-      const newGrade: CreateGradeDto = {
-        numberParallel,
-        parallel,
-      };
-      gradeExist = await this.gradeService.createGrade(newGrade);
-    }
+    });
+
     const user = await this.userService.createUser(createStudentDto, type);
     const student = this.studentsRepository.create({});
     student.grade = gradeExist;
