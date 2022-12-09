@@ -34,12 +34,7 @@ export class ManagerService {
 
   async createManager(createManagerDto: CreateorUpdateManagerDto) {
     const type = this.config.get('MANAGER_TYPE');
-    const teacherType = this.config.get('TEACHER_TYPE');
-    const user = await this.userService.createUser(
-      createManagerDto,
-      type,
-      teacherType,
-    );
+    const user = await this.userService.createUser(createManagerDto, type);
     const manager = this.managerRepository.create({});
     manager.user = user;
     await this.managerRepository.save(manager);

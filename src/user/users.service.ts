@@ -54,25 +54,17 @@ export class UserService {
     return user;
   }
 
-  async createUser(
-    createUserDto: CreateUserDto,
-    type: string,
-    secondType: string = null,
-  ) {
+  async createUser(createUserDto: CreateUserDto, type: string) {
     const role = await this.roleService.getRoleByType(type);
-    const { email, name, lastName } = createUserDto;
-    const password = Helpers.generatePassword();
+    const { email, name, lastName, password } = createUserDto;
+    const currentPassword = !password ? Helpers.generatePassword() : password;
     const user = this.userRepository.create({
       email,
-      password,
+      password: currentPassword,
       name,
       lastName,
     });
     user.roles = [role];
-    if (secondType) {
-      const secondRole = await this.roleService.getRoleByType(secondType);
-      user.roles.push(secondRole);
-    }
     const currentUser = await this.userRepository.save(user);
     return this.getUserById(currentUser.id);
   }
@@ -131,5 +123,12 @@ export class UserService {
       throw new NotFoundException(`El id es necesario`);
     }
     return id;
+  }
+
+  async assignRole(id: string, role: string): Promise<User> {
+    const user = await this.getUserById(id);
+    const currentRole = await this.roleService.getRoleById(role);
+    user.roles.push(currentRole);
+    return await this.userRepository.save(user);
   }
 }

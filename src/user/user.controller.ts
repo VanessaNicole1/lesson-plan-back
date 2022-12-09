@@ -1,4 +1,11 @@
-import { Controller, Delete, Get, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { Role } from 'src/modules/auth/enums/role.enum';
@@ -38,5 +45,10 @@ export class UserController {
   @Roles(Role.Manager)
   getAllUsers() {
     return this.userService.getAllUsers();
+  }
+
+  @Post('assign-role/:id/:role')
+  assignRole(@Param('id') id: string, @Param('role') role: string) {
+    return this.userService.assignRole(id, role);
   }
 }
