@@ -22,6 +22,7 @@ import { ValidManager } from 'src/modules/auth/valid-manager.guard';
 import { Role } from 'src/modules/auth/enums/role.enum';
 import { Roles } from 'src/modules/auth/enums/decorators/roles.decorator';
 import { ValidUser } from 'src/modules/auth/valid-user.guard';
+import { CreateTeacherDto } from './dto/create-teacher-dto';
 
 @Controller('teachers')
 export class TeachersController {
@@ -108,5 +109,10 @@ export class TeachersController {
       const element = results[i];
       this.teacherService.createTeacher(element);
     }
+  }
+
+  @Post()
+  createTeacher(@Body() createTeacherDto: CreateTeacherDto) {
+    return this.teacherService.createTeacher(createTeacherDto);
   }
 }

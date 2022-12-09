@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -21,6 +22,7 @@ import { ValidManager } from 'src/modules/auth/valid-manager.guard';
 import { Roles } from 'src/modules/auth/enums/decorators/roles.decorator';
 import { Role } from 'src/modules/auth/enums/role.enum';
 import { ValidUser } from 'src/modules/auth/valid-user.guard';
+import { CreateStudentDto } from './dto/create-student-dto';
 
 @Controller('students')
 export class StudentsController {
@@ -103,5 +105,10 @@ export class StudentsController {
       const element = results[i];
       this.studentsService.createStudent(element);
     }
+  }
+
+  @Post()
+  createStudent(@Body() createStudentDto: CreateStudentDto) {
+    return this.studentsService.createStudent(createStudentDto);
   }
 }
