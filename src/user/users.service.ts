@@ -6,7 +6,8 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user-entity';
-
+import * as bcrypt from 'bcrypt';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -130,5 +131,32 @@ export class UserService {
     const currentRole = await this.roleService.getRoleById(role);
     user.roles.push(currentRole);
     return await this.userRepository.save(user);
+  }
+
+  async updatePassword(user: User, updatePasswordDto: UpdatePasswordDto) {
+    // eslint-disable-next-line prefer-const
+    let { password, newPassword } = updatePasswordDto;
+    if (!password || !newPassword) {
+      throw new NotFoundException('La clave es requerida');
+    }
+    const currentUser = await this.getUserById(user.id);
+
+    const passwordMatches = await bcrypt.compareSync(
+      password,
+      currentUser.password,
+    );
+    const salt = await bcrypt.genSalt();
+    newPassword = await bcrypt.hash(newPassword, salt);
+    if (!passwordMatches) {
+      throw new NotFoundException('La clave no es correcta');
+    }
+    await this.userRepository
+      .createQueryBuilder()
+      .update(User)
+      .set({ password: newPassword })
+      .where('id = :id', { id: currentUser.id })
+      .execute();
+
+    return this.getUserById(currentUser.id);
   }
 }

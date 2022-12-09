@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -13,6 +14,7 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { Roles } from 'src/modules/auth/roles.decorator';
 import { ValidManager } from 'src/modules/auth/valid-manager.guard';
 import { ValidUser } from 'src/modules/auth/valid-user.guard';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './user-entity';
 import { UserService } from './users.service';
 
@@ -50,5 +52,14 @@ export class UserController {
   @Post('assign-role/:id/:role')
   assignRole(@Param('id') id: string, @Param('role') role: string) {
     return this.userService.assignRole(id, role);
+  }
+
+  @Post('update-password')
+  @UseGuards(JwtAuthGuard)
+  updatePassword(
+    @GetUser() user,
+    @Body() updatePasswordDto: UpdatePasswordDto,
+  ) {
+    return this.userService.updatePassword(user, updatePasswordDto);
   }
 }
