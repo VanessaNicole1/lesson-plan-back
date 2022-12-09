@@ -86,7 +86,9 @@ export class TeachersService {
   }
 
   async findAll(): Promise<Teacher[]> {
-    return await this.teachersRepository.find();
+    return await this.teachersRepository.find({
+      relations: ['subjects', 'user', 'plans'],
+    });
   }
 
   async deleteTeacher(id: string): Promise<void> {

@@ -39,7 +39,9 @@ export class StudentsService {
   }
 
   async getAllStudents(): Promise<Student[]> {
-    return await this.studentsRepository.find();
+    return await this.studentsRepository.find({
+      relations: ['grade', 'user'],
+    });
   }
 
   async createStudent(createStudentDto: CreateStudentDto) {
