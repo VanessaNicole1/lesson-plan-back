@@ -25,6 +25,7 @@ export class TeachersService {
       where: {
         id,
       },
+      relations: ['subjects', 'user', 'plans'],
     });
 
     if (!teacher) {

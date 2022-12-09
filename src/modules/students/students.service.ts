@@ -29,6 +29,7 @@ export class StudentsService {
       where: {
         id,
       },
+      relations: ['grade', 'user'],
     });
 
     if (!student) {
