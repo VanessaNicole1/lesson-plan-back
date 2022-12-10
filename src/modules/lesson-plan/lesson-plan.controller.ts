@@ -1,3 +1,4 @@
+import { ValidManager } from './../auth/valid-manager.guard';
 import {
   Body,
   Controller,
@@ -21,6 +22,13 @@ import { LessonPlanService } from './lesson-plan.service';
 export class LessonPlanController {
   constructor(private lessonPlanService: LessonPlanService) {}
 
+  @Get()
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
+  getLessonPlans() {
+    return this.lessonPlanService.findAll();
+  }
+
   @Get('/:id')
   getLessonPlanById(@Param('id') id: string): Promise<LessonPlan> {
     return this.lessonPlanService.getLessonPlanById(id);
@@ -38,9 +46,13 @@ export class LessonPlanController {
     return this.lessonPlanService.getAllLessonPlanBySubject(subject_id);
   }
 
-  @Post()
-  createLessonPlan(@Body() createLessonPlanDto: CreateLessonPlanDto) {
-    return this.lessonPlanService.createLessonPlan(createLessonPlanDto);
+  @Post(':id')
+  @UseGuards(AuthGuard('jwt'))
+  createLessonPlan(
+    @Body() createLessonPlanDto: CreateLessonPlanDto,
+    @Param('id') id,
+  ) {
+    return this.lessonPlanService.createLessonPlan(createLessonPlanDto, id);
   }
 
   @Delete('/:id')

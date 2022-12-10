@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { TeachersService } from './../teachers/teachers.service';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan-dto';
@@ -10,6 +11,8 @@ export class LessonPlanService {
   constructor(
     @InjectRepository(LessonPlan)
     private LessonPlanRepository: Repository<LessonPlan>,
+    @Inject(TeachersService)
+    private teacherService: TeachersService,
   ) {}
 
   async getLessonPlanById(id: string): Promise<LessonPlan> {
@@ -54,7 +57,7 @@ export class LessonPlanService {
     });
   }
 
-  async createLessonPlan(createLessonPlanDto: CreateLessonPlanDto) {
+  async createLessonPlan(createLessonPlanDto: CreateLessonPlanDto, id: string) {
     const { date, grade, topic, content, comment } = createLessonPlanDto;
     const lesson = this.LessonPlanRepository.create({
       date,
@@ -63,6 +66,8 @@ export class LessonPlanService {
       content,
       comment,
     });
+    const currentTeacher = await this.teacherService.getTeacherById(id);
+    lesson.teacher = currentTeacher;
     await this.LessonPlanRepository.save(lesson);
   }
 
@@ -108,5 +113,11 @@ export class LessonPlanService {
     if (result.affected === 0) {
       throw new NotFoundException(`El plan de clases con ${id} no existe`);
     }
+  }
+
+  async findAll() {
+    return await this.LessonPlanRepository.find({
+      relations: ['subject', 'teacher'],
+    });
   }
 }
