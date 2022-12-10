@@ -117,7 +117,7 @@ export class LessonPlanService {
 
   async findAll() {
     return await this.LessonPlanRepository.find({
-      relations: ['subject', 'teacher'],
+      relations: ['subject', 'teacher', 'teacher.user'],
     });
   }
 }
