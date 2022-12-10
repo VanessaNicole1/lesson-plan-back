@@ -14,7 +14,7 @@ export class LessonPlan {
   id: string;
 
   @Column()
-  date: Date;
+  date: string;
 
   @Column()
   grade: string;

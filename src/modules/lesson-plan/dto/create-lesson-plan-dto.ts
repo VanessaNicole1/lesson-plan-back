@@ -1,5 +1,5 @@
 export class CreateLessonPlanDto {
-  date: Date;
+  date: string;
   grade: string;
   topic: string;
   content: string;
