@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Teacher } from './teacher.entity';
 import { CreateTeacherDto } from './dto/create-teacher-dto';
 import { UpdateTeacherDto } from './dto/update-teacher-dto';
-import { UserService } from 'src/user/users.service';
+import { UserService } from 'src/modules/user/users.service';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()

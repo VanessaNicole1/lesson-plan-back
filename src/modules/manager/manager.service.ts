@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Manager } from './manager.entity';
 import { CreateorUpdateManagerDto } from './dto/create-update-manager.dto';
-import { UserService } from 'src/user/users.service';
+import { UserService } from 'src/modules/user/users.service';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()

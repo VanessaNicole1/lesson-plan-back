@@ -1,4 +1,4 @@
-import { User } from 'src/user/user-entity';
+import { User } from 'src/modules/user/user-entity';
 import { OneToOne, JoinColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { Degree } from '../degree/degree.entity';
 

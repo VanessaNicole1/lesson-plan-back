@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateGradeDto } from 'src/modules/grade/dto/create-grade-dto';
 import { GradeService } from 'src/modules/grade/grade.service';
-import { UserService } from 'src/user/users.service';
+import { UserService } from 'src/modules/user/users.service';
 import { Repository } from 'typeorm';
 import { CreateStudentDto } from './dto/create-student-dto';
 import { UpdateStudentDto } from './dto/update-student-dto';

@@ -4,7 +4,7 @@ import { StudentsService } from './students.service';
 import { Student } from './student.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GradesModule } from 'src/modules/grade/grade.module';
-import { UserModule } from 'src/user/users.module';
+import { UserModule } from 'src/modules/user/users.module';
 import { RoleModule } from 'src/modules/role/role.module';
 
 @Module({
