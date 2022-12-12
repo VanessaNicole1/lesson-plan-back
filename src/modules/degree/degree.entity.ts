@@ -1,5 +1,12 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Grade } from '../grade/grade.entity';
+import { Period } from '../period/period.entity';
 
 @Entity()
 export class Degree {
@@ -8,6 +15,9 @@ export class Degree {
 
   @Column()
   name: string;
+
+  @ManyToOne(() => Period, (period) => period.degrees)
+  period: Period;
 
   @OneToMany(() => Grade, (grade) => grade.degree)
   grades: Grade[];

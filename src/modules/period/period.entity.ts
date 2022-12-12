@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Degree } from '../degree/degree.entity';
 
 @Entity()
@@ -21,7 +15,6 @@ export class Period {
   @Column()
   endDate: Date;
 
-  @OneToOne(() => Degree)
-  @JoinColumn({ name: 'degree_id' })
-  degree: Degree;
+  @OneToMany(() => Degree, (degree) => degree.period)
+  degrees: Degree[];
 }
