@@ -14,6 +14,7 @@ import { UserModule } from './modules/user/users.module';
 import { RoleModule } from './modules/role/role.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
+import { ScheduleModule } from './modules/schedule/schedule.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { AuthModule } from './modules/auth/auth.module';
     UserModule,
     RoleModule,
     AuthModule,
+    ScheduleModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
