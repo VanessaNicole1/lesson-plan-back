@@ -7,13 +7,10 @@ export class Period {
   id: string;
 
   @Column()
-  name: string;
+  startDate: string;
 
   @Column()
-  startDate: Date;
-
-  @Column()
-  endDate: Date;
+  endDate: string;
 
   @OneToMany(() => Degree, (degree) => degree.period)
   degrees: Degree[];

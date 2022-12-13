@@ -33,13 +33,17 @@ export class PeriodsService {
   }
 
   async createPeriod(createPeriodDto: CreatePeriodDto) {
-    const { name, startDate, endDate } = createPeriodDto;
+    const { startDate, endDate } = createPeriodDto;
+    if (!startDate || !startDate) {
+      throw new NotFoundException(
+        'Las fechas del periodo academico son requeridas',
+      );
+    }
     const period = this.periodsRepository.create({
-      name,
       startDate,
       endDate,
     });
-    await this.periodsRepository.save(period);
+    return await this.periodsRepository.save(period);
   }
 
   async updatePeriod(id: string, updatePeriodDto: UpdatePeriodDto) {
@@ -51,14 +55,11 @@ export class PeriodsService {
         id,
       },
     });
-    if (!periodExist) throw new NotFoundException('Docente no existe');
-    if (updatePeriodDto.name === '') {
-      updatePeriodDto.name = periodExist.name;
-    }
-    if (updatePeriodDto.startDate.toString() === '') {
+    if (!periodExist) throw new NotFoundException('Periodo no existe');
+    if (updatePeriodDto.startDate === '') {
       updatePeriodDto.startDate = periodExist.startDate;
     }
-    if (updatePeriodDto.endDate.toString() === '') {
+    if (updatePeriodDto.endDate === '') {
       updatePeriodDto.endDate = periodExist.endDate;
     }
     await this.periodsRepository.update(id, updatePeriodDto);
@@ -69,7 +70,7 @@ export class PeriodsService {
     });
   }
 
-  async deletePeriod(id: string): Promise<void> {
+  async deletePeriod(id: string) {
     if (!id) {
       throw new NotFoundException(`El periodo no existe`);
     }
@@ -77,5 +78,6 @@ export class PeriodsService {
     if (result.affected === 0) {
       throw new NotFoundException(`El periodo con ${id} no existe`);
     }
+    return { message: 'El periodo fue eliminado con éxito' };
   }
 }
