@@ -1,12 +1,13 @@
 import { Subject } from './subject.entity';
 import { SubjectsService } from './subjects.service';
-import { CreateSubjectDto } from './dto/create-subject-dto';
 import { UpdateSubjectDto } from './dto/update-subject-dto';
 import {
   Body,
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -15,18 +16,60 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
 import { Helpers } from 'src/helpers/helpers';
-import { createReadStream } from 'fs';
-import csvParser from 'csv-parser';
 import { AuthGuard } from '@nestjs/passport';
-import { ValidManager } from 'src/modules/auth/valid-manager.guard';
 import { Roles } from 'src/modules/auth/enums/decorators/roles.decorator';
 import { Role } from 'src/modules/auth/enums/role.enum';
+import { ValidManager } from '../auth/guards/valid-manager.guard';
 
-@Controller('subjects')
+@Controller('subject')
 export class SubjectsController {
   constructor(private subjectService: SubjectsService) {}
+
+  @Post('upload')
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
+  @UseInterceptors(FileInterceptor('file'))
+  createSubjects(@UploadedFile() file: Express.Multer.File) {
+    const columns = ['name'];
+    const data = file.buffer.toString();
+    const results = Helpers.validateCsv(data, columns);
+    const names = [];
+    const duplicateNames = [];
+    for (let i = 0; i < results.length; i++) {
+      const { name } = results[i];
+
+      if (name === '') {
+        throw new HttpException(
+          {
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'No pueden existir valores vacios en las columnas',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+      if (names.includes(name)) {
+        duplicateNames.push(name);
+      } else {
+        names.push(name);
+      }
+    }
+    if (duplicateNames.length > 0) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `Las siguientes materias están repetidos ${duplicateNames.join(
+            ',',
+          )}`,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+    for (let i = 0; i < results.length; i++) {
+      const element = results[i];
+      this.subjectService.createSubject(element);
+    }
+  }
 
   @Get('/:id')
   getSubjectById(@Param('id') id: string): Promise<Subject> {
@@ -40,39 +83,10 @@ export class SubjectsController {
     return this.subjectService.getAllSubjects();
   }
 
-  @Post()
-  @UseGuards(AuthGuard('jwt'), ValidManager)
-  @Roles(Role.Manager)
-  @UseInterceptors(
-    FileInterceptor('doc', {
-      storage: diskStorage({
-        destination: './files-csv',
-        filename: Helpers.editFileName,
-      }),
-    }),
-  )
-  createSubject(@UploadedFile() file) {
-    const fileName = file.originalname;
-    const results = [];
-    createReadStream(`files-csv/${fileName}`)
-      .pipe(csvParser())
-      .on('data', (data) => results.push(data))
-      .on('end', () => {
-        for (let i = 0; i < results.length; i++) {
-          const element = results[i];
-          return this.subjectService.createSubject(element);
-        }
-      });
-    return {
-      statusCode: 200,
-      body: 'Los estudiantes han sido creados con exito',
-    };
-  }
-
   @Delete('/:id')
   @UseGuards(AuthGuard('jwt'), ValidManager)
   @Roles(Role.Manager)
-  deleteSubject(@Param('id') id: string): Promise<void> {
+  deleteSubject(@Param('id') id: string) {
     return this.subjectService.deleteSubject(id);
   }
 

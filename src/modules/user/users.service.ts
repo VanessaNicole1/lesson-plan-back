@@ -8,6 +8,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user-entity';
 import * as bcrypt from 'bcrypt';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { AssignRoleDto } from './dto/assign-role-dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -64,6 +65,7 @@ export class UserService {
       password: currentPassword,
       name,
       lastName,
+      displayName: `${name} ${lastName}`,
     });
     user.roles = [role];
     const currentUser = await this.userRepository.save(user);
@@ -89,11 +91,8 @@ export class UserService {
     if (updateUserDto.email === '') {
       updateUserDto.email = userExist.email;
     }
-    const data = await this.userRepository.preload({
-      id,
-      ...updateUserDto,
-    });
-    return this.userRepository.save(data);
+    await this.userRepository.update(id, updateUserDto);
+    return await this.getUserById(id);
   }
 
   async updateRefreshToken(id: string, refreshToken: string) {
@@ -126,9 +125,10 @@ export class UserService {
     return id;
   }
 
-  async assignRole(id: string, role: string): Promise<User> {
-    const user = await this.getUserById(id);
-    const currentRole = await this.roleService.getRoleById(role);
+  async assignRole(assignRole: AssignRoleDto): Promise<User> {
+    const { idRole, idUser } = assignRole;
+    const user = await this.getUserById(idUser);
+    const currentRole = await this.roleService.getRoleById(idRole);
     user.roles.push(currentRole);
     return await this.userRepository.save(user);
   }

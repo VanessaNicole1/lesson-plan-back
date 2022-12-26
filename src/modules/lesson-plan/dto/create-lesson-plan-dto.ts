@@ -4,4 +4,5 @@ export class CreateLessonPlanDto {
   topic: string;
   content: string;
   comment: string;
+  ids: string[];
 }

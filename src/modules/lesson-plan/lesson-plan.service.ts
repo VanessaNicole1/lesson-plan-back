@@ -1,18 +1,26 @@
-import { TeachersService } from './../teachers/teachers.service';
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { StudentLessonPlanService } from './../student-lesson-plan/student-lesson-plan.service';
+import { ScheduleService } from './../schedule/schedule.service';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan-dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan-dto';
 import { LessonPlan } from './lesson-plan.entity';
-
+import { AssignStudentToLessonDto } from '../student-lesson-plan/dto/assign-student-lesson.dto';
 @Injectable()
 export class LessonPlanService {
   constructor(
     @InjectRepository(LessonPlan)
     private LessonPlanRepository: Repository<LessonPlan>,
-    @Inject(TeachersService)
-    private teacherService: TeachersService,
+    @Inject(ScheduleService)
+    private scheduleService: ScheduleService,
+    @Inject(forwardRef(() => StudentLessonPlanService))
+    private studentLessonPlanService: StudentLessonPlanService,
   ) {}
 
   async getLessonPlanById(id: string): Promise<LessonPlan> {
@@ -31,44 +39,50 @@ export class LessonPlanService {
     return lessonPlan;
   }
 
-  async getAllLessonPlanByTeacher(teacherId: string): Promise<LessonPlan[]> {
-    if (!teacherId) {
+  async createLessonPlan(
+    createLessonPlanDto: CreateLessonPlanDto,
+    idSchedule: string,
+    user: any,
+  ) {
+    if (!idSchedule) {
       throw new NotFoundException(`El plan de clase no existe`);
     }
-    return await this.LessonPlanRepository.find({
-      where: {
-        teacher: {
-          id: teacherId,
-        },
-      },
-    });
-  }
 
-  async getAllLessonPlanBySubject(subjectId: string): Promise<LessonPlan[]> {
-    if (!subjectId) {
-      throw new NotFoundException(`El plan de clase no existe`);
+    const schedule = await this.scheduleService.getScheduleById(idSchedule);
+    const userId = schedule.teacher.user.id;
+    if (user.id !== userId) {
+      throw new NotFoundException('Petición denegada');
     }
-    return await this.LessonPlanRepository.find({
-      where: {
-        subject: {
-          id: subjectId,
-        },
-      },
-    });
-  }
+    const { date, topic, content, comment, ids } = createLessonPlanDto;
 
-  async createLessonPlan(createLessonPlanDto: CreateLessonPlanDto, id: string) {
-    const { date, grade, topic, content, comment } = createLessonPlanDto;
+    if (ids.length === 0) {
+      throw new NotFoundException(
+        'El plan de clases debe tener al menos 1 revisor',
+      );
+    }
+
     const lesson = this.LessonPlanRepository.create({
       date,
-      grade,
       topic,
       content,
       comment,
     });
-    const currentTeacher = await this.teacherService.getTeacherById(id);
-    lesson.teacher = currentTeacher;
-    await this.LessonPlanRepository.save(lesson);
+    lesson.schedule = schedule;
+
+    const lessonPlan = await this.LessonPlanRepository.save(lesson);
+
+    for (let i = 0; i < ids.length; i++) {
+      const studentId = ids[i];
+      const lessonId = lessonPlan.id;
+      const assignStudentLesson: AssignStudentToLessonDto = {
+        idStudent: studentId,
+        idLessonPlan: lessonId,
+      };
+      await this.studentLessonPlanService.assignStudentsToLessonPlan(
+        assignStudentLesson,
+      );
+    }
+    return { message: 'El plan de clases fue creado con éxito' };
   }
 
   async updateLessonPlan(id: string, updateLessonPlan: UpdateLessonPlanDto) {
@@ -84,9 +98,6 @@ export class LessonPlanService {
       throw new NotFoundException('Plan de Clases no existe');
     if (updateLessonPlan.date.toString() === '') {
       updateLessonPlan.date = lessonPlanExist.date;
-    }
-    if (updateLessonPlan.grade === '') {
-      updateLessonPlan.grade = lessonPlanExist.grade;
     }
     if (updateLessonPlan.topic === '') {
       updateLessonPlan.topic = lessonPlanExist.topic;
@@ -117,7 +128,12 @@ export class LessonPlanService {
 
   async findAll() {
     return await this.LessonPlanRepository.find({
-      relations: ['subject', 'teacher', 'teacher.user'],
+      relations: [
+        'schedule',
+        'schedule.teacher.user',
+        'schedule.grade',
+        'schedule.subject',
+      ],
     });
   }
 }

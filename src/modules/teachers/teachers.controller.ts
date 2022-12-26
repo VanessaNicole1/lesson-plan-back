@@ -18,13 +18,13 @@ import { TeachersService } from './teachers.service';
 import { Teacher } from './teacher.entity';
 import { UpdateTeacherDto } from './dto/update-teacher-dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ValidManager } from 'src/modules/auth/valid-manager.guard';
 import { Role } from 'src/modules/auth/enums/role.enum';
 import { Roles } from 'src/modules/auth/enums/decorators/roles.decorator';
-import { ValidUser } from 'src/modules/auth/valid-user.guard';
 import { CreateTeacherDto } from './dto/create-teacher-dto';
+import { ValidManager } from '../auth/guards/valid-manager.guard';
+import { ValidUser } from '../auth/guards/valid-user.guard';
 
-@Controller('teachers')
+@Controller('teacher')
 export class TeachersController {
   constructor(private teacherService: TeachersService) {}
 
@@ -33,13 +33,6 @@ export class TeachersController {
   @Roles(Role.Manager, Role.Teacher)
   getTeacherById(@Param('id') id: string): Promise<Teacher> {
     return this.teacherService.getTeacherById(id);
-  }
-
-  @Get('/:id/subjects')
-  @UseGuards(AuthGuard('jwt'), ValidUser)
-  @Roles(Role.Manager, Role.Teacher)
-  getSubjectsByTeacher(@Param('id') id: string) {
-    return this.teacherService.getSubjectsByTeacher(id);
   }
 
   @Get()

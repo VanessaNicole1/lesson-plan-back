@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Teacher } from './teacher.entity';
 import { CreateTeacherDto } from './dto/create-teacher-dto';
 import { UpdateTeacherDto } from './dto/update-teacher-dto';
-import { UserService } from 'src/user/users.service';
+import { UserService } from 'src/modules/user/users.service';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -25,35 +25,13 @@ export class TeachersService {
       where: {
         id,
       },
-      relations: ['subjects', 'user', 'plans'],
+      relations: ['schedule', 'user'],
     });
 
     if (!teacher) {
       throw new NotFoundException(`El docente con ${id} no existe`);
     }
     return teacher;
-  }
-
-  async getSubjectsByTeacher(id: string) {
-    if (!id) {
-      throw new NotFoundException(`El docente no existe`);
-    }
-    const data = await this.teachersRepository.find({
-      relations: ['subjects'],
-    });
-
-    for (let i = 0; i < data.length; i++) {
-      const teacher_id = data[i].id;
-      if (id === teacher_id) {
-        const teacher_subjects = data[i];
-        if (teacher_subjects.subjects.length < 0) {
-          throw new NotFoundException(
-            `El docente con ${id} no tiene materias registradas`,
-          );
-        }
-        return teacher_subjects;
-      }
-    }
   }
 
   async createTeacher(createTeacherDto: CreateTeacherDto) {
@@ -87,7 +65,7 @@ export class TeachersService {
 
   async findAll(): Promise<Teacher[]> {
     return await this.teachersRepository.find({
-      relations: ['subjects', 'user', 'plans'],
+      relations: ['schedule', 'user'],
     });
   }
 
@@ -99,5 +77,17 @@ export class TeachersService {
     if (result.affected === 0) {
       throw new NotFoundException(`El docente con ${id} no existe`);
     }
+  }
+
+  async getTeacherByUserId(id: string) {
+    const teacherExist = await this.teachersRepository.findOne({
+      where: {
+        user: {
+          id,
+        },
+      },
+    });
+    if (!teacherExist) throw new NotFoundException('Docente no existe');
+    return teacherExist;
   }
 }

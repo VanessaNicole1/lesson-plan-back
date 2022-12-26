@@ -10,10 +10,12 @@ import { ManagerModule } from './modules/manager/manager.module';
 import { LessonPlanModule } from './modules/lesson-plan/lesson-plan.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import { UserModule } from './user/users.module';
+import { UserModule } from './modules/user/users.module';
 import { RoleModule } from './modules/role/role.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
+import { ScheduleModule } from './modules/schedule/schedule.module';
+import { StudentLessonPlanModule } from './modules/student-lesson-plan/student-lesson-plan.module';
 
 @Module({
   imports: [
@@ -56,6 +58,8 @@ import { AuthModule } from './modules/auth/auth.module';
     UserModule,
     RoleModule,
     AuthModule,
+    ScheduleModule,
+    StudentLessonPlanModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',

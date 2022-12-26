@@ -12,8 +12,9 @@ import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { Role } from 'src/modules/auth/enums/role.enum';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { Roles } from 'src/modules/auth/roles.decorator';
-import { ValidManager } from 'src/modules/auth/valid-manager.guard';
-import { ValidUser } from 'src/modules/auth/valid-user.guard';
+import { ValidManager } from '../auth/guards/valid-manager.guard';
+import { ValidUser } from '../auth/guards/valid-user.guard';
+import { AssignRoleDto } from './dto/assign-role-dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './user-entity';
 import { UserService } from './users.service';
@@ -49,9 +50,9 @@ export class UserController {
     return this.userService.getAllUsers();
   }
 
-  @Post('assign-role/:id/:role')
-  assignRole(@Param('id') id: string, @Param('role') role: string) {
-    return this.userService.assignRole(id, role);
+  @Post('assign-role')
+  assignRole(@Body() assignRole: AssignRoleDto) {
+    return this.userService.assignRole(assignRole);
   }
 
   @Post('update-password')

@@ -13,13 +13,20 @@ import { Period } from './period.entity';
 import { CreatePeriodDto } from './dto/create-period-dto';
 import { UpdatePeriodDto } from './dto/update-period-dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ValidManager } from 'src/modules/auth/valid-manager.guard';
 import { Roles } from 'src/modules/auth/enums/decorators/roles.decorator';
 import { Role } from 'src/modules/auth/enums/role.enum';
+import { ValidManager } from '../auth/guards/valid-manager.guard';
 
-@Controller('periods')
+@Controller('period')
 export class PeriodsController {
   constructor(private periodsService: PeriodsService) {}
+
+  @Post()
+  @UseGuards(AuthGuard('jwt'), ValidManager)
+  @Roles(Role.Manager)
+  createPeriod(@Body() createPeriodDto: CreatePeriodDto) {
+    return this.periodsService.createPeriod(createPeriodDto);
+  }
 
   @Get('/:id')
   @UseGuards(AuthGuard('jwt'), ValidManager)
@@ -35,17 +42,10 @@ export class PeriodsController {
     return this.periodsService.getAllPeriod();
   }
 
-  @Post()
-  @UseGuards(AuthGuard('jwt'), ValidManager)
-  @Roles(Role.Manager)
-  createPeriod(@Body() createPeriodDto: CreatePeriodDto) {
-    return this.periodsService.createPeriod(createPeriodDto);
-  }
-
   @Delete('/:id')
   @UseGuards(AuthGuard('jwt'), ValidManager)
   @Roles(Role.Manager)
-  deletePeriod(@Param('id') id: string): Promise<void> {
+  deletePeriod(@Param('id') id: string) {
     return this.periodsService.deletePeriod(id);
   }
 

@@ -1,10 +1,12 @@
 import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { Body } from '@nestjs/common';
+import { ValidManager } from '../auth/guards/valid-manager.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { ValidManager } from '../auth/valid-manager.guard';
+import { Roles } from '../auth/roles.decorator';
 import { CreateRoleDto } from './dto/create-role-dto';
 import { Role } from './role.entity';
 import { RoleService } from './role.service';
+import { Role as ROLE } from 'src/modules/auth/enums/role.enum';
 
 @Controller('role')
 export class RoleController {
@@ -12,6 +14,7 @@ export class RoleController {
 
   @Get()
   @UseGuards(JwtAuthGuard, ValidManager)
+  @Roles(ROLE.Manager)
   getAllRoles() {
     return this.roleService.findAll();
   }

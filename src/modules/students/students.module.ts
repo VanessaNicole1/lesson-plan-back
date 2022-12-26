@@ -1,10 +1,11 @@
+import { StudentLessonPlan } from '../student-lesson-plan/student-lesso-plan-entity';
 import { Module } from '@nestjs/common';
 import { StudentsController } from './students.controller';
 import { StudentsService } from './students.service';
 import { Student } from './student.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GradesModule } from 'src/modules/grade/grade.module';
-import { UserModule } from 'src/user/users.module';
+import { UserModule } from 'src/modules/user/users.module';
 import { RoleModule } from 'src/modules/role/role.module';
 
 @Module({
@@ -13,6 +14,7 @@ import { RoleModule } from 'src/modules/role/role.module';
     GradesModule,
     UserModule,
     RoleModule,
+    StudentLessonPlan,
   ],
   controllers: [StudentsController],
   providers: [StudentsService],

@@ -1,13 +1,12 @@
 import {
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Subject } from '../subjects/subject.entity';
-import { Teacher } from '../teachers/teacher.entity';
-
+import { Schedule } from '../schedule/schedule.entity';
+import { StudentLessonPlan } from '../student-lesson-plan/student-lesso-plan-entity';
 @Entity()
 export class LessonPlan {
   @PrimaryGeneratedColumn('uuid')
@@ -15,9 +14,6 @@ export class LessonPlan {
 
   @Column()
   date: string;
-
-  @Column()
-  grade: string;
 
   @Column()
   topic: string;
@@ -28,11 +24,12 @@ export class LessonPlan {
   @Column()
   comment: string;
 
-  @ManyToOne(() => Subject, (subject) => subject.plans)
-  @JoinColumn({ name: 'subject_id' })
-  subject: Subject;
+  @ManyToOne(() => Schedule, (schedule) => schedule.lessonPlans)
+  schedule: Schedule;
 
-  @ManyToOne(() => Teacher, (teacher) => teacher.plans)
-  @JoinColumn({ name: 'teacher_id' })
-  teacher: Teacher;
+  @OneToMany(
+    () => StudentLessonPlan,
+    (studentLessonPlan) => studentLessonPlan.student,
+  )
+  studentLessonPlan: StudentLessonPlan[];
 }

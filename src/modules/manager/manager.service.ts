@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Manager } from './manager.entity';
 import { CreateorUpdateManagerDto } from './dto/create-update-manager.dto';
-import { UserService } from 'src/user/users.service';
+import { UserService } from 'src/modules/user/users.service';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -24,6 +24,7 @@ export class ManagerService {
       where: {
         id,
       },
+      relations: ['degree', 'user', 'user.roles'],
     });
 
     if (!manager) {
@@ -32,36 +33,35 @@ export class ManagerService {
     return manager;
   }
 
+  async getManagers(): Promise<Manager[]> {
+    return await this.managerRepository.find({
+      relations: ['degree', 'user', 'user.roles'],
+    });
+  }
+
   async createManager(createManagerDto: CreateorUpdateManagerDto) {
     const type = this.config.get('MANAGER_TYPE');
     const user = await this.userService.createUser(createManagerDto, type);
     const manager = this.managerRepository.create({});
     manager.user = user;
     await this.managerRepository.save(manager);
-    return { message: 'Manager created successfully' };
+    return { message: 'El director fue creado con éxito' };
   }
 
   async updateManager(id: string, updateManagerDto: CreateorUpdateManagerDto) {
     if (!id) {
       throw new NotFoundException(`El director no existe`);
     }
-    const managerExist = await this.managerRepository.findOne({
-      where: {
-        id,
-      },
-    });
-    if (!managerExist) throw new NotFoundException('Director no existe');
+    const managerExist = await this.getManagerById(id);
+
+    if (!managerExist) throw new NotFoundException('El director no existe');
 
     const user = await this.userService.getUserById(managerExist.user.id);
     await this.userService.updateUser(user.id, updateManagerDto);
-    return await this.managerRepository.findOne({
-      where: {
-        id,
-      },
-    });
+    return await this.getManagerById(id);
   }
 
-  async deleteManager(id: string): Promise<void> {
+  async deleteManager(id: string) {
     if (!id) {
       throw new NotFoundException(`El director no existe`);
     }
@@ -69,5 +69,7 @@ export class ManagerService {
     if (result.affected === 0) {
       throw new NotFoundException(`El director con ${id} no existe`);
     }
+
+    return { message: 'El director fue eliminado con éxito' };
   }
 }

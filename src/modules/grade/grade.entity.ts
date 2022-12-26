@@ -1,5 +1,4 @@
 import { Degree } from 'src/modules/degree/degree.entity';
-import { Subject } from 'src/modules/subjects/subject.entity';
 import {
   Column,
   Entity,
@@ -7,6 +6,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Schedule } from '../schedule/schedule.entity';
 import { Student } from '../students/student.entity';
 
 @Entity()
@@ -20,12 +20,15 @@ export class Grade {
   @Column()
   parallel: string;
 
+  @Column()
+  displayName: string;
+
   @OneToMany(() => Student, (student) => student.grade)
   students: Student[];
 
   @ManyToOne(() => Degree, (degree) => degree.grades)
   degree: Degree;
 
-  @OneToMany(() => Subject, (subject) => subject.grade)
-  subjects: Subject[];
+  @OneToMany(() => Schedule, (schedule) => schedule.grade)
+  schedule: Schedule[];
 }
