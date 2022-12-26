@@ -1,4 +1,3 @@
-import { ValidManager } from './../auth/valid-manager.guard';
 import {
   Body,
   Controller,
@@ -10,9 +9,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { Role } from 'src/modules/auth/enums/role.enum';
 import { Roles } from 'src/modules/auth/roles.decorator';
-import { ValidUser } from 'src/modules/auth/valid-user.guard';
+import { ValidManager } from '../auth/guards/valid-manager.guard';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan-dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan-dto';
 import { LessonPlan } from './lesson-plan.entity';
@@ -34,30 +34,18 @@ export class LessonPlanController {
     return this.lessonPlanService.getLessonPlanById(id);
   }
 
-  @Get('/teacher/:teacher_id')
-  @UseGuards(AuthGuard('jwt'), ValidUser)
-  @Roles(Role.Manager, Role.Teacher)
-  getAllLessonPlanByTeacher(@Param('teacher_id') teacher_id: string) {
-    return this.lessonPlanService.getAllLessonPlanByTeacher(teacher_id);
-  }
-
-  @Get('/subject/:subject_id')
-  getAllLessonPlanBySubject(@Param('subject_id') subject_id: string) {
-    return this.lessonPlanService.getAllLessonPlanBySubject(subject_id);
-  }
-
-  @Post(':id')
+  @Post('/:id')
   @UseGuards(AuthGuard('jwt'))
   createLessonPlan(
     @Body() createLessonPlanDto: CreateLessonPlanDto,
-    @Param('id') id,
+    @Param('id') id: string,
+    @GetUser() user,
   ) {
-    return this.lessonPlanService.createLessonPlan(createLessonPlanDto, id);
-  }
-
-  @Delete('/:id')
-  deleteLessonPlan(@Param('id') id: string): Promise<void> {
-    return this.lessonPlanService.deleteLessonPlan(id);
+    return this.lessonPlanService.createLessonPlan(
+      createLessonPlanDto,
+      id,
+      user,
+    );
   }
 
   @Put(':id')
@@ -66,5 +54,10 @@ export class LessonPlanController {
     @Body() updateLessonPlanDto: UpdateLessonPlanDto,
   ) {
     return this.lessonPlanService.updateLessonPlan(id, updateLessonPlanDto);
+  }
+
+  @Delete('/:id')
+  deleteLessonPlan(@Param('id') id: string): Promise<void> {
+    return this.lessonPlanService.deleteLessonPlan(id);
   }
 }
