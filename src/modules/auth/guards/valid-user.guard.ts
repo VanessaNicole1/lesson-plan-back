@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { User } from 'src/modules/user/user-entity';
-import { Role } from './enums/role.enum';
+import { Role } from '../enums/role.enum';
 
 @Injectable()
 export class ValidUser implements CanActivate {
