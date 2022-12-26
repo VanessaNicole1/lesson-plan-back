@@ -36,9 +36,9 @@ export class RoleService {
         type,
       },
     });
-    if (!role) {
-      throw new NotFoundException(`El role con ${type} no existe`);
-    }
+    // if (!role) {
+    //   throw new NotFoundException(`El role con ${type} no existe`);
+    // }
     return role;
   }
 
