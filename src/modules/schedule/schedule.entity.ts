@@ -15,13 +15,19 @@ export class Schedule {
   id: string;
 
   @Column()
-  startDate: string;
+  startHour: string;
 
-  @OneToMany(() => Grade, (grade) => grade.schedule)
-  grade: Grade[];
+  @Column()
+  endHour: string;
 
-  @OneToMany(() => Subject, (subject) => subject.schedule)
-  subject: Subject[];
+  @Column()
+  day: string;
+
+  @ManyToOne(() => Grade, (grade) => grade.schedule)
+  grade: Grade;
+
+  @ManyToOne(() => Subject, (subject) => subject.schedule)
+  subject: Subject;
 
   @ManyToOne(() => Teacher, (teacher) => teacher.schedule)
   teacher: Teacher;
