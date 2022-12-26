@@ -1,7 +1,4 @@
-import { Subject } from 'src/modules/subjects/subject.entity';
-
 export class UpdateGradeDto {
-  number: number;
+  numberParallel: number;
   parallel: string;
-  subjects: Subject[];
 }

@@ -12,6 +12,20 @@ export class GradeService {
     private gradesRepository: Repository<Grade>,
   ) {}
 
+  async createGrade(createGradeDto: CreateGradeDto): Promise<Grade> {
+    const { numberParallel, parallel } = createGradeDto;
+    const currentGrade = await this.verifyGradeExist(numberParallel, parallel);
+    if (currentGrade) {
+      return currentGrade;
+    }
+    const grade = this.gradesRepository.create({
+      numberParallel,
+      parallel,
+      displayName: `${numberParallel} ${parallel}`,
+    });
+    return await this.gradesRepository.save(grade);
+  }
+
   async getGradeById(id: string): Promise<Grade> {
     if (!id) {
       throw new NotFoundException(`El curso no existe`);
@@ -20,6 +34,7 @@ export class GradeService {
       where: {
         id,
       },
+      relations: ['students', 'degree', 'schedule'],
     });
 
     if (!grade) {
@@ -29,7 +44,9 @@ export class GradeService {
   }
 
   async getAllGrade(): Promise<Grade[]> {
-    return await this.gradesRepository.find();
+    return await this.gradesRepository.find({
+      relations: ['students', 'degree', 'schedule'],
+    });
   }
 
   async getGradeByNameAndParallel(
@@ -53,27 +70,6 @@ export class GradeService {
     return grade;
   }
 
-  async getSubjectsByGrade(id: string) {
-    if (!id) {
-      throw new NotFoundException(`El curso no existe`);
-    }
-    const data = await this.gradesRepository.find({
-      relations: ['subjects'],
-    });
-    for (let i = 0; i < data.length; i++) {
-      const grade_id = data[i].id;
-      if (id === grade_id) {
-        const grades_subject = data[i];
-        if (grades_subject.subjects.length < 0) {
-          throw new NotFoundException(
-            `El curso con ${id} no tiene materias registradas`,
-          );
-        }
-        return grades_subject;
-      }
-    }
-  }
-
   async verifyGradeExist(numberParallel: number, parallel: string) {
     if (!numberParallel || !parallel) {
       throw new NotFoundException(`El curso no existe`);
@@ -87,45 +83,35 @@ export class GradeService {
     return grade;
   }
 
-  async createGrade(createGradeDto: CreateGradeDto): Promise<Grade> {
-    const { numberParallel, parallel } = createGradeDto;
-    const currentGrade = await this.verifyGradeExist(numberParallel, parallel);
-    if (currentGrade) {
-      return currentGrade;
-    }
-    const grade = this.gradesRepository.create({
-      numberParallel,
-      parallel,
-    });
-    return await this.gradesRepository.save(grade);
-  }
-
   async updateGrade(id: string, updateGradeDto: UpdateGradeDto) {
     if (!id) {
       throw new NotFoundException(`El curso no existe`);
     }
-    const gradeExist = await this.gradesRepository.findOne({
-      where: {
-        id,
-      },
-    });
-    if (!gradeExist) throw new NotFoundException('Curso no existe');
-    if (updateGradeDto.number.toString() === '') {
-      updateGradeDto.number = gradeExist.numberParallel;
+    const gradeExist = await this.getGradeById(id);
+    if (!gradeExist) throw new NotFoundException('El curso no existe');
+
+    const { numberParallel, parallel } = updateGradeDto;
+
+    updateGradeDto.numberParallel = !numberParallel
+      ? gradeExist.numberParallel
+      : numberParallel;
+    updateGradeDto.parallel = !parallel ? gradeExist.parallel : parallel;
+
+    const gradeExists = await this.verifyGradeExist(
+      updateGradeDto.numberParallel,
+      updateGradeDto.parallel,
+    );
+
+    if (gradeExists) {
+      return {
+        message: `El curso ${updateGradeDto.numberParallel} ${updateGradeDto.parallel} ya existe`,
+      };
     }
-    if (updateGradeDto.parallel === '') {
-      updateGradeDto.parallel = gradeExist.parallel;
-    }
-    const { subjects } = updateGradeDto;
-    const data = await this.gradesRepository.preload({
-      id,
-      ...updateGradeDto,
-      subjects,
-    });
-    return this.gradesRepository.save(data);
+    await this.gradesRepository.update(id, updateGradeDto);
+    return this.getGradeById(id);
   }
 
-  async deleteGrade(id: string): Promise<void> {
+  async deleteGrade(id: string) {
     if (!id) {
       throw new NotFoundException(`El curso no existe`);
     }
@@ -133,5 +119,6 @@ export class GradeService {
     if (result.affected === 0) {
       throw new NotFoundException(`El curso con ${id} no existe`);
     }
+    return { message: 'El curso fue eliminado con éxito' };
   }
 }
