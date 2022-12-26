@@ -27,19 +27,6 @@ export class RoleService {
     return role;
   }
 
-  async createRole(createRoleDto: CreateRoleDto) {
-    const { type } = createRoleDto;
-
-    if (!type) {
-      return { message: 'El tipo es requerido' };
-    }
-    const role = this.roleRepository.create({
-      type,
-    });
-    await this.roleRepository.save(role);
-    return { message: 'El role fue creado con exito' };
-  }
-
   async getRoleByType(type: string) {
     if (!type) {
       throw new NotFoundException(`El rol no existe`);
@@ -53,6 +40,25 @@ export class RoleService {
       throw new NotFoundException(`El role con ${type} no existe`);
     }
     return role;
+  }
+
+  async createRole(createRoleDto: CreateRoleDto) {
+    const { type } = createRoleDto;
+
+    const currentRole = await this.getRoleByType(type);
+
+    if (currentRole) {
+      throw new NotFoundException(`El role ${currentRole.type} ya existe`);
+    }
+
+    if (!type) {
+      return { message: 'El tipo es requerido' };
+    }
+    const role = this.roleRepository.create({
+      type,
+    });
+    await this.roleRepository.save(role);
+    return { message: 'El role fue creado con exito' };
   }
 
   async findAll(): Promise<Role[]> {
