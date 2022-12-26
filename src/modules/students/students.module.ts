@@ -1,3 +1,4 @@
+import { StudentLessonPlan } from '../student-lesson-plan/student-lesso-plan-entity';
 import { Module } from '@nestjs/common';
 import { StudentsController } from './students.controller';
 import { StudentsService } from './students.service';
@@ -13,6 +14,7 @@ import { RoleModule } from 'src/modules/role/role.module';
     GradesModule,
     UserModule,
     RoleModule,
+    StudentLessonPlan,
   ],
   controllers: [StudentsController],
   providers: [StudentsService],

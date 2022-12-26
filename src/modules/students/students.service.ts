@@ -1,11 +1,11 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateGradeDto } from 'src/modules/grade/dto/create-grade-dto';
 import { GradeService } from 'src/modules/grade/grade.service';
 import { UserService } from 'src/modules/user/users.service';
 import { Repository } from 'typeorm';
 import { CreateStudentDto } from './dto/create-student-dto';
+import { CreateStudentWithExistingGradeDto } from './dto/create-student-with-grade-dto';
 import { UpdateStudentDto } from './dto/update-student-dto';
 import { Student } from './student.entity';
 
@@ -48,6 +48,12 @@ export class StudentsService {
     const type = this.config.get('STUDENT_TYPE');
     const { numberParallel, parallel } = createStudentDto;
 
+    if (!numberParallel || !parallel) {
+      throw new NotFoundException(
+        `El estudiante tiene que tener un grado asignado`,
+      );
+    }
+
     const gradeExist = await this.gradeService.createGrade({
       numberParallel,
       parallel,
@@ -73,5 +79,27 @@ export class StudentsService {
     if (result.affected === 0) {
       throw new NotFoundException(`El estudiante con ${id} no existe`);
     }
+  }
+
+  async createStudentWithGrade(
+    createStudentGradeDto: CreateStudentWithExistingGradeDto,
+  ) {
+    const type = this.config.get('STUDENT_TYPE');
+    const { gradeId } = createStudentGradeDto;
+
+    if (!gradeId) {
+      throw new NotFoundException(
+        `El estudiante tiene que tener un grado asignado`,
+      );
+    }
+
+    const existingGrade = await this.gradeService.getGradeById(gradeId);
+
+    const user = await this.userService.createUser(createStudentGradeDto, type);
+    const student = this.studentsRepository.create({});
+    student.grade = existingGrade;
+    student.user = user;
+    await this.studentsRepository.save(student);
+    return { message: 'Student created successfully' };
   }
 }

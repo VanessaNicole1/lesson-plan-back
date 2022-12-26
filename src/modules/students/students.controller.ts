@@ -18,13 +18,14 @@ import { Helpers } from '../../helpers/helpers';
 import { UpdateStudentDto } from './dto/update-student-dto';
 import { Student } from './student.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { ValidManager } from 'src/modules/auth/valid-manager.guard';
 import { Roles } from 'src/modules/auth/enums/decorators/roles.decorator';
 import { Role } from 'src/modules/auth/enums/role.enum';
-import { ValidUser } from 'src/modules/auth/valid-user.guard';
 import { CreateStudentDto } from './dto/create-student-dto';
+import { ValidManager } from '../auth/guards/valid-manager.guard';
+import { ValidUser } from '../auth/guards/valid-user.guard';
+import { CreateStudentWithExistingGradeDto } from './dto/create-student-with-grade-dto';
 
-@Controller('students')
+@Controller('student')
 export class StudentsController {
   constructor(private studentsService: StudentsService) {}
 
@@ -108,7 +109,9 @@ export class StudentsController {
   }
 
   @Post()
-  createStudent(@Body() createStudentDto: CreateStudentDto) {
-    return this.studentsService.createStudent(createStudentDto);
+  createStudent(
+    @Body() createStudentGradeDto: CreateStudentWithExistingGradeDto,
+  ) {
+    return this.studentsService.createStudentWithGrade(createStudentGradeDto);
   }
 }
