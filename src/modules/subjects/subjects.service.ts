@@ -20,6 +20,7 @@ export class SubjectsService {
       where: {
         id,
       },
+      relations: [],
     });
 
     if (!subject) {
@@ -61,7 +62,7 @@ export class SubjectsService {
     });
   }
 
-  async deleteSubject(id: string): Promise<void> {
+  async deleteSubject(id: string) {
     if (!id) {
       throw new NotFoundException(`La materia no existe`);
     }
@@ -69,5 +70,6 @@ export class SubjectsService {
     if (result.affected === 0) {
       throw new NotFoundException(`La materia con ${id} no existe`);
     }
+    return { message: 'La materia se ha eliminado con éxito' };
   }
 }
