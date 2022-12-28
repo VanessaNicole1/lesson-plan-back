@@ -1,6 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { PeriodsService } from './../period/period.service';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ManagerService } from '../manager/manager.service';
 import { Degree } from './degree.entity';
 import { CreateDegreeDto } from './dto/create-degree-dto';
 import { UpdateDegreeDto } from './dto/update-degree-dto';
@@ -10,6 +12,10 @@ export class DegreeService {
   constructor(
     @InjectRepository(Degree)
     private degreesRepository: Repository<Degree>,
+    @Inject(ManagerService)
+    private managerService: ManagerService,
+    @Inject(PeriodsService)
+    private periodService: PeriodsService,
   ) {}
 
   async getDegreeById(id: string): Promise<Degree> {
@@ -50,12 +56,20 @@ export class DegreeService {
   }
 
   async createDegree(createPeriodDto: CreateDegreeDto) {
-    const { name } = createPeriodDto;
+    const { name, periodId, managerId } = createPeriodDto;
+    if (!periodId || !managerId) {
+      throw new NotFoundException(
+        'El periodo y el manager son campos requeridos',
+      );
+    }
+    const manager = await this.managerService.getManagerByUserId(managerId);
+    const period = await this.periodService.getPeriodById(periodId);
     const degree = this.degreesRepository.create({
       name,
     });
-    await this.degreesRepository.save(degree);
-    return { message: 'La carrera fue creada con éxito' };
+    degree.manager = manager;
+    degree.period = period;
+    return await this.degreesRepository.save(degree);
   }
 
   async deleteDegree(id: string) {

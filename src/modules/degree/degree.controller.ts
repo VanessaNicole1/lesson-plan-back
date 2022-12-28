@@ -21,7 +21,7 @@ import { ValidManager } from '../auth/guards/valid-manager.guard';
 export class DegreesController {
   constructor(private degreesService: DegreeService) {}
 
-  @Post()
+  @Post('/:id')
   @UseGuards(AuthGuard('jwt'), ValidManager)
   @Roles(Role.Manager)
   createDegree(@Body() createDegreeDto: CreateDegreeDto) {

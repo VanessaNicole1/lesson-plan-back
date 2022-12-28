@@ -1,10 +1,8 @@
 import {
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Grade } from '../grade/grade.entity';
@@ -19,8 +17,7 @@ export class Degree {
   @Column()
   name: string;
 
-  @OneToOne(() => Manager)
-  @JoinColumn({ name: 'manager_id' })
+  @ManyToOne(() => Manager, (manager) => manager.degree)
   manager: Manager;
 
   @ManyToOne(() => Period, (period) => period.degrees)
