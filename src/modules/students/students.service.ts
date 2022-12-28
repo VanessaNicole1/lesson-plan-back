@@ -44,24 +44,18 @@ export class StudentsService {
     });
   }
 
-  async createStudent(createStudentDto: CreateStudentDto) {
+  async createStudent(createStudentDto: CreateStudentDto, grade: any) {
     const type = this.config.get('STUDENT_TYPE');
-    const { numberParallel, parallel } = createStudentDto;
 
-    if (!numberParallel || !parallel) {
+    if (!grade) {
       throw new NotFoundException(
         `El estudiante tiene que tener un grado asignado`,
       );
     }
 
-    const gradeExist = await this.gradeService.createGrade({
-      numberParallel,
-      parallel,
-    });
-
     const user = await this.userService.createUser(createStudentDto, type);
     const student = this.studentsRepository.create({});
-    student.grade = gradeExist;
+    student.grade = grade;
     student.user = user;
     await this.studentsRepository.save(student);
     return { message: 'Student created successfully' };

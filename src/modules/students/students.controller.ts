@@ -102,10 +102,10 @@ export class StudentsController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-    for (let i = 0; i < results.length; i++) {
-      const element = results[i];
-      this.studentsService.createStudent(element);
-    }
+    // for (let i = 0; i < results.length; i++) {
+    //   const element = results[i];
+    //   this.studentsService.createStudent(element);
+    // }
   }
 
   @Post()

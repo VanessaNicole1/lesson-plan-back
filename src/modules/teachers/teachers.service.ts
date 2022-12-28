@@ -40,7 +40,6 @@ export class TeachersService {
     const teacher = this.teachersRepository.create({});
     teacher.user = user;
     await this.teachersRepository.save(teacher);
-    return { message: 'Docente creado con éxito' };
   }
 
   async updateTeacher(id: string, updateTeacherDto: UpdateTeacherDto) {
