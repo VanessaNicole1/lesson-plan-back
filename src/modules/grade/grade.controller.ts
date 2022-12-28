@@ -42,14 +42,6 @@ export class GradesController {
     return this.gradeService.getAllGrade();
   }
 
-  @Get('/:number/:parallel')
-  getGradeByNameAndParallel(
-    @Param('number') number: number,
-    @Param('parallel') parallel: string,
-  ) {
-    return this.gradeService.getGradeByNameAndParallel(number, parallel);
-  }
-
   @Delete('/:id')
   @UseGuards(AuthGuard('jwt'), ValidManager)
   @Roles(Role.Manager)
