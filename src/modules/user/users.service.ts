@@ -58,6 +58,9 @@ export class UserService {
 
   async createUser(createUserDto: CreateUserDto, type: string) {
     const role = await this.roleService.getRoleByType(type);
+    if (!role) {
+      throw new NotFoundException('El usuario debe tener un rol asignado');
+    }
     const { email, name, lastName, password } = createUserDto;
     const currentPassword = !password ? Helpers.generatePassword() : password;
     const user = this.userRepository.create({
