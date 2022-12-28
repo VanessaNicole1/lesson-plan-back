@@ -6,11 +6,11 @@ export class Period {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  startDate: string;
+  @Column({ type: 'timestamptz' })
+  startDate: Date;
 
-  @Column()
-  endDate: string;
+  @Column({ type: 'timestamptz' })
+  endDate: Date;
 
   @OneToMany(() => Degree, (degree) => degree.period)
   degrees: Degree[];

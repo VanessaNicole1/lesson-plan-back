@@ -56,10 +56,10 @@ export class PeriodsService {
       },
     });
     if (!periodExist) throw new NotFoundException('Periodo no existe');
-    if (updatePeriodDto.startDate === '') {
+    if (!updatePeriodDto.startDate) {
       updatePeriodDto.startDate = periodExist.startDate;
     }
-    if (updatePeriodDto.endDate === '') {
+    if (!updatePeriodDto.endDate) {
       updatePeriodDto.endDate = periodExist.endDate;
     }
     await this.periodsRepository.update(id, updatePeriodDto);

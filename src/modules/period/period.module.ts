@@ -8,5 +8,6 @@ import { PeriodsController } from './period.controller';
   imports: [TypeOrmModule.forFeature([Period])],
   controllers: [PeriodsController],
   providers: [PeriodsService],
+  exports: [PeriodsService],
 })
 export class PeriodsModule {}

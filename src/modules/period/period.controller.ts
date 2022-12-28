@@ -58,4 +58,6 @@ export class PeriodsController {
   ) {
     return this.periodsService.updatePeriod(id, updatePeriodDto);
   }
+
+  //TODO: Create a method to get the last record
 }
