@@ -72,4 +72,16 @@ export class ManagerService {
 
     return { message: 'El director fue eliminado con éxito' };
   }
+
+  async getManagerByUserId(id: string) {
+    const managerExist = await this.managerRepository.findOne({
+      where: {
+        user: {
+          id,
+        },
+      },
+    });
+    if (!managerExist) throw new NotFoundException('El Director no existe');
+    return managerExist;
+  }
 }
