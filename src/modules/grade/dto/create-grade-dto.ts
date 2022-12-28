@@ -1,4 +1,4 @@
 export class CreateGradeDto {
-  numberParallel: number;
+  numberParallel: string;
   parallel: string;
 }

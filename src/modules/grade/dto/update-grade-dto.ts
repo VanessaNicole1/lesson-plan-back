@@ -1,4 +1,4 @@
 export class UpdateGradeDto {
-  numberParallel: number;
+  numberParallel: string;
   parallel: string;
 }
