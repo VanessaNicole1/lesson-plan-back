@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { DegreeService } from '../degree/degree.service';
 import { CreateGradeDto } from './dto/create-grade-dto';
 import { UpdateGradeDto } from './dto/update-grade-dto';
 import { Grade } from './grade.entity';
@@ -10,6 +11,8 @@ export class GradeService {
   constructor(
     @InjectRepository(Grade)
     private gradesRepository: Repository<Grade>,
+    @Inject(DegreeService)
+    private degreeService: DegreeService,
   ) {}
 
   async createGrade(createGradeDto: CreateGradeDto): Promise<Grade> {
@@ -23,7 +26,19 @@ export class GradeService {
       parallel,
       displayName: `${numberParallel} ${parallel}`,
     });
-    return await this.gradesRepository.save(grade);
+    await this.gradesRepository.save(grade);
+  }
+
+  async createNewGrade(createGradeDto: CreateGradeDto, idDegree: string) {
+    const { numberParallel, parallel } = createGradeDto;
+    const degree = await this.degreeService.getDegreeById(idDegree);
+    const grade = this.gradesRepository.create({
+      numberParallel,
+      parallel,
+      displayName: `${numberParallel} ${parallel}`,
+    });
+    grade.degree = degree;
+    await this.gradesRepository.save(grade);
   }
 
   async getGradeById(id: string): Promise<Grade> {
@@ -49,12 +64,12 @@ export class GradeService {
     });
   }
 
-  async getGradeByNameAndParallel(
-    numberParallel: number,
+  async getGradeByNumberAndParallel(
+    numberParallel: string,
     parallel: string,
   ): Promise<Grade> {
     if (!numberParallel || !parallel) {
-      throw new NotFoundException(`La carrera no existe`);
+      throw new NotFoundException(`El curso no existe`);
     }
     const grade = await this.gradesRepository.findOne({
       where: {
@@ -62,17 +77,12 @@ export class GradeService {
         parallel,
       },
     });
-    if (!grade) {
-      throw new NotFoundException(
-        `El curso ${numberParallel}${parallel} no existe`,
-      );
-    }
     return grade;
   }
 
-  async verifyGradeExist(numberParallel: number, parallel: string) {
+  async verifyGradeExist(numberParallel: string, parallel: string) {
     if (!numberParallel || !parallel) {
-      throw new NotFoundException(`El curso no existe`);
+      throw new NotFoundException(`El numero y el paralelo son requeridos`);
     }
     const grade = await this.gradesRepository.findOne({
       where: {
