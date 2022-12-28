@@ -16,6 +16,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { ScheduleModule } from './modules/schedule/schedule.module';
 import { StudentLessonPlanModule } from './modules/student-lesson-plan/student-lesson-plan.module';
+import { InitialProcessModule } from './modules/initial-process/initial-process.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { StudentLessonPlanModule } from './modules/student-lesson-plan/student-l
     AuthModule,
     ScheduleModule,
     StudentLessonPlanModule,
+    InitialProcessModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
