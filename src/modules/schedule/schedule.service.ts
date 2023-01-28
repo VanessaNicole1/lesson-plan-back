@@ -22,12 +22,15 @@ export class ScheduleService {
     private subjectService: SubjectsService,
   ) {}
 
-  async createSchedule(createScheduleDto: CreateScheduleDto, id) {
+  async createSchedule(createScheduleDto: CreateScheduleDto, id: string) {
+    if (!id) {
+      throw new NotFoundException(`El id es requerido`);
+    }
     const { startHour, endHour, day, gradeId, subjectId } = createScheduleDto;
     const grade = await this.gradeService.getGradeById(gradeId);
     const subject = await this.subjectService.getSubjectById(subjectId);
     const teacher = await this.teacherService.getTeacherByUserId(id);
-    const schedule = await this.scheduleRepository.create({
+    const schedule = this.scheduleRepository.create({
       startHour,
       endHour,
       day,
