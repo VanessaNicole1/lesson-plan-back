@@ -1,12 +1,15 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Helpers } from 'src/helpers/helpers';
 import { GradeService } from 'src/modules/grade/grade.service';
 import { UserService } from 'src/modules/user/users.service';
 import { Repository } from 'typeorm';
+import { User } from '../user/user-entity';
 import { CreateStudentDto } from './dto/create-student-dto';
 import { CreateStudentWithExistingGradeDto } from './dto/create-student-with-grade-dto';
 import { UpdateStudentDto } from './dto/update-student-dto';
+import { ValidateStudentFormatDto } from './dto/validate-student-format-dto';
 import { Student } from './student.entity';
 
 @Injectable()
@@ -53,12 +56,27 @@ export class StudentsService {
       );
     }
 
+    const { email } = createStudentDto;
+    const existsUser = await this.userService.getUserByEmail(email);
+
+    if (existsUser) {
+      const currentUser = await this.userService.getUserByEmail(email);
+      await this.createAStudentAssociation(currentUser, grade);
+      return;
+    }
+
     const user = await this.userService.createUser(createStudentDto, type);
     const student = this.studentsRepository.create({});
     student.grade = grade;
     student.user = user;
     await this.studentsRepository.save(student);
-    return { message: 'Student created successfully' };
+  }
+
+  async createAStudentAssociation(user: User, grade: any) {
+    const student = this.studentsRepository.create({});
+    student.user = user;
+    student.grade = grade;
+    await this.studentsRepository.save(student);
   }
 
   async updateStudent(updateStudentDto: UpdateStudentDto) {
@@ -95,5 +113,66 @@ export class StudentsService {
     student.user = user;
     await this.studentsRepository.save(student);
     return { message: 'Student created successfully' };
+  }
+
+  async validateStudentFormat(
+    validateStudentFormatDto: ValidateStudentFormatDto,
+  ) {
+    const { students } = validateStudentFormatDto;
+
+    let errorMessage = '';
+
+    for (let i = 0; i < students.length; i++) {
+      const student = students[i];
+
+      if (!('name' in student)) {
+        errorMessage += `El estudiante en el registro ${i} no contiene el nombre\n`;
+      }
+
+      if (!('lastName' in student)) {
+        errorMessage += `El estudiante en el registro ${i} no contiene el apellido\n`;
+      }
+
+      if (!('email' in student)) {
+        errorMessage += `El estudiante en el registro ${i} no contiene el correo\n`;
+      }
+
+      if (!('numberParallel' in student)) {
+        errorMessage += `El estudiante en el registro ${i} no contiene el número del paralelo\n`;
+      }
+
+      if (!('parallel' in student)) {
+        errorMessage += `El estudiante en el registro ${i} no contiene el paralelo\n`;
+      }
+
+      const { name, lastName, email, numberParallel, parallel } = student;
+
+      if (!name) {
+        errorMessage += `El estudiante en el registro ${i} tiene el campo nombre vacio\n`;
+      }
+
+      if (!lastName) {
+        errorMessage += `El estudiante en el registro ${i} tiene el campo apellido vacio\n`;
+      }
+
+      if (!email) {
+        errorMessage += `El estudiante en el registro ${i} tiene el campo email vacio\n`;
+      }
+
+      if (!numberParallel) {
+        errorMessage += `El estudiante en el registro ${i} tiene el campo numero de paralelo vacio\n`;
+      }
+
+      if (!parallel) {
+        errorMessage += `El estudiante en el registro ${i} tiene el campo paralelo vacio\n`;
+      }
+    }
+    const studentEmails = students.map((student) => student.email);
+    const duplicateStudentEmails = Helpers.getDuplicateEmails(studentEmails);
+    if (duplicateStudentEmails.length > 0) {
+      errorMessage += `Estos correos se repiten en el archivo de estudiantes ${duplicateStudentEmails}`;
+    }
+    console.log('errorMessage', errorMessage);
+    return errorMessage;
   }
 }
