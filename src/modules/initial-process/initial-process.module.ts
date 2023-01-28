@@ -1,3 +1,4 @@
+import { ScheduleModule } from './../schedule/schedule.module';
 import { ManagerModule } from './../manager/manager.module';
 import { SubjectsModule } from './../subjects/subjects.module';
 import { TeachersModule } from 'src/modules/teachers/teachers.module';
@@ -8,6 +9,7 @@ import { InitialProcessService } from './initial-process.service';
 import { Module } from '@nestjs/common';
 import { InitialProcessController } from './initial-process.controller';
 import { GradesModule } from '../grade/grade.module';
+import { UserModule } from '../user/users.module';
 @Module({
   imports: [
     PeriodsModule,
@@ -17,6 +19,8 @@ import { GradesModule } from '../grade/grade.module';
     SubjectsModule,
     ManagerModule,
     GradesModule,
+    UserModule,
+    ScheduleModule,
   ],
   controllers: [InitialProcessController],
   providers: [InitialProcessService],

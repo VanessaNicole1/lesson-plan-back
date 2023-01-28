@@ -6,6 +6,9 @@ import { CreateTeacherDto } from './dto/create-teacher-dto';
 import { UpdateTeacherDto } from './dto/update-teacher-dto';
 import { UserService } from 'src/modules/user/users.service';
 import { ConfigService } from '@nestjs/config';
+import { User } from '../user/user-entity';
+import { Helpers } from 'src/helpers/helpers';
+import { ValidateTeacherFormatDto } from './dto/validate-teacher-format-dto';
 
 @Injectable()
 export class TeachersService {
@@ -36,7 +39,21 @@ export class TeachersService {
 
   async createTeacher(createTeacherDto: CreateTeacherDto) {
     const type = this.config.get('TEACHER_TYPE');
+    const { email } = createTeacherDto;
+    const currentUser = await this.userService.getUserByEmail(email);
+
+    if (currentUser) {
+      const currentUser = await this.userService.getUserByEmail(email);
+      await this.createATeacherAssociation(currentUser);
+      return;
+    }
     const user = await this.userService.createUser(createTeacherDto, type);
+    const teacher = this.teachersRepository.create({});
+    teacher.user = user;
+    return await this.teachersRepository.save(teacher);
+  }
+
+  async createATeacherAssociation(user: User) {
     const teacher = this.teachersRepository.create({});
     teacher.user = user;
     await this.teachersRepository.save(teacher);
@@ -88,5 +105,50 @@ export class TeachersService {
     });
     if (!teacherExist) throw new NotFoundException('Docente no existe');
     return teacherExist;
+  }
+
+  async validateTeacherFormat(
+    validateTeacherFormatDto: ValidateTeacherFormatDto,
+  ) {
+    const { teachers } = validateTeacherFormatDto;
+
+    let errorMessage = '';
+
+    for (let i = 0; i < teachers.length; i++) {
+      const teacher = teachers[i];
+
+      if (!('name' in teacher)) {
+        errorMessage += `El docente en el registro ${i} no contiene el nombre\n`;
+      }
+
+      if (!('lastName' in teacher)) {
+        errorMessage += `El docente en el registro ${i} no contiene el apellido\n`;
+      }
+
+      if (!('email' in teacher)) {
+        errorMessage += `El docente en el registro ${i} no contiene el correo\n`;
+      }
+
+      const { name, lastName, email } = teacher;
+
+      if (!name) {
+        errorMessage += `El docente en el registro ${i} tiene el campo nombre vacio\n`;
+      }
+
+      if (!lastName) {
+        errorMessage += `El docente en el registro ${i} tiene el campo apellido vacio\n`;
+      }
+
+      if (!email) {
+        errorMessage += `El docente en el registro ${i} tiene el campo email vacio\n`;
+      }
+    }
+    const teacherEmails = teachers.map((teacher) => teacher.email);
+    const duplicateTeacherEmails = Helpers.getDuplicateEmails(teacherEmails);
+    if (duplicateTeacherEmails.length > 0) {
+      errorMessage += `Estos correos se repiten en el archivo de docentes ${duplicateTeacherEmails}`;
+    }
+    console.log('errorMessage', errorMessage);
+    return errorMessage;
   }
 }

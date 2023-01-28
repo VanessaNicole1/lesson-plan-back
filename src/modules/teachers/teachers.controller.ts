@@ -23,6 +23,7 @@ import { Roles } from 'src/modules/auth/enums/decorators/roles.decorator';
 import { CreateTeacherDto } from './dto/create-teacher-dto';
 import { ValidManager } from '../auth/guards/valid-manager.guard';
 import { ValidUser } from '../auth/guards/valid-user.guard';
+import { ValidateTeacherFormatDto } from './dto/validate-teacher-format-dto';
 
 @Controller('teacher')
 export class TeachersController {
@@ -107,5 +108,12 @@ export class TeachersController {
   @Post()
   createTeacher(@Body() createTeacherDto: CreateTeacherDto) {
     return this.teacherService.createTeacher(createTeacherDto);
+  }
+
+  @Post('validate-format')
+  validateFormatOfTheStudentData(
+    @Body() validateTeacherFormatDto: ValidateTeacherFormatDto,
+  ) {
+    return this.teacherService.validateTeacherFormat(validateTeacherFormatDto);
   }
 }

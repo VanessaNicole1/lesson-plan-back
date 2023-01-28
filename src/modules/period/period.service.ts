@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Period } from './period.entity';
@@ -35,7 +39,7 @@ export class PeriodsService {
   async createPeriod(createPeriodDto: CreatePeriodDto) {
     const { startDate, endDate } = createPeriodDto;
     if (!startDate || !startDate) {
-      throw new NotFoundException(
+      throw new BadRequestException(
         'Las fechas del periodo academico son requeridas',
       );
     }
@@ -72,12 +76,22 @@ export class PeriodsService {
 
   async deletePeriod(id: string) {
     if (!id) {
-      throw new NotFoundException(`El periodo no existe`);
+      throw new BadRequestException(`El periodo no existe`);
     }
     const result = await this.periodsRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`El periodo con ${id} no existe`);
     }
     return { message: 'El periodo fue eliminado con éxito' };
+  }
+
+  async validateDates(createPeriodDto: CreatePeriodDto) {
+    const { startDate, endDate } = createPeriodDto;
+
+    if (startDate >= endDate) {
+      throw new BadRequestException(
+        `La fecha de inicio ${startDate} debe ser menor a la fecha final ${endDate}`,
+      );
+    }
   }
 }

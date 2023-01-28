@@ -1,19 +1,6 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
 import { generate } from 'generate-password';
-import { extname } from 'path';
+import { CreateTeacherSubjectGradeDto } from 'src/modules/teachers/dto/create-teacher-subject-grade-dto';
 export class Helpers {
-  static editFileName = (req, file, callback) => {
-    const name = file.originalname.split('.')[0];
-    const fileExtName = extname(file.originalname);
-    callback(null, `${name}${fileExtName}`);
-  };
-
-  static editFileNameTeacher = (req, file, callback) => {
-    const name = file.originalname.split('.')[0];
-    const fileExtName = extname(file.originalname);
-    callback(null, `${name}${fileExtName}`);
-  };
-
   static generatePassword() {
     const plainPassword = generate({
       length: 10,
@@ -53,79 +40,53 @@ export class Helpers {
     });
   }
 
-  static duplicatedEmails(results) {
+  static getDuplicateEmails(currentEmails: string[]) {
     const emails = [];
     const duplicateEmails = [];
-    for (let i = 0; i < results.length; i++) {
-      const { name, lastName, email, numberParallel, parallel } = results[i];
-
-      if (
-        name === '' ||
-        lastName === '' ||
-        email === '' ||
-        parallel === '' ||
-        numberParallel === ''
-      ) {
-        throw new HttpException(
-          {
-            status: HttpStatus.INTERNAL_SERVER_ERROR,
-            error: 'No pueden existir valores vacios en las columnas',
-          },
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
+    for (let i = 0; i < currentEmails.length; i++) {
+      const email = currentEmails[i];
       if (emails.includes(email)) {
         duplicateEmails.push(email);
       } else {
         emails.push(email);
       }
     }
-
-    if (duplicateEmails.length > 0) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: `Los siguientes correos están repetidos ${duplicateEmails.join(
-            ',',
-          )}`,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return duplicateEmails.length > 0 ? duplicateEmails.join(', ') : [];
   }
 
-  static duplicatedNames(results) {
+  static getDuplicateNames(currentNames: string[]) {
     const names = [];
     const duplicateNames = [];
+    for (let i = 0; i < currentNames.length; i++) {
+      const name = currentNames[i];
 
-    for (let i = 0; i < results.length; i++) {
-      const { name } = results[i];
-
-      if (name === '') {
-        throw new HttpException(
-          {
-            status: HttpStatus.INTERNAL_SERVER_ERROR,
-            error: 'No pueden existir valores vacios en las columnas',
-          },
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
       if (names.includes(name)) {
         duplicateNames.push(name);
       } else {
         names.push(name);
       }
     }
-    if (duplicateNames.length > 0) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: `Las siguientes materias están repetidos ${duplicateNames.join(
-            ',',
-          )}`,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    return duplicateNames.length > 0 ? duplicateNames : [];
+  }
+
+  static getDuplicatedSchedule(teachers: CreateTeacherSubjectGradeDto[]) {
+    const schedules = [];
+    const duplicatedSchedules = [];
+    for (let i = 0; i < teachers.length; i++) {
+      const { numberParallel, parallel, subject } = teachers[i];
+      const schedule = {
+        numberParallel,
+        parallel,
+        subject,
+      };
+      if (schedules.includes(JSON.stringify(schedule))) {
+        duplicatedSchedules.push(
+          `${numberParallel} - ${parallel} - ${subject}`,
+        );
+      } else {
+        schedules.push(JSON.stringify(schedule));
+      }
     }
+    return duplicatedSchedules.length > 0 ? duplicatedSchedules : [];
   }
 }

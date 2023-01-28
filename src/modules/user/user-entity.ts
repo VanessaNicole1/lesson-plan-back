@@ -5,10 +5,14 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
+import { Manager } from '../manager/manager.entity';
+import { Student } from '../students/student.entity';
+import { Teacher } from '../teachers/teacher.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -28,6 +32,15 @@ export class User {
 
   @Column()
   displayName: string;
+
+  @OneToMany(() => Manager, (manager) => manager.user)
+  manager?: Manager[];
+
+  @OneToMany(() => Student, (student) => student.user)
+  student?: Student[];
+
+  @OneToMany(() => Teacher, (teacher) => teacher.user)
+  teacher?: Teacher[];
 
   @ManyToMany(() => Role, (role) => role.users)
   @JoinTable()

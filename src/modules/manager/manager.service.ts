@@ -5,6 +5,7 @@ import { Manager } from './manager.entity';
 import { CreateorUpdateManagerDto } from './dto/create-update-manager.dto';
 import { UserService } from 'src/modules/user/users.service';
 import { ConfigService } from '@nestjs/config';
+import { User } from '../user/user-entity';
 
 @Injectable()
 export class ManagerService {
@@ -41,11 +42,27 @@ export class ManagerService {
 
   async createManager(createManagerDto: CreateorUpdateManagerDto) {
     const type = this.config.get('MANAGER_TYPE');
+
+    const { email } = createManagerDto;
+    const existsUser = await this.userService.getUserByEmail(email);
+
+    if (existsUser) {
+      const currentUser = await this.userService.getUserByEmail(email);
+      await this.createAManagerAssociation(currentUser);
+      return;
+    }
+
     const user = await this.userService.createUser(createManagerDto, type);
     const manager = this.managerRepository.create({});
     manager.user = user;
     await this.managerRepository.save(manager);
     return { message: 'El director fue creado con éxito' };
+  }
+
+  async createAManagerAssociation(user: User) {
+    const manager = this.managerRepository.create({});
+    manager.user = user;
+    return await this.managerRepository.save(manager);
   }
 
   async updateManager(id: string, updateManagerDto: CreateorUpdateManagerDto) {

@@ -20,10 +20,10 @@ import { Student } from './student.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from 'src/modules/auth/enums/decorators/roles.decorator';
 import { Role } from 'src/modules/auth/enums/role.enum';
-import { CreateStudentDto } from './dto/create-student-dto';
 import { ValidManager } from '../auth/guards/valid-manager.guard';
 import { ValidUser } from '../auth/guards/valid-user.guard';
 import { CreateStudentWithExistingGradeDto } from './dto/create-student-with-grade-dto';
+import { ValidateStudentFormatDto } from './dto/validate-student-format-dto';
 
 @Controller('student')
 export class StudentsController {
@@ -113,5 +113,12 @@ export class StudentsController {
     @Body() createStudentGradeDto: CreateStudentWithExistingGradeDto,
   ) {
     return this.studentsService.createStudentWithGrade(createStudentGradeDto);
+  }
+
+  @Post('validate-format')
+  validateStudentFormat(
+    @Body() validateStudentFormatDto: ValidateStudentFormatDto,
+  ) {
+    return this.studentsService.validateStudentFormat(validateStudentFormatDto);
   }
 }

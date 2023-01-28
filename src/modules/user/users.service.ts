@@ -56,6 +56,21 @@ export class UserService {
     return user;
   }
 
+  async getUserByEmail(email: string): Promise<User> {
+    if (!email) {
+      throw new NotFoundException(`El usuario no existe`);
+    }
+    const user = await this.userRepository.findOne({
+      where: {
+        email: email,
+      },
+      relations: {
+        roles: true,
+      },
+    });
+    return user && user;
+  }
+
   async createUser(createUserDto: CreateUserDto, type: string) {
     const role = await this.roleService.getRoleByType(type);
     if (!role) {
