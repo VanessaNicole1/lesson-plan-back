@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Subject } from './subject.entity';
@@ -14,7 +18,7 @@ export class SubjectsService {
 
   async getSubjectById(id: string): Promise<Subject> {
     if (!id) {
-      throw new NotFoundException(`La materia no existe`);
+      throw new BadRequestException(`La materia no existe`);
     }
     const subject = await this.subjectsRepository.findOne({
       where: {
@@ -29,28 +33,45 @@ export class SubjectsService {
     return subject;
   }
 
+  async getSubjectByName(name: string): Promise<Subject> {
+    if (!name) {
+      throw new BadRequestException(`La materia no existe`);
+    }
+    const subject = await this.subjectsRepository.findOne({
+      where: {
+        name,
+      },
+      relations: [],
+    });
+
+    if (!subject) {
+      throw new NotFoundException(`El profesor con ${name} no existe`);
+    }
+    return subject;
+  }
+
   async getAllSubjects(): Promise<Subject[]> {
     return await this.subjectsRepository.find();
   }
 
-  async createSubject(createSubjectDto: CreateSubjectDto) {
+  async createSubject(createSubjectDto: CreateSubjectDto): Promise<Subject> {
     const { name } = createSubjectDto;
     const subject = this.subjectsRepository.create({
       name,
     });
-    await this.subjectsRepository.save(subject);
+    return await this.subjectsRepository.save(subject);
   }
 
   async updateSubject(id: string, updateSubjectDto: UpdateSubjectDto) {
     if (!id) {
-      throw new NotFoundException(`La materia no existe`);
+      throw new BadRequestException(`La materia no existe`);
     }
     const subjectExist = await this.subjectsRepository.findOne({
       where: {
         id,
       },
     });
-    if (!subjectExist) throw new NotFoundException('Materia no existe');
+    if (!subjectExist) throw new NotFoundException('La materia no existe');
     if (updateSubjectDto.name === '') {
       updateSubjectDto.name = subjectExist.name;
     }
@@ -64,7 +85,7 @@ export class SubjectsService {
 
   async deleteSubject(id: string) {
     if (!id) {
-      throw new NotFoundException(`La materia no existe`);
+      throw new BadRequestException(`La materia no existe`);
     }
     const result = await this.subjectsRepository.delete(id);
     if (result.affected === 0) {
