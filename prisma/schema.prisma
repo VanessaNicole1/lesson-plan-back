@@ -1,0 +1,92 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Period {
+  id        String   @id @default(uuid())
+  startDate DateTime
+  endDate   DateTime
+  degree    Degree?
+}
+
+model Degree {
+  id        String  @id @default(uuid())
+  name      String
+  period    Period  @relation(fields: [periodId], references: [id])
+  periodId  String  @unique
+  manager   Manager @relation(fields: [managerId], references: [id])
+  managerId String  @unique
+  grades    Grade[]
+}
+
+model Manager {
+  id     String  @id @default(uuid())
+  degree Degree?
+}
+
+model Grade {
+  id        String     @id @default(uuid())
+  number    Int
+  parallel  String
+  degree    Degree     @relation(fields: [degreeId], references: [id])
+  degreeId  String
+  students  Student[]
+  schedules Schedule[]
+}
+
+model Student {
+  id                    String                         @id @default(uuid())
+  grade                 Grade                          @relation(fields: [gradeId], references: [id])
+  gradeId               String
+  lessonPlansValidation LessonPlanValidationTracking[]
+}
+
+model Teacher {
+  id        String     @id @default(uuid())
+  schedules Schedule[]
+}
+
+model Subject {
+  id        String     @id @default(uuid())
+  name      String
+  schedules Schedule[]
+}
+
+model Schedule {
+  id          String       @id @default(uuid())
+  startHour   String
+  endHour     String
+  day         String
+  grade       Grade        @relation(fields: [gradeId], references: [id])
+  gradeId     String
+  subject     Subject      @relation(fields: [subjectId], references: [id])
+  subjectId   String
+  teacher     Teacher      @relation(fields: [teacherId], references: [id])
+  teacherId   String
+  lessonPlans LessonPlan[]
+}
+
+model LessonPlan {
+  id                  String                         @id @default(uuid())
+  date                DateTime
+  topic               String
+  content             Json?
+  schedule            Schedule                       @relation(fields: [scheduleId], references: [id])
+  scheduleId          String
+  validationsTracking LessonPlanValidationTracking[]
+}
+
+model LessonPlanValidationTracking {
+  isValidated  Boolean    @default(false)
+  lessonPlan   LessonPlan @relation(fields: [lessonPlanId], references: [id])
+  lessonPlanId String
+  student      Student    @relation(fields: [studentId], references: [id])
+  studentId    String
+
+  @@id([lessonPlanId, studentId])
+}
