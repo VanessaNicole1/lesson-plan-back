@@ -27,6 +27,8 @@ model Degree {
 model Manager {
   id     String  @id @default(uuid())
   degree Degree?
+  user   User    @relation(fields: [userId], references: [id])
+  userId String
 }
 
 model Grade {
@@ -44,11 +46,15 @@ model Student {
   grade                 Grade                          @relation(fields: [gradeId], references: [id])
   gradeId               String
   lessonPlansValidation LessonPlanValidationTracking[]
+  user                  User                           @relation(fields: [userId], references: [id])
+  userId                String
 }
 
 model Teacher {
   id        String     @id @default(uuid())
   schedules Schedule[]
+  user      User       @relation(fields: [userId], references: [id])
+  userId    String
 }
 
 model Subject {
@@ -89,4 +95,23 @@ model LessonPlanValidationTracking {
   studentId    String
 
   @@id([lessonPlanId, studentId])
+}
+
+model User {
+  id          String    @id @default(uuid())
+  name        String
+  lastName    String
+  email       String    @unique
+  password    String
+  displayName String
+  manager     Manager[]
+  student     Student[]
+  teacher     Teacher[]
+  roles       Role[]
+}
+
+model Role {
+  id    String @id @default(uuid())
+  name  String @unique
+  users User[]
 }
