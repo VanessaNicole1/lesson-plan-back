@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreatePeriodDto } from './dto/create-period.dto';
 import { UpdatePeriodDto } from './dto/update-period.dto';
 import { PeriodsRepository } from './periods.repository';
@@ -25,5 +25,13 @@ export class PeriodsService {
 
   remove(id: number) {
     return `This action removes a #${id} period`;
+  }
+
+  validateDates(createPeriodDto: CreatePeriodDto) {
+    const { startDate, endDate } = createPeriodDto; 
+
+    if (endDate <= startDate) {
+      throw new BadRequestException('La fecha de fin del periodo debe ser mayor a la fecha de inicio')
+    }
   }
 }
