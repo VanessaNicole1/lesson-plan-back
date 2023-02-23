@@ -1,14 +1,39 @@
 import { Injectable } from '@nestjs/common';
+import { GradesService } from '../grades/grades.service';
+import { PeriodsService } from '../periods/periods.service';
+import { StudentsService } from '../students/students.service';
+import { TeachersService } from '../teachers/teachers.service';
+import { UsersService } from '../users/users.service';
 import { CreateInitialProcessDto } from './dto/create-initial-process.dto';
 import { UpdateInitialProcessDto } from './dto/update-initial-process.dto';
 import { InitialProcessRepository } from './initial-process.repository';
 
 @Injectable()
 export class InitialProcessService {
-  constructor (private initialProcessRepository: InitialProcessRepository) {}
+  constructor (
+    private initialProcessRepository: InitialProcessRepository,
+    private periodsService: PeriodsService,
+    private usersService: UsersService,
+    private studentsService: StudentsService,
+    private teachersService: TeachersService,
+    private gradesService: GradesService
+  ) {}
 
   create(createInitialProcessDto: CreateInitialProcessDto) {
-    return 'This action adds a new initialProcess';
+    const { 
+      period, 
+      manager: { userId },
+      students,
+      teachers 
+    } = createInitialProcessDto;
+
+    this.periodsService.validateDates(period);
+    this.usersService.findOne(userId);
+    this.studentsService.validateStudents(students);
+    this.teachersService.validateTeachers(teachers);
+    this.gradesService.validateGradesMatch({ students, teachers });
+
+    return this.initialProcessRepository.create(createInitialProcessDto);
   }
 
   findAll() {
