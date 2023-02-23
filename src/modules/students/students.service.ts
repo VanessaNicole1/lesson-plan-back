@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { getDuplicatedEmails, isEmailDomainValid } from 'src/utils/email.utils';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { StudentsRepository } from './students.repository';
@@ -26,5 +27,27 @@ export class StudentsService {
 
   remove(id: number) {
     return `This action removes a #${id} student`;
+  }
+
+  validateStudentEmail(createStudentDto: CreateStudentDto) {
+    const { email } = createStudentDto;
+    const isDomainValid = isEmailDomainValid(email); 
+
+    if (!isDomainValid) {
+      throw new BadRequestException('El email del estudiante debe ser el institucional.')
+    }
+  }
+
+  validateStudents(createStudentsDto: CreateStudentDto[]) {
+    const studentsEmails = createStudentsDto.map(({ email }) => email);
+    const duplicatedEmails = getDuplicatedEmails(studentsEmails);
+
+    if (duplicatedEmails.length > 0) {
+      throw new BadRequestException(`Los siguientes correos están repetidos ${duplicatedEmails.join(', ')}`);
+    }
+    
+    for (const studentDto of createStudentsDto) {
+      this.validateStudentEmail(studentDto);
+    }
   }
 }
