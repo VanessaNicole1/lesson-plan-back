@@ -5,6 +5,7 @@ import { GradesRepository } from './grades.repository';
 
 @Module({
   controllers: [GradesController],
-  providers: [GradesService, GradesRepository]
+  providers: [GradesService, GradesRepository],
+  exports: [GradesService]
 })
 export class GradesModule {}
