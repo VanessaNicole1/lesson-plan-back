@@ -33,7 +33,7 @@ model Manager {
 
 model Grade {
   id        String     @id @default(uuid())
-  number    Int
+  number    String
   parallel  String
   degree    Degree     @relation(fields: [degreeId], references: [id])
   degreeId  String
