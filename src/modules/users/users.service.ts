@@ -5,9 +5,8 @@ import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
-
   constructor(private usersRepository: UsersRepository) {}
-    
+
   create(createUserDto: CreateUserDto) {
     return this.usersRepository.create(createUserDto);
   }
@@ -27,6 +26,4 @@ export class UsersService {
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
-
-
 }

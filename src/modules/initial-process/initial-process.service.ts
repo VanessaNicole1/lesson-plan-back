@@ -10,21 +10,21 @@ import { InitialProcessRepository } from './initial-process.repository';
 
 @Injectable()
 export class InitialProcessService {
-  constructor (
+  constructor(
     private initialProcessRepository: InitialProcessRepository,
     private periodsService: PeriodsService,
     private usersService: UsersService,
     private studentsService: StudentsService,
     private teachersService: TeachersService,
-    private gradesService: GradesService
+    private gradesService: GradesService,
   ) {}
 
   create(createInitialProcessDto: CreateInitialProcessDto) {
-    const { 
-      period, 
+    const {
+      period,
       manager: { userId },
       students,
-      teachers 
+      teachers,
     } = createInitialProcessDto;
 
     this.periodsService.validateDates(period);

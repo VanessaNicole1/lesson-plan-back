@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { PrismaService } from "../common/services/prisma.service";
-import { CreateUserDto } from "./dto/create-user.dto";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../common/services/prisma.service';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersRepository {
@@ -15,9 +15,9 @@ export class UsersRepository {
         lastName,
         email,
         password,
-        displayName: `${name} ${lastName}`
-      }
-    })
+        displayName: `${name} ${lastName}`,
+      },
+    });
   }
 
   findAll() {
@@ -27,12 +27,12 @@ export class UsersRepository {
   async findOne(id: string) {
     const user = await this.prisma.user.findUnique({
       where: {
-        id
-      }
-    })
+        id,
+      },
+    });
 
     if (!user) {
-      throw new NotFoundException(`Usuario con id "${id}" no encontrado`)
+      throw new NotFoundException(`Usuario con id "${id}" no encontrado`);
     }
 
     return user;

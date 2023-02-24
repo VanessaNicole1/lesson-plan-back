@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { InitialProcessService } from './initial-process.service';
 import { CreateInitialProcessDto } from './dto/create-initial-process.dto';
 import { UpdateInitialProcessDto } from './dto/update-initial-process.dto';
@@ -23,7 +31,10 @@ export class InitialProcessController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateInitialProcessDto: UpdateInitialProcessDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateInitialProcessDto: UpdateInitialProcessDto,
+  ) {
     return this.initialProcessService.update(+id, updateInitialProcessDto);
   }
 
