@@ -103,6 +103,7 @@ export class InitialProcessRepository {
                 email: student.email,
                 displayName: `${student.name} ${student.lastName}`,
                 password: 'fakePassword',
+                refreshToken: '',
               },
             });
 
@@ -140,6 +141,7 @@ export class InitialProcessRepository {
                 email: teacher.email,
                 displayName: `${teacher.name} ${teacher.lastName}`,
                 password: 'fakePassword',
+                refreshToken: '',
               },
             });
 
