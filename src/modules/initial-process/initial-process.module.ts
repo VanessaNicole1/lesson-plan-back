@@ -14,9 +14,9 @@ import { GradesModule } from '../grades/grades.module';
     UsersModule,
     StudentsModule,
     TeachersModule,
-    GradesModule
+    GradesModule,
   ],
   controllers: [InitialProcessController],
-  providers: [InitialProcessService, InitialProcessRepository]
+  providers: [InitialProcessService, InitialProcessRepository],
 })
 export class InitialProcessModule {}
