@@ -10,6 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AssignRoleDto } from './dto/assign-role.dto';
 
 @Controller('users')
 export class UsersController {
@@ -18,6 +19,19 @@ export class UsersController {
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
+  }
+
+  @Post('/:id/role')
+  createWithRole(
+    @Body() createUserDto: CreateUserDto,
+    @Param('id') id: string,
+  ) {
+    return this.usersService.createWithRole(createUserDto, id);
+  }
+
+  @Post('assign-role')
+  assignRole(@Body() assignRoleDto: AssignRoleDto) {
+    return this.usersService.assignRole(assignRoleDto);
   }
 
   @Get()
