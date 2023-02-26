@@ -98,16 +98,17 @@ model LessonPlanValidationTracking {
 }
 
 model User {
-  id          String    @id @default(uuid())
-  name        String
-  lastName    String
-  email       String    @unique
-  password    String
-  displayName String
-  manager     Manager[]
-  student     Student[]
-  teacher     Teacher[]
-  roles       Role[]
+  id           String    @id @default(uuid())
+  name         String
+  lastName     String
+  email        String    @unique
+  password     String
+  displayName  String
+  refreshToken String
+  manager      Manager[]
+  student      Student[]
+  teacher      Teacher[]
+  roles        Role[]
 }
 
 model Role {
