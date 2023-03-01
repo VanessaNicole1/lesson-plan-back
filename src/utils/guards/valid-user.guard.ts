@@ -24,18 +24,13 @@ export class ValidUser implements CanActivate {
     if (rolesType.includes(manager) && requiredRoles.includes(manager)) {
       return true;
     }
-
+    if (currentUser.id !== id) {
+      return false;
+    }
     if (rolesType.includes(student) && requiredRoles.includes(student)) {
-      if (currentUser.id !== id) {
-        return false;
-      }
       return true;
     }
-
     if (rolesType.includes(teacher) && requiredRoles.includes(teacher)) {
-      if (currentUser.id !== id) {
-        return false;
-      }
       return true;
     }
   }
