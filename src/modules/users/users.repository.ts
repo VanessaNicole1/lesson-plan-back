@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { hashPassword } from '../../utils/password.utils';
 import { PrismaService } from '../common/services/prisma.service';
 import { Role } from '../roles/entities/role.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -9,11 +8,8 @@ export class UsersRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
-    const { name, lastName, email } = createUserDto;
-    let { password } = createUserDto;
-    password = await hashPassword(password);
-
-    return this.prisma.user.create({
+    const { name, lastName, email, password, ids } = createUserDto;
+    let createUserData = {
       data: {
         name,
         lastName,
@@ -22,34 +18,28 @@ export class UsersRepository {
         displayName: `${name} ${lastName}`,
         refreshToken: '',
       },
-    });
-  }
+    };
+    if (ids) {
+      const idsRole = [];
 
-  async createWithRole(createUserDto: CreateUserDto, role: Role) {
-    const { name, lastName, email } = createUserDto;
-    let { password } = createUserDto;
-    password = await hashPassword(password);
+      for (let i = 0; i < ids.length; i++) {
+        idsRole.push({ id: ids[i] });
+      }
 
-    return this.prisma.user.create({
-      data: {
-        name,
-        lastName,
-        email,
-        password,
-        displayName: `${name} ${lastName}`,
-        refreshToken: '',
+      const { data } = createUserData;
+
+      const newData = {
+        ...data,
         roles: {
-          connectOrCreate: {
-            where: {
-              id: role.id,
-            },
-            create: {
-              name: role.name,
-            },
-          },
+          connect: idsRole,
         },
-      },
-    });
+      };
+
+      createUserData = {
+        data: newData,
+      };
+    }
+    return this.prisma.user.create(createUserData);
   }
 
   async assignRole(id: string, role: Role) {
