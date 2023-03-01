@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { RolesRepository } from './roles.repository';
@@ -29,5 +29,21 @@ export class RolesService {
 
   findByName(name: string) {
     return this.rolesRepository.findByName(name);
+  }
+
+  async getInvalidRoles(roles: string[]) {
+    const invalidRoles = [];
+    for (let i = 0; i < roles.length; i++) {
+      const id = roles[i];
+      const roleExists = await this.findOne(id);
+      if (!roleExists) {
+        invalidRoles.push(id);
+      }
+    }
+    if (invalidRoles.length > 0) {
+      throw new BadRequestException(
+        `Los siguientes roles no existen ${invalidRoles.join(', ')}`,
+      );
+    }
   }
 }
