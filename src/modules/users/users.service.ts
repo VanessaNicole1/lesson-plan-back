@@ -1,5 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { hashPassword } from '../../utils/password.utils';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepository } from './users.repository';
@@ -14,6 +15,16 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
+    let { password } = createUserDto;
+    password = await hashPassword(password);
+    createUserDto = {
+      ...createUserDto,
+      password,
+    };
+    const { ids } = createUserDto;
+    if (ids) {
+      await this.rolesService.getInvalidRoles(ids);
+    }
     return this.usersRepository.create(createUserDto);
   }
 
@@ -48,11 +59,6 @@ export class UsersService {
     const user = await this.usersRepository.findOne(id);
     if (!user) throw new NotFoundException('El usuario no existe');
     return await this.usersRepository.updateRefreshToken(id, refreshToken);
-  }
-
-  async createWithRole(createUserDto, id) {
-    const role = await this.rolesService.findOne(id);
-    return this.usersRepository.createWithRole(createUserDto, role);
   }
 
   async assignRole(assignRoleDto: AssignRoleDto) {
