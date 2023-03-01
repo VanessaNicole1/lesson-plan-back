@@ -28,10 +28,12 @@ export class PeriodsService {
   }
 
   validateDates(createPeriodDto: CreatePeriodDto) {
-    const { startDate, endDate } = createPeriodDto; 
+    const { startDate, endDate } = createPeriodDto;
 
     if (endDate <= startDate) {
-      throw new BadRequestException('La fecha de fin del periodo debe ser mayor a la fecha de inicio')
+      throw new BadRequestException(
+        'La fecha de fin del periodo debe ser mayor a la fecha de inicio',
+      );
     }
   }
 }
