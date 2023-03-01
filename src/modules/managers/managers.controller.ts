@@ -9,14 +9,14 @@ import {
 } from '@nestjs/common';
 import { ManagersService } from './managers.service';
 import { UpdateManagerDto } from './dto/update-manager.dto';
-import { CreateUserDto } from '../users/dto/create-user.dto';
+import { CreateManagerDto } from './dto/create-manager.dto';
 
 @Controller('managers')
 export class ManagersController {
   constructor(private readonly managersService: ManagersService) {}
 
   @Post()
-  create(@Body() createManagerDto: CreateUserDto) {
+  create(@Body() createManagerDto: CreateManagerDto) {
     return this.managersService.create(createManagerDto);
   }
 
