@@ -38,7 +38,6 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findByUsername(email);
-    console.log('USERRRR', user);
     const isValidPassword = await this.usersService.validatePassword(
       password,
       user.password,
@@ -72,7 +71,6 @@ export class AuthService {
         },
       ),
     ]);
-
     return {
       accessToken,
       refreshToken,
@@ -91,8 +89,9 @@ export class AuthService {
 
   async refreshTokens(userId: string, refreshToken: string) {
     const user = await this.usersService.findOne(userId);
-    if (!user || !user.refreshToken)
+    if (!user || !user.refreshToken) {
       throw new ForbiddenException('Access Denied');
+    }
     const refreshTokenMatches = await bcrypt.compareSync(
       refreshToken,
       user.refreshToken,
