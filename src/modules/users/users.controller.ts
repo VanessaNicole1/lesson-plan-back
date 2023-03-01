@@ -21,14 +21,6 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Post('/:id/role')
-  createWithRole(
-    @Body() createUserDto: CreateUserDto,
-    @Param('id') id: string,
-  ) {
-    return this.usersService.createWithRole(createUserDto, id);
-  }
-
   @Post('assign-role')
   assignRole(@Body() assignRoleDto: AssignRoleDto) {
     return this.usersService.assignRole(assignRoleDto);
