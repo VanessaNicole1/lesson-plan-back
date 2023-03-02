@@ -14,24 +14,18 @@ export class ValidUser implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const currentUser: User = request.user;
     const roles = currentUser.roles;
-    const rolesType = roles.map((role) => role.type);
+    const userRoles = roles.map((role) => role.name);
     const id = request.params.id;
-
-    const student = Role.Student;
-    const teacher = Role.Teacher;
     const manager = Role.Manager;
 
-    if (rolesType.includes(manager) && requiredRoles.includes(manager)) {
+    if (userRoles.includes(manager)) {
       return true;
     }
-    if (currentUser.id !== id) {
-      return false;
-    }
-    if (rolesType.includes(student) && requiredRoles.includes(student)) {
-      return true;
-    }
-    if (rolesType.includes(teacher) && requiredRoles.includes(teacher)) {
-      return true;
+
+    for (const role of userRoles) {
+      if (requiredRoles.includes(role) && currentUser.id === id) {
+        return true;
+      }
     }
   }
 }
