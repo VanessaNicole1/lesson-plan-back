@@ -31,19 +31,17 @@ export class RolesService {
     return this.rolesRepository.findByName(name);
   }
 
-  async getInvalidRoles(roles: string[]) {
-    const invalidRoles = [];
-    for (let i = 0; i < roles.length; i++) {
-      const id = roles[i];
-      const roleExists = await this.findOne(id);
-      if (!roleExists) {
-        invalidRoles.push(id);
+  async validateRoles(roleIds: string[]) {
+    if (roleIds) {
+      for (let i = 0; i < roleIds.length; i++) {
+        const id = roleIds[i];
+        const roleExists = await this.findOne(id);
+        if (!roleExists) {
+          throw new BadRequestException(
+            `No existe role con el siguiente id: ${id}`,
+          );
+        }
       }
-    }
-    if (invalidRoles.length > 0) {
-      throw new BadRequestException(
-        `Los siguientes roles no existen ${invalidRoles.join(', ')}`,
-      );
     }
   }
 }
