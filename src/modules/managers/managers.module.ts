@@ -5,6 +5,6 @@ import { ManagersRepository } from './managers.repository';
 
 @Module({
   controllers: [ManagersController],
-  providers: [ManagersService, ManagersRepository]
+  providers: [ManagersService, ManagersRepository],
 })
 export class ManagersModule {}

@@ -14,6 +14,7 @@ import { SchedulesModule } from './modules/schedules/schedules.module';
 import { StudentsModule } from './modules/students/students.module';
 import { SubjectsModule } from './modules/subjects/subjects.module';
 import { TeachersModule } from './modules/teachers/teachers.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { TeachersModule } from './modules/teachers/teachers.module';
     StudentsModule,
     SubjectsModule,
     TeachersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

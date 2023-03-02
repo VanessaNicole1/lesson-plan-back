@@ -1,4 +1,7 @@
-export const isEmailDomainValid = (email: string, domain: string = '@unl.edu.ec'): boolean => email.includes(domain);
+export const isEmailDomainValid = (
+  email: string,
+  domain = '@unl.edu.ec',
+): boolean => email.includes(domain);
 
 export const getDuplicatedEmails = (emails: string[]) => {
   const uniqueEmails = [];

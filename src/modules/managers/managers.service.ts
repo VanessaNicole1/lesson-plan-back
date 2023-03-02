@@ -5,8 +5,8 @@ import { ManagersRepository } from './managers.repository';
 
 @Injectable()
 export class ManagersService {
-  constructor (private managersRepository: ManagersRepository) {}
-  
+  constructor(private managersRepository: ManagersRepository) {}
+
   create(createManagerDto: CreateManagerDto) {
     return 'This action adds a new manager';
   }
