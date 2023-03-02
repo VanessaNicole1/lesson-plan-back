@@ -30,8 +30,8 @@ export class InitialProcessService {
       teachers,
     } = createInitialProcessDto;
 
+    await this.usersService.findOne(userId);
     this.periodsService.validateDates(period);
-    this.usersService.findOne(userId);
     this.studentsService.validateStudents(students);
     this.teachersService.validateTeachers(teachers);
     this.gradesService.validateGradesMatch({ students, teachers });
