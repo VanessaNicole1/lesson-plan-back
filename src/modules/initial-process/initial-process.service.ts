@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { GradesService } from '../grades/grades.service';
 import { PeriodsService } from '../periods/periods.service';
+import { RolesService } from '../roles/roles.service';
 import { StudentsService } from '../students/students.service';
 import { TeachersService } from '../teachers/teachers.service';
 import { UsersService } from '../users/users.service';
 import { CreateInitialProcessDto } from './dto/create-initial-process.dto';
 import { UpdateInitialProcessDto } from './dto/update-initial-process.dto';
 import { InitialProcessRepository } from './initial-process.repository';
+import { Role } from '../../utils/enums/roles.enum';
 
 @Injectable()
 export class InitialProcessService {
@@ -17,9 +19,10 @@ export class InitialProcessService {
     private studentsService: StudentsService,
     private teachersService: TeachersService,
     private gradesService: GradesService,
+    private rolesService: RolesService,
   ) {}
 
-  create(createInitialProcessDto: CreateInitialProcessDto) {
+  async create(createInitialProcessDto: CreateInitialProcessDto) {
     const {
       period,
       manager: { userId },
@@ -33,7 +36,18 @@ export class InitialProcessService {
     this.teachersService.validateTeachers(teachers);
     this.gradesService.validateGradesMatch({ students, teachers });
 
-    return this.initialProcessRepository.create(createInitialProcessDto);
+    const studentRole = await this.rolesService.findByName(Role.Student);
+    const teacherRole = await this.rolesService.findByName(Role.Teacher);
+
+    const roleIds = {
+      studentRoleId: studentRole.id,
+      teacherRoleId: teacherRole.id,
+    };
+
+    return this.initialProcessRepository.create(
+      createInitialProcessDto,
+      roleIds,
+    );
   }
 
   findAll() {

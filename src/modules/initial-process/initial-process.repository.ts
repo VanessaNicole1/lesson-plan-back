@@ -6,10 +6,11 @@ import { CreateInitialProcessDto } from './dto/create-initial-process.dto';
 export class InitialProcessRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(createInitialProcessDto: CreateInitialProcessDto) {
+  async create(createInitialProcessDto: CreateInitialProcessDto, roleIds) {
     const grades = [];
     const { period, degree, manager, students, teachers } =
       createInitialProcessDto;
+    const { studentRoleId, teacherRoleId } = roleIds;
     const uniqueGrades = [
       ...new Set(
         students.map(
@@ -103,7 +104,9 @@ export class InitialProcessRepository {
                 email: student.email,
                 displayName: `${student.name} ${student.lastName}`,
                 password: 'fakePassword',
-                refreshToken: '',
+                roles: {
+                  connect: { id: studentRoleId },
+                },
               },
             });
 
@@ -141,7 +144,9 @@ export class InitialProcessRepository {
                 email: teacher.email,
                 displayName: `${teacher.name} ${teacher.lastName}`,
                 password: 'fakePassword',
-                refreshToken: '',
+                roles: {
+                  connect: { id: teacherRoleId },
+                },
               },
             });
 

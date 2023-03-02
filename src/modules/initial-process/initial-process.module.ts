@@ -7,6 +7,7 @@ import { UsersModule } from '../users/users.module';
 import { StudentsModule } from '../students/students.module';
 import { TeachersModule } from '../teachers/teachers.module';
 import { GradesModule } from '../grades/grades.module';
+import { RolesModule } from '../roles/roles.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { GradesModule } from '../grades/grades.module';
     StudentsModule,
     TeachersModule,
     GradesModule,
+    RolesModule,
   ],
   controllers: [InitialProcessController],
   providers: [InitialProcessService, InitialProcessRepository],
