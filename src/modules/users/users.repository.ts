@@ -8,38 +8,24 @@ export class UsersRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
-    const { name, lastName, email, password, ids } = createUserDto;
-    let createUserData = {
+    const { name, lastName, email, password, roleIds } = createUserDto;
+
+    const roles = roleIds?.map((roleId) => ({
+      id: roleId,
+    }));
+
+    return this.prisma.user.create({
       data: {
         name,
         lastName,
         email,
         password,
         displayName: `${name} ${lastName}`,
-        refreshToken: '',
-      },
-    };
-    if (ids) {
-      const idsRole = [];
-
-      for (let i = 0; i < ids.length; i++) {
-        idsRole.push({ id: ids[i] });
-      }
-
-      const { data } = createUserData;
-
-      const newData = {
-        ...data,
         roles: {
-          connect: idsRole,
+          connect: roles,
         },
-      };
-
-      createUserData = {
-        data: newData,
-      };
-    }
-    return this.prisma.user.create(createUserData);
+      },
+    });
   }
 
   async assignRole(id: string, role: Role) {
