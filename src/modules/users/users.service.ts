@@ -21,10 +21,9 @@ export class UsersService {
       ...createUserDto,
       password,
     };
-    const { ids } = createUserDto;
-    if (ids) {
-      await this.rolesService.getInvalidRoles(ids);
-    }
+
+    const { roleIds } = createUserDto;
+    await this.rolesService.validateRoles(roleIds);
     return this.usersRepository.create(createUserDto);
   }
 
