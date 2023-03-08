@@ -11,8 +11,8 @@ export class ManagersService {
     return 'This action adds a new manager';
   }
 
-  findAll() {
-    return this.managersRepository.findAll();
+  findAll(periodId?: string) {
+    return this.managersRepository.findAll(periodId);
   }
 
   findOne(id: number) {
