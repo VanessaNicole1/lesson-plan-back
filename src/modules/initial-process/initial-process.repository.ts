@@ -58,6 +58,7 @@ export class InitialProcessRepository {
         data: {
           startDate: new Date(period.startDate),
           endDate: new Date(period.endDate),
+          isActive: true,
         },
       });
 
