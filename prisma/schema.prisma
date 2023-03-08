@@ -11,6 +11,7 @@ model Period {
   id        String   @id @default(uuid())
   startDate DateTime
   endDate   DateTime
+  isActive  Boolean?
   degree    Degree?
 }
 
