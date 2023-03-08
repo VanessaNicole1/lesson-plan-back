@@ -27,8 +27,8 @@ export class UsersService {
     return this.usersRepository.create(createUserDto);
   }
 
-  findAll() {
-    return this.usersRepository.findAll();
+  findAll(type?: string) {
+    return this.usersRepository.findAll(type);
   }
 
   findOne(id: string) {

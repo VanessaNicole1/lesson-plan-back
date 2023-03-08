@@ -7,13 +7,15 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AssignRoleDto } from './dto/assign-role.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { GetUser } from 'src/utils/decorators/get-user.decorator';
+import { GetUser } from '../../utils/decorators/get-user.decorator';
+import { Role } from '../../utils/enums/roles.enum';
 
 @Controller('users')
 export class UsersController {
@@ -36,7 +38,11 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
+  findAll(@Query('type') type?: string) {
+    const typeUser = type?.charAt(0).toUpperCase() + type?.slice(1);
+    if (Object.keys(Role).some((v) => v === typeUser)) {
+      return this.usersService.findAll(type);
+    }
     return this.usersService.findAll();
   }
 
