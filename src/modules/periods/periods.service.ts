@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreatePeriodDto } from './dto/create-period.dto';
+import { FilterPeriodDto } from './dto/filter-period.dto';
 import { UpdatePeriodDto } from './dto/update-period.dto';
 import { PeriodsRepository } from './periods.repository';
 
@@ -11,8 +12,8 @@ export class PeriodsService {
     return 'This action adds a new period';
   }
 
-  findAll() {
-    return this.periodsRepository.findAll();
+  findAll(filterPeriodDto?: FilterPeriodDto) {
+    return this.periodsRepository.findAll(filterPeriodDto);
   }
 
   findOne(id: number) {
