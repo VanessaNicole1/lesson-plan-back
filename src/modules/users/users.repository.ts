@@ -8,6 +8,14 @@ import { Role as RoleEnum} from '../../utils/enums/roles.enum';
 export class UsersRepository {
   constructor(private prisma: PrismaService) {}
 
+  private getAdittionalData() {
+    return {
+      include: {
+        roles: true,
+      },
+    };
+  }
+
   async create(createUserDto: CreateUserDto) {
     const { name, lastName, email, password, roleIds } = createUserDto;
 
@@ -39,6 +47,7 @@ export class UsersRepository {
       data: {
         ...updateUserDto,
       },
+      ...this.getAdittionalData(),
     });
 
     return updatedUser;
@@ -59,14 +68,25 @@ export class UsersRepository {
           },
         },
       },
+      ...this.getAdittionalData(),
     });
   }
 
-  findAll() {
+  findAll(type?: string) {
+    if (type) {
+      return this.prisma.user.findMany({
+        where: {
+          roles: {
+            some: {
+              name: type.toUpperCase(),
+            },
+          },
+        },
+        ...this.getAdittionalData(),
+      });
+    }
     return this.prisma.user.findMany({
-      include: {
-        roles: true,
-      },
+      ...this.getAdittionalData(),
     });
   }
 
@@ -89,9 +109,7 @@ export class UsersRepository {
       where: {
         id,
       },
-      include: {
-        roles: true,
-      },
+      ...this.getAdittionalData(),
     });
 
     if (!user) {
@@ -106,9 +124,7 @@ export class UsersRepository {
       where: {
         email,
       },
-      include: {
-        roles: true,
-      },
+      ...this.getAdittionalData(),
     });
 
     if (!user) {
