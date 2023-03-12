@@ -6,6 +6,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepository } from './users.repository';
 import { RolesService } from './../roles/roles.service';
 import { AssignRoleDto } from './dto/assign-role.dto';
+import { FilterUserDto } from './dto/filter-user.dto';
 @Injectable()
 export class UsersService {
   constructor(
@@ -27,8 +28,8 @@ export class UsersService {
     return this.usersRepository.create(createUserDto);
   }
 
-  findAll(type?: string) {
-    return this.usersRepository.findAll(type);
+  findAll(filterUserDto?: FilterUserDto) {
+    return this.usersRepository.findAll(filterUserDto);
   }
 
   findAllWithManagerRole() {

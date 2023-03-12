@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../common/services/prisma.service';
 import { Role } from '../roles/entities/role.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { FilterUserDto } from './dto/filter-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role as RoleEnum} from '../../utils/enums/roles.enum';
 @Injectable()
@@ -72,20 +73,18 @@ export class UsersRepository {
     });
   }
 
-  findAll(type?: string) {
-    if (type) {
-      return this.prisma.user.findMany({
-        where: {
-          roles: {
-            some: {
-              name: type.toUpperCase(),
-            },
+  findAll(filterUserDto: FilterUserDto = {}) {
+    const { roleType, email, name } = filterUserDto;
+    return this.prisma.user.findMany({
+      where: {
+        name,
+        email,
+        roles: {
+          some: {
+            name: roleType,
           },
         },
-        ...this.getAdittionalData(),
-      });
-    }
-    return this.prisma.user.findMany({
+      },
       ...this.getAdittionalData(),
     });
   }
