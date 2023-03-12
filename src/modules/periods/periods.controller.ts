@@ -16,12 +16,12 @@ import { FilterPeriodDto } from './dto/filter-period.dto';
 export class PeriodsController {
   constructor(private readonly periodsService: PeriodsService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createPeriodDto: CreatePeriodDto) {
     return this.periodsService.create(createPeriodDto);
   }
 
-  @Get()
+  @Post()
   findAll(@Body() filterPeriodDto?: FilterPeriodDto) {
     return this.periodsService.findAll(filterPeriodDto);
   }
