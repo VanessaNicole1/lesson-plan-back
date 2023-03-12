@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { isEmailDomainValid } from '../../utils/email.utils';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
+import { FilterTeacherDto } from './dto/filter-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
 import { TeachersRepository } from './teachers.repository';
 
@@ -12,8 +13,8 @@ export class TeachersService {
     return 'This action adds a new teacher';
   }
 
-  findAll(periodId?: string) {
-    return this.teachersRepository.findAll(periodId);
+  findAll(filterTeacherDto?: FilterTeacherDto) {
+    return this.teachersRepository.findAll(filterTeacherDto);
   }
 
   findOne(id: number) {

@@ -6,24 +6,24 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
 } from '@nestjs/common';
 import { TeachersService } from './teachers.service';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
+import { FilterTeacherDto } from './dto/filter-teacher.dto';
 
 @Controller('teachers')
 export class TeachersController {
   constructor(private readonly teachersService: TeachersService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createTeacherDto: CreateTeacherDto) {
     return this.teachersService.create(createTeacherDto);
   }
 
-  @Get()
-  findAll(@Query('period') periodId?: string) {
-    return this.teachersService.findAll(periodId);
+  @Post()
+  findAll(@Body() filterTeacherDto: FilterTeacherDto) {
+    return this.teachersService.findAll(filterTeacherDto);
   }
 
   @Get(':id')
