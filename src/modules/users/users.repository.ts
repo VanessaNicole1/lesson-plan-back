@@ -38,8 +38,7 @@ export class UsersRepository {
     });
   }
 
-  async update(updateUserDto: UpdateUserDto) {
-    const { id } = updateUserDto;
+  async update(id: string, updateUserDto: UpdateUserDto) {
     await this.findOne(id);
     const updatedUser = await this.prisma.user.update({
       where: {
