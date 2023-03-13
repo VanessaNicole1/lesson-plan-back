@@ -40,8 +40,8 @@ export class UsersService {
     return this.usersRepository.findOne(id);
   }
 
-  update(updateUserDto: UpdateUserDto) {
-    return this.usersRepository.update(updateUserDto);
+  update(id: string, updateUserDto: UpdateUserDto) {
+    return this.usersRepository.update(id, updateUserDto);
   }
 
   remove(id: number) {
