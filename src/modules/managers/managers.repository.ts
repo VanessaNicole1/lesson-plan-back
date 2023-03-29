@@ -1,40 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../common/services/prisma.service';
-import { Role } from '../../utils/enums/roles.enum';
+import { FilterManagerDto } from './dto/filter-manager.dto';
 @Injectable()
 export class ManagersRepository {
   constructor(private prisma: PrismaService) {}
 
-  findAll(id: string) {
-    if (id) {
-      return this.prisma.manager.findMany({
-        where: {
-          degree: {
-            period: {
-              id,
-            },
-          },
-        },
-        include: {
-          user: {
-            include: {
-              roles: true,
-            },
-          },
-        },
-      });
-    }
+  findAll(filterManagerDto?: FilterManagerDto) {
+    const { periodId, degreeId } = filterManagerDto;
     return this.prisma.manager.findMany({
-      include: {
-        user: {
-          include: {
-            roles: {
-              where: {
-                name: Role.Teacher,
-              },
-            },
+      where: {
+        degree: {
+          id: degreeId,
+          period: {
+            id: periodId,
           },
         },
+      },
+      include: {
+        user: true,
       },
     });
   }

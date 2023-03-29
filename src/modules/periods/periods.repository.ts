@@ -12,6 +12,17 @@ export class PeriodsRepository {
       where: {
         isActive,
       },
+      include: {
+        degree: {
+          include: {
+            manager: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 }

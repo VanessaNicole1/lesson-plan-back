@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateManagerDto } from './dto/create-manager.dto';
+import { FilterManagerDto } from './dto/filter-manager.dto';
 import { UpdateManagerDto } from './dto/update-manager.dto';
 import { ManagersRepository } from './managers.repository';
 
@@ -11,8 +12,8 @@ export class ManagersService {
     return 'This action adds a new manager';
   }
 
-  findAll(periodId?: string) {
-    return this.managersRepository.findAll(periodId);
+  findAll(filterManagerDto?: FilterManagerDto) {
+    return this.managersRepository.findAll(filterManagerDto);
   }
 
   findOne(id: number) {

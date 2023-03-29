@@ -6,11 +6,11 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
 } from '@nestjs/common';
 import { ManagersService } from './managers.service';
 import { UpdateManagerDto } from './dto/update-manager.dto';
 import { CreateManagerDto } from './dto/create-manager.dto';
+import { FilterManagerDto } from './dto/filter-manager.dto';
 
 @Controller('managers')
 export class ManagersController {
@@ -21,9 +21,9 @@ export class ManagersController {
     return this.managersService.create(createManagerDto);
   }
 
-  @Get('')
-  findAll(@Query('period') periodId?: string) {
-    return this.managersService.findAll(periodId);
+  @Get()
+  findAll(@Body() filterManagerDto: FilterManagerDto) {
+    return this.managersService.findAll(filterManagerDto);
   }
 
   @Get(':id')

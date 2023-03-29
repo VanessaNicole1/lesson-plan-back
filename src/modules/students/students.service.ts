@@ -4,6 +4,7 @@ import {
   isEmailDomainValid,
 } from '../../utils/email.utils';
 import { CreateStudentDto } from './dto/create-student.dto';
+import { FilterStudentDto } from './dto/filter-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { StudentsRepository } from './students.repository';
 
@@ -15,8 +16,8 @@ export class StudentsService {
     return 'This action adds a new student';
   }
 
-  findAll(periodId?: string) {
-    return this.studentsRepository.findAll(periodId);
+  findAll(filterStudentDto?: FilterStudentDto) {
+    return this.studentsRepository.findAll(filterStudentDto);
   }
 
   findOne(id: number) {

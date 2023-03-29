@@ -3,4 +3,8 @@ import { CreateUserDto } from './create-user.dto';
 
 export class UpdateUserDto extends PartialType(
   OmitType(CreateUserDto, ['email'] as const),
-) {}
+) {
+  phoneNumber: number;
+  city: string;
+  identificationCard: string;
+}

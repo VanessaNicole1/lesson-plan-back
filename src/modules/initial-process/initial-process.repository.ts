@@ -60,12 +60,14 @@ export class InitialProcessRepository {
     )}`;
     const endDateFormat = `${getMonth(endDate)} ${getFullYearTest(endDate)}`;
 
+    const { name: nameDegree } = degree;
+
     await this.prisma.$transaction(async (tx) => {
       const createdPeriod = await tx.period.create({
         data: {
           startDate: new Date(period.startDate),
           endDate: new Date(period.endDate),
-          displayName: `${startDateFormat}  -  ${endDateFormat}`,
+          displayName: `${startDateFormat}  -  ${endDateFormat}  ${nameDegree}`,
           isActive: true,
         },
       });
