@@ -34,7 +34,7 @@ export class StudentsService {
     const isDomainValid = isEmailDomainValid(email); 
 
     if (!isDomainValid) {
-      throw new BadRequestException('El email del estudiante debe ser el institucional.')
+      throw new BadRequestException('El email debe ser el institucional.')
     }
   }
 
@@ -43,7 +43,7 @@ export class StudentsService {
     const duplicatedEmails = getDuplicatedEmails(studentsEmails);
 
     if (duplicatedEmails.length > 0) {
-      throw new BadRequestException(`Los siguientes correos están repetidos ${duplicatedEmails.join(', ')}`);
+      throw new BadRequestException(`Los siguientes correos se encuentran repetidos: ${duplicatedEmails.join(', ')}`);
     }
     
     for (const studentDto of createStudentsDto) {
