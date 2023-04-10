@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, UseFilters } from '@nestjs/common';
 import { StudentsService } from './students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
+import { ValidateStudentsDto } from './dto/validate-students.dto';
+import { HttpExceptionFilter } from '../common/exception-filters/http.exception-filter';
 
 @Controller('students')
 export class StudentsController {
@@ -30,5 +32,13 @@ export class StudentsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.studentsService.remove(+id);
+  }
+
+  @Post('validate')
+  @HttpCode(200)
+  @UseFilters(new HttpExceptionFilter())
+  validateStudents(@Body() validateStudentsDto: ValidateStudentsDto) {
+    const { students } = validateStudentsDto;
+    return this.studentsService.validateStudents(students);
   }
 }

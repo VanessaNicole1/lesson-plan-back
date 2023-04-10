@@ -3,7 +3,7 @@ import { PrismaService } from '../common/services/prisma.service';
 import { Role } from '../roles/entities/role.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-
+import { Role as RoleEnum} from '../../utils/enums/roles.enum';
 @Injectable()
 export class UsersRepository {
   constructor(private prisma: PrismaService) {}
@@ -68,6 +68,20 @@ export class UsersRepository {
         roles: true,
       },
     });
+  }
+
+  findAllWithManagerRole() {
+    return this.prisma.user.findMany({
+      where: {
+        roles: {
+          some: {
+            name: {
+              equals:  RoleEnum.Manager
+            }
+          }
+        }
+      }
+    })
   }
 
   async findOne(id: string) {

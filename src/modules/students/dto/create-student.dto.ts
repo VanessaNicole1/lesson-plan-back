@@ -1,24 +1,26 @@
-import { IsDefined, IsEmail, IsString, Length, min } from "class-validator";
+import { IsDefined, IsEmail, IsString, Length, MinLength } from "class-validator";
 
 export class CreateStudentDto {
-  @IsString()
+  @IsString({ message: 'Solo caractéres son aceptados en el nombre'})
+  @MinLength(3, { message: 'El nombre debe tener al menos 3 carácteres'})
   @IsDefined({ message: 'El nombre del estudiante es requerido'})
   name: string;
 
-  @IsString()
+  @IsString({ message: 'Solo caractéres son aceptados en el apellido'})
+  @MinLength(3, { message: 'El apellido debe tener al menos 3 carácteres'})
   @IsDefined({ message: 'El apellido del estudiante es requerido'})
   lastName: string;
 
-  @IsEmail()
+  @IsEmail({}, { message: 'El email debe ser un correo válido'})
   @IsDefined({ message: 'El email del estudiante es requerido'})
   email: string;
 
-  @IsString()
-  @Length(1, 1, { message: 'El ciclo debe tener un cáracter'})
+  @IsString({ message: 'Solo cáractereres son aceptados en el ciclo'})
+  @Length(1, 2, { message: 'El ciclo debe tener un cáracter'})
   @IsDefined({ message: 'El ciclo del estudiante es requerido'})
   numberParallel: string;
   
-  @IsString()
+  @IsString({ message: 'Solo cáractereres son aceptados en el paralelo'})
   @Length(1, 1, { message: 'El paralelo debe tener un cáracter'})
   @IsDefined({ message: 'El paralelo del estudiante es requerido'})
   parallel: string;
