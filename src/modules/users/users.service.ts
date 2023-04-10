@@ -31,6 +31,10 @@ export class UsersService {
     return this.usersRepository.findAll();
   }
 
+  findAllWithManagerRole() {
+    return this.usersRepository.findAllWithManagerRole();
+  }
+
   findOne(id: string) {
     return this.usersRepository.findOne(id);
   }

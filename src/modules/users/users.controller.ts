@@ -40,6 +40,11 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get('managers')
+  findAllWithManagerRole() {
+    return this.usersService.findAllWithManagerRole();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
