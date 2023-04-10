@@ -47,7 +47,7 @@ export class GradesService {
     }
 
     if (notMatchingGrades.length > 0) {
-      const message = 'En el archivo de estudiantes, los siguientes cursos no constan en la lista de docentes:';
+      const message = 'En el archivo de estudiantes, los siguientes cursos no constan en la lista de docentes';
       throw new BadRequestException(`${message}: ${notMatchingGrades.join(', ')}`);
     };
   }
