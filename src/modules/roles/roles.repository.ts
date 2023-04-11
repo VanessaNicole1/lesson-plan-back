@@ -41,7 +41,11 @@ export class RolesRepository {
   }
 
   findAll() {
-    return this.prisma.role.findMany();
+    return this.prisma.role.findMany({
+      include: {
+        users: true,
+      },
+    });
   }
 
   findByName(name: string) {
