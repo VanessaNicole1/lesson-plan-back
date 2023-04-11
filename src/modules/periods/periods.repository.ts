@@ -7,10 +7,17 @@ export class PeriodsRepository {
   constructor(private prisma: PrismaService) {}
 
   findAll(filterPeriodDto: FilterPeriodDto = {}) {
-    const { isActive } = filterPeriodDto;
+    const { isActive, idManagerUser } = filterPeriodDto;
     return this.prisma.period.findMany({
       where: {
         isActive,
+        degree: {
+          manager: {
+            user: {
+              id: idManagerUser,
+            },
+          },
+        },
       },
       include: {
         degree: {
