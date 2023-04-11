@@ -110,6 +110,7 @@ model User {
   phoneNumber        Int?
   city               String?
   identificationCard String?
+  isActive           Boolean?  @default(true)
   manager            Manager[]
   student            Student[]
   teacher            Teacher[]
