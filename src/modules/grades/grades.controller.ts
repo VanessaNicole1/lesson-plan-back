@@ -1,21 +1,31 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpCode,
+} from '@nestjs/common';
 import { GradesService } from './grades.service';
 import { CreateGradeDto } from './dto/create-grade.dto';
 import { UpdateGradeDto } from './dto/update-grade.dto';
 import { ValidateGradesMatchDto } from './dto/validate-grades-match.dto';
+import { FilterGradeDto } from './dto/filter-grade.dto';
 
 @Controller('grades')
 export class GradesController {
   constructor(private readonly gradesService: GradesService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createGradeDto: CreateGradeDto) {
     return this.gradesService.create(createGradeDto);
   }
 
-  @Get()
-  findAll() {
-    return this.gradesService.findAll();
+  @Post()
+  findAll(@Body() filterGradeDto: FilterGradeDto) {
+    return this.gradesService.findAll(filterGradeDto);
   }
 
   @Get(':id')

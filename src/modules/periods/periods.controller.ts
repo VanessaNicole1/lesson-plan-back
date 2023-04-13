@@ -1,20 +1,29 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { PeriodsService } from './periods.service';
 import { CreatePeriodDto } from './dto/create-period.dto';
 import { UpdatePeriodDto } from './dto/update-period.dto';
+import { FilterPeriodDto } from './dto/filter-period.dto';
 
 @Controller('periods')
 export class PeriodsController {
   constructor(private readonly periodsService: PeriodsService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createPeriodDto: CreatePeriodDto) {
     return this.periodsService.create(createPeriodDto);
   }
 
-  @Get()
-  findAll() {
-    return this.periodsService.findAll();
+  @Post()
+  findAll(@Body() filterPeriodDto?: FilterPeriodDto) {
+    return this.periodsService.findAll(filterPeriodDto);
   }
 
   @Get(':id')

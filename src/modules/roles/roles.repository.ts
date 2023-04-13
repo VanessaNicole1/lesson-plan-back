@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../common/services/prisma.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 
@@ -6,14 +10,20 @@ import { CreateRoleDto } from './dto/create-role.dto';
 export class RolesRepository {
   constructor(private prisma: PrismaService) {}
 
-  create(createRoleDto: CreateRoleDto) {
+  async create(createRoleDto: CreateRoleDto) {
     const { name } = createRoleDto;
 
-    return this.prisma.role.create({
-      data: {
-        name: name.toUpperCase(),
-      },
-    });
+    const currentRole = await this.findByName(name.toUpperCase());
+
+    if (!currentRole) {
+      await this.prisma.role.create({
+        data: {
+          name: name.toUpperCase(),
+        },
+      });
+      return 'El rol se creó con éxito';
+    }
+    throw new BadRequestException(`El role con el nombre ${name} ya existe`);
   }
 
   findOne(id: string) {
@@ -31,7 +41,11 @@ export class RolesRepository {
   }
 
   findAll() {
-    return this.prisma.role.findMany();
+    return this.prisma.role.findMany({
+      include: {
+        users: true,
+      },
+    });
   }
 
   findByName(name: string) {

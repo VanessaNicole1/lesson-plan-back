@@ -2,11 +2,20 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../common/services/prisma.service';
 import { Role } from '../roles/entities/role.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { FilterUserDto } from './dto/filter-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role as RoleEnum} from '../../utils/enums/roles.enum';
 @Injectable()
 export class UsersRepository {
   constructor(private prisma: PrismaService) {}
+
+  private getAdittionalData() {
+    return {
+      include: {
+        roles: true,
+      },
+    };
+  }
 
   async create(createUserDto: CreateUserDto) {
     const { name, lastName, email, password, roleIds } = createUserDto;
@@ -29,8 +38,7 @@ export class UsersRepository {
     });
   }
 
-  async update(updateUserDto: UpdateUserDto) {
-    const { id } = updateUserDto;
+  async update(id: string, updateUserDto: UpdateUserDto) {
     await this.findOne(id);
     const updatedUser = await this.prisma.user.update({
       where: {
@@ -39,6 +47,7 @@ export class UsersRepository {
       data: {
         ...updateUserDto,
       },
+      ...this.getAdittionalData(),
     });
 
     return updatedUser;
@@ -59,14 +68,23 @@ export class UsersRepository {
           },
         },
       },
+      ...this.getAdittionalData(),
     });
   }
 
-  findAll() {
+  findAll(filterUserDto: FilterUserDto = {}) {
+    const { roleType, email, name } = filterUserDto;
     return this.prisma.user.findMany({
-      include: {
-        roles: true,
+      where: {
+        name,
+        email,
+        roles: {
+          some: {
+            name: roleType,
+          },
+        },
       },
+      ...this.getAdittionalData(),
     });
   }
 
@@ -89,9 +107,7 @@ export class UsersRepository {
       where: {
         id,
       },
-      include: {
-        roles: true,
-      },
+      ...this.getAdittionalData(),
     });
 
     if (!user) {
@@ -106,9 +122,7 @@ export class UsersRepository {
       where: {
         email,
       },
-      include: {
-        roles: true,
-      },
+      ...this.getAdittionalData(),
     });
 
     if (!user) {

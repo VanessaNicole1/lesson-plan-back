@@ -1,22 +1,33 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, UseFilters } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpCode,
+  UseFilters,
+} from '@nestjs/common';
 import { StudentsService } from './students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { ValidateStudentsDto } from './dto/validate-students.dto';
 import { HttpExceptionFilter } from '../common/exception-filters/http.exception-filter';
+import { FilterStudentDto } from './dto/filter-student.dto';
 
 @Controller('students')
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createStudentDto: CreateStudentDto) {
     return this.studentsService.create(createStudentDto);
   }
 
-  @Get()
-  findAll() {
-    return this.studentsService.findAll();
+  @Post()
+  findAll(@Body() filterStudentDto: FilterStudentDto) {
+    return this.studentsService.findAll(filterStudentDto);
   }
 
   @Get(':id')

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../common/services/prisma.service';
 import { CreateInitialProcessDto } from './dto/create-initial-process.dto';
+import { getFullYearTest, getMonth } from './../../utils/date.utils';
 
 @Injectable()
 export class InitialProcessRepository {
@@ -53,11 +54,21 @@ export class InitialProcessRepository {
       });
     }
 
+    const { startDate, endDate } = period;
+    const startDateFormat = `${getMonth(startDate)} ${getFullYearTest(
+      startDate,
+    )}`;
+    const endDateFormat = `${getMonth(endDate)} ${getFullYearTest(endDate)}`;
+
+    const { name: nameDegree } = degree;
+
     await this.prisma.$transaction(async (tx) => {
       const createdPeriod = await tx.period.create({
         data: {
           startDate: new Date(period.startDate),
           endDate: new Date(period.endDate),
+          displayName: `${startDateFormat}  -  ${endDateFormat}  ${nameDegree}`,
+          isActive: true,
         },
       });
 

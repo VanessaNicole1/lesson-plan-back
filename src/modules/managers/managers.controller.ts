@@ -10,6 +10,7 @@ import {
 import { ManagersService } from './managers.service';
 import { UpdateManagerDto } from './dto/update-manager.dto';
 import { CreateManagerDto } from './dto/create-manager.dto';
+import { FilterManagerDto } from './dto/filter-manager.dto';
 
 @Controller('managers')
 export class ManagersController {
@@ -21,8 +22,8 @@ export class ManagersController {
   }
 
   @Get()
-  findAll() {
-    return this.managersService.findAll();
+  findAll(@Body() filterManagerDto: FilterManagerDto) {
+    return this.managersService.findAll(filterManagerDto);
   }
 
   @Get(':id')

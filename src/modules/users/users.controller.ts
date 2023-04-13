@@ -13,13 +13,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AssignRoleDto } from './dto/assign-role.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { GetUser } from 'src/utils/decorators/get-user.decorator';
+import { GetUser } from '../../utils/decorators/get-user.decorator';
+import { FilterUserDto } from './dto/filter-user.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
@@ -35,9 +36,9 @@ export class UsersController {
     return this.usersService.assignRole(assignRoleDto);
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @Post()
+  findAll(@Body() filterUserDto?: FilterUserDto) {
+    return this.usersService.findAll(filterUserDto);
   }
 
   @Get('managers')
@@ -52,7 +53,7 @@ export class UsersController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(updateUserDto);
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
