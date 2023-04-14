@@ -1,0 +1,8 @@
+{
+  "service": {
+    "validateTeachers": {
+      "SAME_SUBJECT": "The following teachers are assigned to the same subject in the same cycle: \n",
+      "SAME_SUBJECT_TEACHERS": "- Teachers: {first} and {second} - Subject: {subject} - Cycle: {grade}\n"
+    }
+  }
+}

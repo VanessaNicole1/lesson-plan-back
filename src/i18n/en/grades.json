@@ -1,0 +1,7 @@
+{
+  "service": {
+    "validateGradesMatch": {
+      "NOT_MATCHING_GRADES": "The following courses on the students list don't appear on teachers list:"
+    }
+  }
+}

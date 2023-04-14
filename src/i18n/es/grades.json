@@ -1,0 +1,7 @@
+{
+  "service": {
+    "validateGradesMatch": {
+      "NOT_MATCHING_GRADES": "Los siguientes cursos del listado de estudiantes no constan en la lista de docentes:"
+    }
+  }
+}

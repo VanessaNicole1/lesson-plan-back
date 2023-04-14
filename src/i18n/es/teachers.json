@@ -1,0 +1,8 @@
+{
+  "service": {
+    "validateTeachers": {
+      "SAME_SUBJECT": "Los siguientes docentes tienen asignadas la misma materia en el mismo ciclo: \n",
+      "SAME_SUBJECT_TEACHERS": "- Docentes: {first} y {second} - Materia: {subject} - Ciclo: {grade}\n"
+    }
+  }
+}

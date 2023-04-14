@@ -13,6 +13,7 @@ import { CreateGradeDto } from './dto/create-grade.dto';
 import { UpdateGradeDto } from './dto/update-grade.dto';
 import { ValidateGradesMatchDto } from './dto/validate-grades-match.dto';
 import { FilterGradeDto } from './dto/filter-grade.dto';
+import { I18n, I18nContext } from 'nestjs-i18n';
 
 @Controller('grades')
 export class GradesController {
@@ -45,7 +46,10 @@ export class GradesController {
 
   @Post('validate')
   @HttpCode(200)
-  validateGradesMatch(@Body() validateGradesMatchDto: ValidateGradesMatchDto) {
-    return this.gradesService.validateGradesMatch(validateGradesMatchDto);
+  validateGradesMatch(
+    @Body() validateGradesMatchDto: ValidateGradesMatchDto,
+    @I18n() i18nContext: I18nContext
+  ) {
+    return this.gradesService.validateGradesMatch(validateGradesMatchDto, i18nContext);
   }
 }

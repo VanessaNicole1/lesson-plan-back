@@ -1,0 +1,7 @@
+{
+  "service": {
+    "validateDates": {
+      "GREATER_END_DATE": "End date must be greater than start date."
+    }
+  }
+}

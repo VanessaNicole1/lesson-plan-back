@@ -15,6 +15,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ValidManager } from '../../utils/guards/valid-manager.guard';
 import { Roles } from '../../utils/decorators/roles.decorator';
 import { Role } from '../../utils/enums/roles.enum';
+import { I18n, I18nContext } from 'nestjs-i18n';
 
 @Controller('initial-process')
 export class InitialProcessController {
@@ -23,8 +24,11 @@ export class InitialProcessController {
   @Post()
   @UseGuards(JwtAuthGuard, ValidManager)
   @Roles(Role.Manager)
-  create(@Body() createInitialProcessDto: CreateInitialProcessDto) {
-    return this.initialProcessService.create(createInitialProcessDto);
+  create(
+    @Body() createInitialProcessDto: CreateInitialProcessDto,
+    @I18n() i18nContext: I18nContext
+  ) {
+    return this.initialProcessService.create(createInitialProcessDto, i18nContext);
   }
 
   @Get()
