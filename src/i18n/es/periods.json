@@ -1,0 +1,7 @@
+{
+  "service": {
+    "validateDates": {
+      "GREATER_END_DATE": "La fecha de fin del periodo debe ser mayor a la fecha de inicio"
+    }
+  }
+}

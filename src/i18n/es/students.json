@@ -1,0 +1,7 @@
+{
+  "service": {
+    "validateStudents": {
+      "DUPLICATED_EMAILS": "Los siguientes correos están repetidos:"
+    }
+  }
+}
