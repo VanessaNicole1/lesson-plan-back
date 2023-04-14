@@ -3,9 +3,13 @@ import { CreatePeriodDto } from './dto/create-period.dto';
 import { FilterPeriodDto } from './dto/filter-period.dto';
 import { UpdatePeriodDto } from './dto/update-period.dto';
 import { PeriodsRepository } from './periods.repository';
+import { I18nContext } from 'nestjs-i18n';
 
 @Injectable()
 export class PeriodsService {
+
+  readonly baseI18nKey = 'periods.service';
+
   constructor(private periodsRepository: PeriodsRepository) {}
 
   create(createPeriodDto: CreatePeriodDto) {
@@ -28,12 +32,12 @@ export class PeriodsService {
     return `This action removes a #${id} period`;
   }
 
-  validateDates(createPeriodDto: CreatePeriodDto) {
+  validateDates(createPeriodDto: CreatePeriodDto, i18nContext: I18nContext) {
     const { startDate, endDate } = createPeriodDto;
 
     if (endDate <= startDate) {
       throw new BadRequestException(
-        'La fecha de fin del periodo debe ser mayor a la fecha de inicio',
+        i18nContext.t(`${this.baseI18nKey}.validateDates.GREATER_END_DATE`)
       );
     }
   }

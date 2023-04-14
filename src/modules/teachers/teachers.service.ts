@@ -4,10 +4,16 @@ import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { FilterTeacherDto } from './dto/filter-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
 import { TeachersRepository } from './teachers.repository';
+import { I18nContext } from 'nestjs-i18n';
 
 @Injectable()
 export class TeachersService {
-  constructor(private teachersRepository: TeachersRepository) {}
+  
+  readonly baseI18nKey = 'teachers.service';
+
+  constructor(
+    private teachersRepository: TeachersRepository,
+  ) {}
 
   create(createTeacherDto: CreateTeacherDto) {
     return 'This action adds a new teacher';
@@ -29,31 +35,40 @@ export class TeachersService {
     return `This action removes a #${id} teacher`;
   }
 
-  validateTeacherEmail(createTeacherDto: CreateTeacherDto) {
+  validateTeacherEmail(createTeacherDto: CreateTeacherDto, i18nContext: I18nContext) {
     const { email } = createTeacherDto;
     const isDomainValid = isEmailDomainValid(email);
 
     if (!isDomainValid) {
       throw new BadRequestException(
-        'El email del docente debe ser el institucional.',
+        i18nContext.t('common.INSTITUTIONAL_EMAIL')
       );
     }
   }
 
-  validateTeachers(teachers: CreateTeacherDto[]) {
+  validateTeachers(teachers: CreateTeacherDto[], i18nContext: I18nContext) {
     for (const teacher of teachers) {
-      this.validateTeacherEmail(teacher);
+      this.validateTeacherEmail(teacher, i18nContext);
     }
 
     const duplicatedTeachersBySubjectAndGrade =
       this.getDuplicatedTeachersBySubjectAndGrade(teachers);
 
     if (duplicatedTeachersBySubjectAndGrade.length > 0) {
-      let message = `Los siguientes docentes tienen asignadas la misma materia en el mismo ciclo: \n`;
-
+      let message = i18nContext.t(`${this.baseI18nKey}.validateTeachers.SAME_SUBJECT`);
       for (const duplicatedTeachers of duplicatedTeachersBySubjectAndGrade) {
         const { first, second, subject, grade } = duplicatedTeachers;
-        const duplicatedTeachersMessage = `- Docentes: ${first} y ${second} - Materia: ${subject} - Ciclo: ${grade}\n`;
+        const duplicatedTeachersMessage = i18nContext.t(
+          `${this.baseI18nKey}.validateTeachers.SAME_SUBJECT_TEACHERS`,
+          { 
+            args: {
+              first,
+              second,
+              subject,
+              grade
+            }
+          }
+        );
         message += duplicatedTeachersMessage;
       }
 

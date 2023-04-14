@@ -9,6 +9,7 @@ import {
   HttpCode,
   UseFilters,
 } from '@nestjs/common';
+import { I18n, I18nContext } from 'nestjs-i18n';
 import { TeachersService } from './teachers.service';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
@@ -48,8 +49,11 @@ export class TeachersController {
   @Post('validate')
   @HttpCode(200)
   @UseFilters(new HttpExceptionFilter())
-  valdateTeachers(@Body() validateTeachersDto: ValidateTeachersDto) {
+  valdateTeachers(
+    @Body() validateTeachersDto: ValidateTeachersDto,
+    @I18n() i18n: I18nContext  
+  ) {
     const { teachers } = validateTeachersDto;
-    return this.teachersService.validateTeachers(teachers);
+    return this.teachersService.validateTeachers(teachers, i18n);
   }
 }
