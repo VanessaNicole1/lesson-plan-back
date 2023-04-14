@@ -20,7 +20,7 @@ import { FilterUserDto } from './dto/filter-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('create')
+  @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
@@ -36,7 +36,7 @@ export class UsersController {
     return this.usersService.assignRole(assignRoleDto);
   }
 
-  @Post()
+  @Get()
   findAll(@Body() filterUserDto?: FilterUserDto) {
     return this.usersService.findAll(filterUserDto);
   }
