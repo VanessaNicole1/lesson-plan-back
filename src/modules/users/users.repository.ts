@@ -4,7 +4,7 @@ import { Role } from '../roles/entities/role.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FilterUserDto } from './dto/filter-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Role as RoleEnum} from '../../utils/enums/roles.enum';
+import { Role as RoleEnum } from '../../utils/enums/roles.enum';
 @Injectable()
 export class UsersRepository {
   constructor(private prisma: PrismaService) {}
@@ -94,12 +94,12 @@ export class UsersRepository {
         roles: {
           some: {
             name: {
-              equals:  RoleEnum.Manager
-            }
-          }
-        }
-      }
-    })
+              equals: RoleEnum.Manager,
+            },
+          },
+        },
+      },
+    });
   }
 
   async findOne(id: string) {
