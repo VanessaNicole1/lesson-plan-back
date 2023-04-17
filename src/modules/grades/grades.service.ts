@@ -54,7 +54,7 @@ export class GradesService {
     if (notMatchingGrades.length > 0) {
       const message = i18nContext.t(`${this.baseI18nKey}.validateGradesMatch.NOT_MATCHING_GRADES`);
       throw new BadRequestException(
-        `${message}: ${notMatchingGrades.join(', ')}`,
+        `${message} ${notMatchingGrades.join(', ')}`,
       );
     }
   }
