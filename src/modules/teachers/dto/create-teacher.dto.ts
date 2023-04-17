@@ -10,9 +10,9 @@ import { i18nValidationMessage } from 'nestjs-i18n';
 const baseI18nKey = 'teachers.dtos.createTeacherDto';
 
 export class CreateTeacherDto {
-  @IsString({ message: i18nValidationMessage(`${baseI18nKey}.STRING_TNAME`) })
+  @IsString({ message: i18nValidationMessage(`${baseI18nKey}.STRING_NAME`) })
   @MinLength(3, { message: i18nValidationMessage(`${baseI18nKey}.TOO_SHORT_NAME`) })
-  @IsDefined({ message: i18nValidationMessage(`${baseI18nKey}.DEFINED_TNAME`) })
+  @IsDefined({ message: i18nValidationMessage(`${baseI18nKey}.DEFINED_NAME`) })
   name: string;
 
   @IsString({ message: i18nValidationMessage(`${baseI18nKey}.STRING_LASTNAME`) })

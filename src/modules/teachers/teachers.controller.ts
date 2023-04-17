@@ -51,7 +51,7 @@ export class TeachersController {
   @UseFilters(new DtoArrayErrorExceptionFilter(/teachers\.\d+\./))
   validateTeachers(
     @Body() validateTeachersDto: ValidateTeachersDto,
-    @I18n() i18n: I18nContext  
+    @I18n() i18n: I18nContext
   ) {
     const { teachers } = validateTeachersDto;
     return this.teachersService.validateTeachers(teachers, i18n);
