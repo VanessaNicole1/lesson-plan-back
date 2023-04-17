@@ -3,5 +3,26 @@
     "validateStudents": {
       "DUPLICATED_EMAILS": "The following emails are repeated:"
     }
+  },
+  "dtos": {
+    "validateStudentsDto": {
+      "EMPTY_ARRAY": "There must be at least one student to validate."
+    },
+    "createStudentDto": {
+      "TOO_SHORT_NAME": "Student's name must have at least 3 characters.",
+      "DEFINED_NAME": "Student's name is required",
+      "STRING_NAME": "Only characters are accepted in the student's name.",
+      "TOO_SHORT_LASTNAME": "Student's last name must have at least 3 characters.",
+      "DEFINED_LASTNAME": "Student's last name is required",
+      "STRING_LASTNAME": "Only characters are accepted in the student's last name.",
+      "INVALID_EMAIL": "Student's email should be a valid email.",
+      "NOT_DEFINED_EMAIL": "Student's emai is required.",
+      "NOT_STRING_NUMBER_PARALLEL": "Only characters are accepted in the student's cycle.",
+      "INVALID_LENGTH_NUMBER_PARALLEL": "Student's cycle should have max two character.",
+      "NOT_DEFINED_NUMBER_PARALLEL": "Student's cycle is required.",
+      "NOT_STRING_PARALLEL": "Only characters are accepted in the student's parallel.",
+      "INVALID_LENGTH_PARALLEL": "Student's parallel should have only one character.",
+      "NOT_DEFINED_PARALLEL": "Student's parallel is required."
+    }
   }
 }

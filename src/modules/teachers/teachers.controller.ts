@@ -14,14 +14,14 @@ import { TeachersService } from './teachers.service';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
 import { ValidateTeachersDto } from './dto/validate-teachers.dto';
-import { HttpExceptionFilter } from '../common/exception-filters/http.exception-filter';
 import { FilterTeacherDto } from './dto/filter-teacher.dto';
+import { DtoArrayErrorExceptionFilter } from '../common/exception-filters/dto-array-error-exception.filter';
 
 @Controller('teachers')
 export class TeachersController {
   constructor(private readonly teachersService: TeachersService) {}
 
-  @Post('create')
+  @Post()
   create(@Body() createTeacherDto: CreateTeacherDto) {
     return this.teachersService.create(createTeacherDto);
   }
@@ -48,8 +48,8 @@ export class TeachersController {
 
   @Post('validate')
   @HttpCode(200)
-  @UseFilters(new HttpExceptionFilter())
-  valdateTeachers(
+  @UseFilters(new DtoArrayErrorExceptionFilter(/teachers\.\d+\./))
+  validateTeachers(
     @Body() validateTeachersDto: ValidateTeachersDto,
     @I18n() i18n: I18nContext  
   ) {

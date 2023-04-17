@@ -4,5 +4,28 @@
       "SAME_SUBJECT": "Los siguientes docentes tienen asignadas la misma materia en el mismo ciclo: \n",
       "SAME_SUBJECT_TEACHERS": "- Docentes: {first} y {second} - Materia: {subject} - Ciclo: {grade}\n"
     }
+  },
+  "dtos": {
+    "validateTeachersDto": {
+      "EMPTY_ARRAY": "Debe existir al menos un docente para validar."
+    },
+    "createTeacherDto": {
+      "TOO_SHORT_NAME": "El nombre del docente debe tener al menos 3 caracteres.",
+      "DEFINED_NAME": "El nombre del docente es requerido.",
+      "STRING_NAME": "Solo caracteres son aceptados en el nombre del docente.",
+      "TOO_SHORT_LASTNAME": "El apellido del docente debe tener al menos 3 caracteres.",
+      "DEFINED_LASTNAME": "El apellido del docente es requerido.",
+      "STRING_LASTNAME": "Solo caracteres son aceptados en el apellido del docente.",
+      "INVALID_EMAIL": "El email del docente debe ser un correo válido.",
+      "NOT_DEFINED_EMAIL": "El email del docente es requerido.",
+      "NOT_STRING_SUBJECT": "Solo caracteres son aceptados en la materia del docente.",
+      "NOT_DEFINED_SUBJECT": "La materia del docente es requerida.",
+      "NOT_STRING_NUMBER_PARALLEL": "Solo cáractereres son aceptados en el ciclo.",
+      "INVALID_LENGTH_NUMBER_PARALLEL": "El ciclo puede tener máximo dos caracteres.",
+      "NOT_DEFINED_NUMBER_PARALLEL": "El ciclo del docente es requerido.",
+      "NOT_STRING_PARALLEL": "Solo cáractereres son aceptados en el paralelo.",
+      "INVALID_LENGTH_PARALLEL": "El paralelo solamente debe tener un caracter.",
+      "NOT_DEFINED_PARALLEL": "El paralelo del docente es requerido."
+    }
   }
 }

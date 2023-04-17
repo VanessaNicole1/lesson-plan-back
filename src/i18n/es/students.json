@@ -3,5 +3,26 @@
     "validateStudents": {
       "DUPLICATED_EMAILS": "Los siguientes correos están repetidos:"
     }
+  },
+  "dtos": {
+    "validateStudentsDto": {
+      "EMPTY_ARRAY": "Debe existir al menos un estudiante para validar."
+    },
+    "createStudentDto": {
+      "TOO_SHORT_NAME": "El nombre del estudiante debe tener al menos 3 caracteres.",
+      "DEFINED_NAME": "El nombre del estudiante es requerido.",
+      "STRING_NAME": "Solo caracteres son aceptados en el nombre del estudiante.",
+      "TOO_SHORT_LASTNAME": "El apellido del estudiante debe tener al menos 3 caracteres.",
+      "DEFINED_LASTNAME": "El apellido del estudiante es requerido.",
+      "STRING_LASTNAME": "Solo caracteres son aceptados en el apellido del estudiante.",
+      "INVALID_EMAIL": "El email del estudiante debe ser un correo válido.",
+      "NOT_DEFINED_EMAIL": "El email del estudiante es requerido.",
+      "NOT_STRING_NUMBER_PARALLEL": "Solo cáractereres son aceptados en el ciclo del estudiante.",
+      "INVALID_LENGTH_NUMBER_PARALLEL": "El ciclo del estudiante puede tener máximo dos caracteres.",
+      "NOT_DEFINED_NUMBER_PARALLEL": "El ciclo del estudiante es requerido.",
+      "NOT_STRING_PARALLEL": "Solo cáractereres son aceptados en el paralelo.",
+      "INVALID_LENGTH_PARALLEL": "El paralelo solamente debe tener un caracter.",
+      "NOT_DEFINED_PARALLEL": "El paralelo del estudiante es requerido."
+    }
   }
 }

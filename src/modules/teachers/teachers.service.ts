@@ -8,7 +8,6 @@ import { I18nContext } from 'nestjs-i18n';
 
 @Injectable()
 export class TeachersService {
-  
   readonly baseI18nKey = 'teachers.service';
 
   constructor(

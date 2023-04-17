@@ -1,3 +1,4 @@
 {
-  "INSTITUTIONAL_EMAIL": "Emails must be institutional."
+  "INSTITUTIONAL_EMAIL": "Emails must be institutional.",
+  "ERROR_FOUND_IN_RECORD": "The following errors were found in record {recordNumber}:"
 }

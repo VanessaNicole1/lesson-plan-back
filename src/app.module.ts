@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Module } from '@nestjs/common';
-import { AcceptLanguageResolver, HeaderResolver, I18nModule } from 'nestjs-i18n';
+import { AcceptLanguageResolver, I18nModule } from 'nestjs-i18n';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './modules/users/users.module';

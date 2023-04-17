@@ -5,33 +5,36 @@ import {
   Length,
   MinLength,
 } from 'class-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
+
+const baseI18nKey = 'teachers.dtos.createTeacherDto';
 
 export class CreateTeacherDto {
-  @IsString({ message: 'Solo caractéres son aceptados en el nombre' })
-  @MinLength(3, { message: 'El nombre debe tener al menos 3 carácteres' })
-  @IsDefined({ message: 'El nombre del docente es requerido' })
+  @IsString({ message: i18nValidationMessage(`${baseI18nKey}.STRING_TNAME`) })
+  @MinLength(3, { message: i18nValidationMessage(`${baseI18nKey}.TOO_SHORT_NAME`) })
+  @IsDefined({ message: i18nValidationMessage(`${baseI18nKey}.DEFINED_TNAME`) })
   name: string;
 
-  @IsString({ message: 'Solo caractéres son aceptados en el apellido' })
-  @MinLength(3, { message: 'El apellido debe tener al menos 3 carácteres' })
-  @IsDefined({ message: 'El apellido del docente es requerido' })
+  @IsString({ message: i18nValidationMessage(`${baseI18nKey}.STRING_LASTNAME`) })
+  @MinLength(3, { message: i18nValidationMessage(`${baseI18nKey}.TOO_SHORT_LASTNAME`) })
+  @IsDefined({ message: i18nValidationMessage(`${baseI18nKey}.DEFINED_LASTNAME`) })
   lastName: string;
 
-  @IsEmail({}, { message: 'El email debe ser un correo válido' })
-  @IsDefined({ message: 'El email del docente es requerido' })
+  @IsEmail({}, { message: i18nValidationMessage(`${baseI18nKey}.INVALID_EMAIL`) })
+  @IsDefined({ message: i18nValidationMessage(`${baseI18nKey}.NOT_DEFINED_EMAIL`) })
   email: string;
 
-  @IsString({ message: 'Solo caractéres son aceptados en la materia' })
-  @IsDefined({ message: 'La materia del docente es requerida' })
+  @IsString({ message: i18nValidationMessage(`${baseI18nKey}.NOT_STRING_SUBJECT`) })
+  @IsDefined({ message: i18nValidationMessage(`${baseI18nKey}.NOT_DEFINED_SUBJECT`) })
   subject: string;
 
-  @IsString({ message: 'Solo cáractereres son aceptados en el ciclo' })
-  @Length(1, 2, { message: 'El ciclo debe tener un cáracter' })
-  @IsDefined({ message: 'El ciclo del docente es requerido' })
+  @IsString({ message: i18nValidationMessage(`${baseI18nKey}.NOT_STRING_NUMBER_PARALLEL`) })
+  @Length(1, 2, { message: i18nValidationMessage(`${baseI18nKey}.INVALID_LENGTH_NUMBER_PARALLEL`) })
+  @IsDefined({ message:  i18nValidationMessage(`${baseI18nKey}.NOT_DEFINED_NUMBER_PARALLEL`) })
   numberParallel: string;
 
-  @IsString({ message: 'Solo cáractereres son aceptados en el paralelo' })
-  @Length(1, 1, { message: 'El paralelo debe tener un cáracter' })
-  @IsDefined({ message: 'El paralelo del docente es requerido' })
+  @IsString({ message: i18nValidationMessage(`${baseI18nKey}.NOT_STRING_PARALLEL`) })
+  @Length(1, 1, { message: i18nValidationMessage(`${baseI18nKey}.INVALID_LENGTH_PARALLEL`) })
+  @IsDefined({ message:  i18nValidationMessage(`${baseI18nKey}.NOT_DEFINED_PARALLEL`) })
   parallel: string;
 }
