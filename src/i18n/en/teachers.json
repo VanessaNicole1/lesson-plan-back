@@ -4,5 +4,28 @@
       "SAME_SUBJECT": "The following teachers are assigned to the same subject in the same cycle: \n",
       "SAME_SUBJECT_TEACHERS": "- Teachers: {first} and {second} - Subject: {subject} - Cycle: {grade}\n"
     }
+  },
+  "dtos": {
+    "validateTeachersDto": {
+      "EMPTY_ARRAY": "There must be one teacher to validate."
+    },
+    "createTeacherDto": {
+      "TOO_SHORT_NAME": "Teacher's name must have at least 3 characters.",
+      "DEFINED_NAME": "Teacher's name is required",
+      "STRING_NAME": "Only characters are accepted in the teacher's name.",
+      "TOO_SHORT_LASTNAME": "Teacher's last name must have at least 3 characters.",
+      "DEFINED_LASTNAME": "Teacher's last name is required",
+      "STRING_LASTNAME": "Only characters are accepted in the teacher's last name.",
+      "INVALID_EMAIL": "Teacher's email should be a valid email.",
+      "NOT_DEFINED_EMAIL": "Teacher's emai is required.",
+      "NOT_STRING_SUBJECT": "Only characters are accepted in the teacher's subject.",
+      "NOT_DEFINED_SUBJECT": "Teacher's subject is required.",
+      "NOT_STRING_NUMBER_PARALLEL": "Only characters are accepted in the teacher's cycle.",
+      "INVALID_LENGTH_NUMBER_PARALLEL": "Teacher's cycle should have max two character.",
+      "NOT_DEFINED_NUMBER_PARALLEL": "Teacher's cycle is required.",
+      "NOT_STRING_PARALLEL": "Only characters are accepted in the teacher's parallel.",
+      "INVALID_LENGTH_PARALLEL": "Teacher's parallel should have only one character.",
+      "NOT_DEFINED_PARALLEL": "Teacher's parallel is required."
+    }
   }
 }
