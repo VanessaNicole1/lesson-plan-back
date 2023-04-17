@@ -13,9 +13,9 @@ import { StudentsService } from './students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { ValidateStudentsDto } from './dto/validate-students.dto';
-import { HttpExceptionFilter } from '../common/exception-filters/http.exception-filter';
 import { FilterStudentDto } from './dto/filter-student.dto';
 import { I18n, I18nContext } from 'nestjs-i18n';
+import { DtoArrayErrorExceptionFilter } from '../common/exception-filters/dto-array-error-exception.filter';
 
 @Controller('students')
 export class StudentsController {
@@ -48,7 +48,7 @@ export class StudentsController {
 
   @Post('validate')
   @HttpCode(200)
-  @UseFilters(new HttpExceptionFilter())
+  @UseFilters(new DtoArrayErrorExceptionFilter(/students\.\d+\./))
   validateStudents(
     @Body() validateStudentsDto: ValidateStudentsDto,
     @I18n() i18nContext: I18nContext
