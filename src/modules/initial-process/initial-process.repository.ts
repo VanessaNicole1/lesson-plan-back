@@ -211,7 +211,7 @@ export class InitialProcessRepository {
         }
       });
   
-      return createdPeriod;
+      return CreateInitialProcessDto;
     } catch (error) {
       throw new InternalServerErrorException('Something was wrong at the moment to Start the Process.')
     }

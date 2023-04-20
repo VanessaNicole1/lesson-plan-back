@@ -10,6 +10,8 @@ import { UpdateInitialProcessDto } from './dto/update-initial-process.dto';
 import { InitialProcessRepository } from './initial-process.repository';
 import { Role } from '../../utils/enums/roles.enum';
 import { I18nContext } from 'nestjs-i18n';
+import { SendEmailService } from '../common/services/send-email.service';
+import { TeacherFisrtTimeLoginEmail } from '../common/strategies/email/first-time-register.strategy';
 
 @Injectable()
 export class InitialProcessService {
@@ -21,6 +23,7 @@ export class InitialProcessService {
     private teachersService: TeachersService,
     private gradesService: GradesService,
     private rolesService: RolesService,
+    private sendEmailService: SendEmailService
   ) {}
 
   async create(createInitialProcessDto: CreateInitialProcessDto, i18nContext: I18nContext) {
@@ -45,10 +48,16 @@ export class InitialProcessService {
       teacherRoleId: teacherRole.id,
     };
 
-    return this.initialProcessRepository.create(
+    await this.initialProcessRepository.create(
       createInitialProcessDto,
       roleIds,
     );
+    
+    const firstTime = new TeacherFisrtTimeLoginEmail();
+
+    students.forEach(student => {
+      this.sendEmailService.sendEmail(firstTime, student.email)
+    });
   }
 
   findAll() {
