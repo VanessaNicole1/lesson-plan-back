@@ -43,7 +43,7 @@ import { AuthModule } from './modules/auth/auth.module';
     StudentsModule,
     SubjectsModule,
     TeachersModule,
-    AuthModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
