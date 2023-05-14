@@ -131,3 +131,8 @@ model RegisterConfig {
   user          User     @relation(fields: [userId], references: [id])
   userId        String   @unique
 }
+
+model MinimumStudentsToEvaluate {
+  id            String @id @default(uuid())
+  minimumNumber Int
+}
