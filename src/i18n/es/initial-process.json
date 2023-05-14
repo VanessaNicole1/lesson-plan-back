@@ -1,0 +1,8 @@
+{
+    "repository": {
+      "create": {
+        "MINIMUM_STUDENTS": "Los siguientes grados no contienen el número mínimo requerido para evaludar los planes de clases, por favor considerar el número mínimo de estudiantes"
+      }
+    }
+  }
+  

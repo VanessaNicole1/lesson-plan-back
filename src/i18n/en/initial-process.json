@@ -1,0 +1,8 @@
+{
+    "repository": {
+      "create": {
+        "MINIMUM_STUDENTS": "The following grades does not contain the minimun number of students to evaluate the lesson plans, please considering the minimun number of students: "
+      }
+    }
+  }
+  
