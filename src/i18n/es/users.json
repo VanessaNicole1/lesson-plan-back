@@ -1,0 +1,13 @@
+{
+  "service": {
+    "findOneByRegisteredToken": {
+      "NOT_REGISTERED_USER": "Enlace de registro inválido."
+    },
+    "updatePassword": {
+      "SOMETHING_WAS_WRONG": "Ocurrio un error al intentar actualizar la contraseña."
+    },
+    "updatePasswordByRegisteredToken": {
+      "SOMETHING_WAS_WRONG": "Ocurrio un error al intentar actualizar la contraseña."
+    }
+  }
+}

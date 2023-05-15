@@ -5,6 +5,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { FilterUserDto } from './dto/filter-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role as RoleEnum } from '../../utils/enums/roles.enum';
+
 @Injectable()
 export class UsersRepository {
   constructor(private prisma: PrismaService) {}
@@ -51,6 +52,17 @@ export class UsersRepository {
     });
 
     return updatedUser;
+  }
+
+  updatePassword(id: string, password: string) {
+    return this.prisma.user.update({
+      where: {
+        id
+      },
+      data: {
+        password
+      }
+    })
   }
 
   async assignRole(id: string, role: Role) {
@@ -115,6 +127,19 @@ export class UsersRepository {
     }
 
     return user;
+  }
+
+  findOneByRegisteredToken(registeredToken: string) {
+    return this.prisma.user.findFirst({
+      where: {
+        registerConfig: {
+          registerToken: {
+            equals: registeredToken
+          }
+        }
+      },
+      ...this.getAdittionalData()
+    });
   }
 
   async findByUsername(email: string) {

@@ -8,6 +8,8 @@ export class InitialProcessRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(createInitialProcessDto: CreateInitialProcessDto, roleIds) {
+    const userStudents = [];
+    const userTeachers = [];
     const grades = [];
     const { period, degree, manager, students, teachers } = createInitialProcessDto;
     const { studentRoleId, teacherRoleId } = roleIds;
@@ -55,9 +57,7 @@ export class InitialProcessRepository {
       }
   
       const { startDate, endDate } = period;
-      const startDateFormat = `${getMonth(startDate)} ${getFullYearTest(
-        startDate,
-      )}`;
+      const startDateFormat = `${getMonth(startDate)} ${getFullYearTest(startDate)}`;
       const endDateFormat = `${getMonth(endDate)} ${getFullYearTest(endDate)}`;
   
       const { name: nameDegree } = degree;
@@ -103,6 +103,7 @@ export class InitialProcessRepository {
             });
   
             if (userAttachedToStudent) {
+              userStudents.push(userAttachedToStudent);
               await tx.student.create({
                 data: {
                   gradeId: createdGrade.id,
@@ -116,13 +117,19 @@ export class InitialProcessRepository {
                   lastName: student.lastName,
                   email: student.email,
                   displayName: `${student.name} ${student.lastName}`,
-                  password: 'fakePassword',
                   roles: {
                     connect: { id: studentRoleId },
                   },
+                  registerConfig: {
+                    create: {}
+                  }
                 },
+                include: {
+                  registerConfig: {}
+                }
               });
-  
+
+              userStudents.push({...createdUser });
               await tx.student.create({
                 data: {
                   gradeId: createdGrade.id,
@@ -144,6 +151,7 @@ export class InitialProcessRepository {
             let createdTeacher;
   
             if (userAttachedToTeacher) {
+              userTeachers.push(userAttachedToTeacher);
               createdTeacher = await tx.teacher.create({
                 data: {
                   userId: userAttachedToTeacher.id,
@@ -156,12 +164,19 @@ export class InitialProcessRepository {
                   lastName: teacher.lastName,
                   email: teacher.email,
                   displayName: `${teacher.name} ${teacher.lastName}`,
-                  password: 'fakePassword',
                   roles: {
                     connect: { id: teacherRoleId },
                   },
+                  registerConfig: {
+                    create: {}
+                  }
                 },
+                include: {
+                  registerConfig: {},
+                }
               });
+
+              userTeachers.push({...createdUser });
   
               createdTeacher = await tx.teacher.create({
                 data: {
@@ -211,7 +226,7 @@ export class InitialProcessRepository {
         }
       });
   
-      return createdPeriod;
+      return [userStudents, userTeachers];
     } catch (error) {
       throw new InternalServerErrorException('Something was wrong at the moment to Start the Process.')
     }

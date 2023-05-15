@@ -1,0 +1,13 @@
+{
+  "service": {
+    "findOneByRegisteredToken": {
+      "NOT_REGISTERED_USER": "Invalid Register Link."
+    },
+    "updatePassword": {
+      "SOMETHING_WAS_WRONG": "Something was wrong when trying to update the password."
+    },
+    "updatePasswordByRegisteredToken": {
+      "SOMETHING_WAS_WRONG": "Something was wrong when trying to update the password."
+    }
+  }
+}

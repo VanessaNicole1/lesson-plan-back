@@ -17,6 +17,7 @@ import { StudentsModule } from './modules/students/students.module';
 import { SubjectsModule } from './modules/subjects/subjects.module';
 import { TeachersModule } from './modules/teachers/teachers.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { RegisterConfigModule } from './modules/register-config/register-config.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { AuthModule } from './modules/auth/auth.module';
     SubjectsModule,
     TeachersModule,
     AuthModule,
+    RegisterConfigModule
   ],
   controllers: [AppController],
   providers: [AppService],

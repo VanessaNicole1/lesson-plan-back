@@ -100,25 +100,34 @@ model LessonPlanValidationTracking {
 }
 
 model User {
-  id                 String    @id @default(uuid())
+  id                 String          @id @default(uuid())
   name               String
   lastName           String
-  email              String    @unique
-  password           String
+  email              String          @unique
+  password           String?
   displayName        String
   refreshToken       String?
   phoneNumber        Int?
   city               String?
   identificationCard String?
-  isActive           Boolean?  @default(true)
+  isActive           Boolean?        @default(true)
   manager            Manager[]
   student            Student[]
   teacher            Teacher[]
   roles              Role[]
+  registerConfig     RegisterConfig?
 }
 
 model Role {
   id    String @id @default(uuid())
   name  String @unique
   users User[]
+}
+
+model RegisterConfig {
+  id            String   @id @default(uuid())
+  registerToken String?  @unique @default(uuid())
+  isRegistered  Boolean? @default(false)
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String   @unique
 }
