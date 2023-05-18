@@ -1,7 +1,8 @@
 {
     "repository": {
       "create": {
-        "MINIMUM_STUDENTS": "Los siguientes grados no contienen el número mínimo requerido para evaludar los planes de clases, por favor considerar el número mínimo de estudiantes"
+        "MINIMUM_STUDENTS": "Los siguientes grados no contienen el número mínimo requerido para evaludar los planes de clases, por favor considerar el número mínimo de estudiantes",
+        "INTERNAL_SERVER_ERROR_EXCEPTION": "Algo ha salido mal al momento de crear el nuevo proceso."
       }
     }
   }

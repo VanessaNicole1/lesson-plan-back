@@ -1,7 +1,8 @@
 {
     "repository": {
       "create": {
-        "MINIMUM_STUDENTS": "The following grades does not contain the minimun number of students to evaluate the lesson plans, please considering the minimun number of students: "
+        "MINIMUM_STUDENTS": "The following grades does not contain the minimun number of students to evaluate the lesson plans, please considering the minimun number of students: ",
+        "INTERNAL_SERVER_ERROR_EXCEPTION": "Something was wrong at the moment to Start the Process."
       }
     }
   }
