@@ -3,6 +3,16 @@
       "create": {
         "MINIMUM_STUDENTS": "The following grades does not contain the minimun number of students to evaluate the lesson plans, please considering the minimun number of students: ",
         "INTERNAL_SERVER_ERROR_EXCEPTION": "Something was wrong at the moment to Start the Process."
+      },
+      "dtos": {
+        "createInitialProcessDto": {
+          "NUMBER_STUDENTS_REQUIRED": "Number of students needed to grade the lesson plans are required.",
+          "NOT_DEFINED_PERIOD": "Period is required.",
+          "NOT_DEFINED_MANAGER": "Manager is required.",
+          "NOT_DEFINED_DEGREE": "Degree is required.",
+          "NOT_DEFINED_STUDENTS": "Students are required.",
+          "NOT_DEFINED_TEACHERS": "Teachers are required."
+        }
       }
     }
   }

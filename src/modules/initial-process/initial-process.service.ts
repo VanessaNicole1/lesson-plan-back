@@ -57,6 +57,7 @@ export class InitialProcessService {
     ] = await this.initialProcessRepository.create(
       createInitialProcessDto,
       roleIds,
+      i18nContext
     );
 
     const lessonPlanYear = {

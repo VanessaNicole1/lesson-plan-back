@@ -3,6 +3,16 @@
       "create": {
         "MINIMUM_STUDENTS": "Los siguientes grados no contienen el número mínimo requerido para evaludar los planes de clases, por favor considerar el número mínimo de estudiantes",
         "INTERNAL_SERVER_ERROR_EXCEPTION": "Algo ha salido mal al momento de crear el nuevo proceso."
+      },
+      "dtos": {
+        "createInitialProcessDto": {
+          "NUMBER_STUDENTS_REQUIRED": "El número de estudiantes ha calificar los planes de clases son requeridos.",
+          "NOT_DEFINED_PERIOD": "El periodo es requerido.",
+          "NOT_DEFINED_MANAGER": "El director de carrera es requerido.",
+          "NOT_DEFINED_DEGREE": "La carrera es requerida.",
+          "NOT_DEFINED_STUDENTS": "Los estudiantes son requeridos.",
+          "NOT_DEFINED_TEACHERS": "Los docentes son requeridos."
+        }
       }
     }
   }
