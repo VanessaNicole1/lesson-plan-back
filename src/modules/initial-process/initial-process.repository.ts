@@ -14,8 +14,8 @@ export class InitialProcessRepository {
     const userStudents = [];
     const userTeachers = [];
     const grades = [];
-    const { period, degree, manager, students, teachers, minimumNumberOfStudentsToEvaluate } = createInitialProcessDto;
-    const { minimumNumber } = minimumNumberOfStudentsToEvaluate;
+    const { period, degree, manager, students, teachers, minimumStudents } = createInitialProcessDto;
+    const { minimumStudentsToEvaluate } = minimumStudents;
     const { studentRoleId, teacherRoleId } = roleIds;
     const uniqueGrades = [
       ...new Set(
@@ -63,7 +63,7 @@ export class InitialProcessRepository {
       let mismatchedGrades = [];
 
       for ( const grade of grades ) {
-        if (grade.students.length < minimumNumber) {
+        if (grade.students.length < minimumStudentsToEvaluate) {
           mismatchedGrades.push(`${grade.numberParallel} "${grade.parallel}" `);
         }
       }
@@ -243,9 +243,10 @@ export class InitialProcessRepository {
             });
           }
         }
-        await tx.minimumStudentsToEvaluate.create({
+        await tx.periodConfig.create({
           data: {
-            minimumNumber
+            minimumStudentsToEvaluate,
+            periodId: createdPeriod.id,
           }
         });
       });

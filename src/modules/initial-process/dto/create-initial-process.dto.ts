@@ -32,5 +32,5 @@ export class CreateInitialProcessDto {
 
   @ValidateNested({ each: true })
   @IsDefined({ message: i18nValidationMessage(`${baseI18nKey}.NUMBER_STUDENTS_REQUIRED`) })
-  minimumNumberOfStudentsToEvaluate: CreateMinimumNumberOfStudentsToEvaluateDto;
+  minimumStudents: CreateMinimumNumberOfStudentsToEvaluateDto;
 }
