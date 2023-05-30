@@ -59,21 +59,6 @@ export class InitialProcessRepository {
           schedules,
         });
       }
-
-      let mismatchedGrades = [];
-
-      for ( const grade of grades ) {
-        if (grade.students.length < minimumStudentsToEvaluate) {
-          mismatchedGrades.push(`${grade.numberParallel} "${grade.parallel}" `);
-        }
-      }
-
-      if (mismatchedGrades.length > 0) {
-        const errorMessage = {
-          message: `${i18nContext.t(`${this.baseI18nKey}.create.MINIMUM_STUDENTS`)} ${mismatchedGrades.join(', ')}`
-        }
-        return errorMessage
-      }
   
       const { startDate, endDate } = period;
       const startDateFormat = `${getMonth(startDate)} ${getFullYearTest(startDate)}`;
