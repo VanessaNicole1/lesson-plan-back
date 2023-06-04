@@ -103,6 +103,19 @@ export class InitialProcessRepository {
             });
   
             if (userAttachedToStudent) {
+              await tx.user.update({
+                where: {
+                  email: userAttachedToStudent.email
+                },
+                data: {
+                  roles: {
+                    connect: {
+                      id: studentRoleId
+                    }
+                  }
+                }
+              });
+
               userStudents.push(userAttachedToStudent);
               await tx.student.create({
                 data: {
@@ -151,6 +164,19 @@ export class InitialProcessRepository {
             let createdTeacher;
   
             if (userAttachedToTeacher) {
+              await tx.user.update({
+                where: {
+                  email: userAttachedToTeacher.email
+                },
+                data: {
+                  roles: {
+                    connect: {
+                      id: teacherRoleId
+                    }
+                  }
+                }
+              });
+
               userTeachers.push(userAttachedToTeacher);
               createdTeacher = await tx.teacher.create({
                 data: {
