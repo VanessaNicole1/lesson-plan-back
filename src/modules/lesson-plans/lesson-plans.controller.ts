@@ -5,7 +5,6 @@ import { UpdateLessonPlanDto } from './dto/update-lesson-plan.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { ValidateLessonPlanDto } from './dto/validate-lesson-plan.dto';
 
 @Controller('lesson-plans')
 export class LessonPlansController {
@@ -47,9 +46,5 @@ export class LessonPlansController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.lessonPlansService.remove(id);
-  }
-
-  validateLessonPlan(validateLessonPlan: ValidateLessonPlanDto) {
-    return this.lessonPlansService.validateLessonPlan(validateLessonPlan);
   }
 }
