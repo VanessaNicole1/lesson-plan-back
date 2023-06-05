@@ -2,16 +2,20 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../common/services/prisma.service';
 import { CreateInitialProcessDto } from './dto/create-initial-process.dto';
 import { getFullYearTest, getMonth } from './../../utils/date.utils';
+import { I18nContext } from 'nestjs-i18n';
 
 @Injectable()
 export class InitialProcessRepository {
   constructor(private prisma: PrismaService) {}
+    
+  readonly baseI18nKey = 'initial-process.repository';
 
-  async create(createInitialProcessDto: CreateInitialProcessDto, roleIds) {
+  async create(createInitialProcessDto: CreateInitialProcessDto, roleIds, i18nContext: I18nContext) {
     const userStudents = [];
     const userTeachers = [];
     const grades = [];
-    const { period, degree, manager, students, teachers } = createInitialProcessDto;
+    const { period, degree, manager, students, teachers, minimumStudents } = createInitialProcessDto;
+    const { minimumStudentsToEvaluate } = minimumStudents;
     const { studentRoleId, teacherRoleId } = roleIds;
     const uniqueGrades = [
       ...new Set(
@@ -250,11 +254,17 @@ export class InitialProcessRepository {
             });
           }
         }
+        await tx.periodConfig.create({
+          data: {
+            minimumStudentsToEvaluate,
+            periodId: createdPeriod.id,
+          }
+        });
       });
   
       return [userStudents, userTeachers];
     } catch (error) {
-      throw new InternalServerErrorException('Something was wrong at the moment to Start the Process.')
+      throw new InternalServerErrorException(`${i18nContext.t(`${this.baseI18nKey}.create.INTERNAL_SERVER_ERROR_EXCEPTION`)}`);
     }
   }
 

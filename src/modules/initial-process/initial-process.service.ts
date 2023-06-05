@@ -35,14 +35,16 @@ export class InitialProcessService {
       manager: { userId },
       students,
       teachers,
+      minimumStudents,
     } = createInitialProcessDto;
 
     const manager = await this.usersService.findOne(userId);
+    const { minimumStudentsToEvaluate } = minimumStudents;
     this.periodsService.validateDates(period, i18nContext);
     this.studentsService.validateStudents(students, i18nContext);
+    this.studentsService.validateStudentsNumber({ students }, minimumStudentsToEvaluate, i18nContext);
     this.teachersService.validateTeachers(teachers, i18nContext);
     this.gradesService.validateGradesMatch({ students, teachers }, i18nContext);
-
     const studentRole = await this.rolesService.findByName(Role.Student);
     const teacherRole = await this.rolesService.findByName(Role.Teacher);
 
@@ -57,6 +59,7 @@ export class InitialProcessService {
     ] = await this.initialProcessRepository.create(
       createInitialProcessDto,
       roleIds,
+      i18nContext
     );
 
     const lessonPlanYear = {

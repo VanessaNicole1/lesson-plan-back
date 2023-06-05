@@ -12,12 +12,12 @@ import { InitialProcessModule } from './modules/initial-process/initial-process.
 import { LessonPlansModule } from './modules/lesson-plans/lesson-plans.module';
 import { ManagersModule } from './modules/managers/managers.module';
 import { RolesModule } from './modules/roles/roles.module';
-import { SchedulesModule } from './modules/schedules/schedules.module';
 import { StudentsModule } from './modules/students/students.module';
 import { SubjectsModule } from './modules/subjects/subjects.module';
 import { TeachersModule } from './modules/teachers/teachers.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RegisterConfigModule } from './modules/register-config/register-config.module';
+import { SchedulesModule } from './modules/schedules/schedules.module';
 
 @Module({
   imports: [

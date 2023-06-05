@@ -8,12 +8,13 @@ generator client {
 }
 
 model Period {
-  id          String   @id @default(uuid())
-  startDate   DateTime
-  endDate     DateTime
-  displayName String
-  isActive    Boolean?
-  degree      Degree?
+  id           String        @id @default(uuid())
+  startDate    DateTime
+  endDate      DateTime
+  displayName  String
+  isActive     Boolean?
+  degree       Degree?
+  periodConfig PeriodConfig?
 }
 
 model Degree {
@@ -130,4 +131,11 @@ model RegisterConfig {
   isRegistered  Boolean? @default(false)
   user          User     @relation(fields: [userId], references: [id])
   userId        String   @unique
+}
+
+model PeriodConfig {
+  id                        String   @id @default(uuid())
+  minimumStudentsToEvaluate Int
+  period                    Period   @relation(fields: [periodId], references: [id])
+  periodId                  String   @unique
 }
