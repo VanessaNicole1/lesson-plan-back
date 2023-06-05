@@ -87,6 +87,7 @@ model LessonPlan {
   content             Json?
   schedule            Schedule                       @relation(fields: [scheduleId], references: [id])
   scheduleId          String
+  resources           Json?
   validationsTracking LessonPlanValidationTracking[]
 }
 
