@@ -1,30 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { CreateScheduleDto } from './dto/create-schedule.dto';
-import { UpdateScheduleDto } from './dto/update-schedule.dto';
-import { SchedulesRepository } from './schedules.repository';
+import { SchedulessRepository } from './schedules.repository';
 
 @Injectable()
 export class SchedulesService {
-
-  constructor (private schedulesRepository: SchedulesRepository) {}
-
-  create(createScheduleDto: CreateScheduleDto) {
-    return 'This action adds a new schedule';
-  }
+  constructor(
+    private schedulessRepository: SchedulessRepository,
+  ) {}
 
   findAll() {
-    return this.schedulesRepository.findAll();
+    return this.schedulessRepository.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} schedule`;
-  }
-
-  update(id: number, updateScheduleDto: UpdateScheduleDto) {
-    return `This action updates a #${id} schedule`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} schedule`;
+  findOne(id: string) {
+    return this.schedulessRepository.findOne(id);
   }
 }
