@@ -3,7 +3,6 @@ import { CreateLessonPlanDto } from './dto/create-lesson-plan.dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan.dto';
 import { LessonPlansRepository } from './lesson-plans.repository';
 import { SchedulesService } from '../schedules/schedules.service';
-import { ValidateLessonPlanDto } from './dto/validate-lesson-plan.dto';
 
 @Injectable()
 export class LessonPlansService {
@@ -53,9 +52,5 @@ export class LessonPlansService {
       throw new BadRequestException('El plan de clases no puede ser eliminado ya que ya tiene una validación por parte de un estudiante')
     }
     return this.lessonPlansRepository.remove(id);
-  }
-
-  validateLessonPlan(validateLessonPlan: ValidateLessonPlanDto) {
-    return null;
   }
 }
