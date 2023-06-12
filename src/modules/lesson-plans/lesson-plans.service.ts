@@ -3,6 +3,7 @@ import { CreateLessonPlanDto } from './dto/create-lesson-plan.dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan.dto';
 import { LessonPlansRepository } from './lesson-plans.repository';
 import { SchedulesService } from '../schedules/schedules.service';
+import * as fs from 'fs'
 
 @Injectable()
 export class LessonPlansService {
@@ -23,12 +24,7 @@ export class LessonPlansService {
   async create(createLessonPlanDto: CreateLessonPlanDto, files: Array<Express.Multer.File>) {
     const resources = [];
     for (let i = 0; i < files.length; i++) {
-      const file = {
-        originalName: files[i].originalname,
-        currentName: files[i].filename,
-        path: `../../../uploads/${files[i].filename}`,
-      }
-      resources.push(file);
+      resources.push(files[i].filename);
     }
     createLessonPlanDto['resources'] = resources;
     const { scheduleId } = createLessonPlanDto;
@@ -50,6 +46,11 @@ export class LessonPlansService {
     const validatedLessonPlans = validationsTracking.filter((tracking) => tracking.isValidated === true);
     if (validatedLessonPlans.length > 0) {
       throw new BadRequestException('El plan de clases no puede ser eliminado ya que ya tiene una validación por parte de un estudiante')
+    }
+    const resources = lessonPlan.resources;
+    for (let i = 0; i < resources.length; i++) {
+      const resource = resources[i];
+      fs.unlinkSync(`./uploads/${resource}`);
     }
     return this.lessonPlansRepository.remove(id);
   }
