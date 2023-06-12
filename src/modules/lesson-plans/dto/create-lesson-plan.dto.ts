@@ -19,5 +19,5 @@ export class CreateLessonPlanDto {
 
     @IsOptional()
     @IsArray()
-    resources?: Array<{}>;
+    resources?: string[];
 }
