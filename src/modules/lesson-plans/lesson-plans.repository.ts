@@ -52,6 +52,7 @@ export class LessonPlansRepository {
         topic,
         content,
         scheduleId,
+        resources,
       }
     })
   }
