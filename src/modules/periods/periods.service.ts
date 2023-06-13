@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { I18nContext, I18nService } from 'nestjs-i18n';
 import { CreatePeriodDto } from './dto/create-period.dto';
 import { FilterPeriodDto } from './dto/filter-period.dto';
@@ -6,12 +10,11 @@ import { PeriodsRepository } from './periods.repository';
 
 @Injectable()
 export class PeriodsService {
-
   readonly baseI18nKey = 'periods.service';
 
   constructor(
     private periodsRepository: PeriodsRepository,
-    private i18nService: I18nService
+    private i18nService: I18nService,
   ) {}
 
   findAll(filterPeriodDto?: FilterPeriodDto) {
@@ -32,15 +35,19 @@ export class PeriodsService {
 
     if (!period) {
       throw new NotFoundException(
-        i18n.t(`${this.baseI18nKey}.findOne.PERIOD_DOES_NOT_EXIST`, { 
+        i18n.t(`${this.baseI18nKey}.findOne.PERIOD_DOES_NOT_EXIST`, {
           args: {
-            id
-          }
-        })
+            id,
+          },
+        }),
       );
     }
-    
+
     return period;
+  }
+
+  remove(id: string) {
+    return this.periodsRepository.remove(id);
   }
 
   validateDates(createPeriodDto: CreatePeriodDto, i18nContext: I18nContext) {
@@ -48,7 +55,7 @@ export class PeriodsService {
 
     if (endDate <= startDate) {
       throw new BadRequestException(
-        i18nContext.t(`${this.baseI18nKey}.validateDates.GREATER_END_DATE`)
+        i18nContext.t(`${this.baseI18nKey}.validateDates.GREATER_END_DATE`),
       );
     }
   }

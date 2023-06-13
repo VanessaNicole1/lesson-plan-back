@@ -36,16 +36,24 @@ export class PeriodsRepository {
   findOne(id: string) {
     return this.prisma.period.findUnique({
       where: {
-        id
-      }
+        id,
+      },
+    });
+  }
+
+  remove(id: string) {
+    return this.prisma.period.delete({
+      where: {
+        id,
+      },
     });
   }
 
   findActivePeriods() {
     return this.prisma.period.findMany({
       where: {
-        isActive: true
-      }
+        isActive: true,
+      },
     });
   }
 
@@ -53,9 +61,9 @@ export class PeriodsRepository {
     return this.prisma.period.findMany({
       where: {
         id: {
-          in: periodIds
-        }
-      }
-    })
+          in: periodIds,
+        },
+      },
+    });
   }
 }

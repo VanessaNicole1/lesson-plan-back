@@ -1,9 +1,4 @@
-import {
-  Controller,
-  Get,
-  Body,
-  Param,
-} from '@nestjs/common';
+import { Controller, Get, Body, Param, Delete } from '@nestjs/common';
 import { PeriodsService } from './periods.service';
 import { FilterPeriodDto } from './dto/filter-period.dto';
 import { I18n, I18nContext } from 'nestjs-i18n';
@@ -23,10 +18,12 @@ export class PeriodsController {
   }
 
   @Get(':id')
-  findOne(
-    @Param('id') id: string,
-    @I18n() i18nContext: I18nContext
-  ) {
+  findOne(@Param('id') id: string, @I18n() i18nContext: I18nContext) {
     return this.periodsService.findOne(id, i18nContext);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.periodsService.remove(id);
   }
 }
