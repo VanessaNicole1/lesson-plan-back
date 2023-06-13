@@ -27,4 +27,8 @@ export class SubjectsService {
   remove(id: number) {
     return `This action removes a #${id} subject`;
   }
+
+  removeSubjectsByPeriod(idPeriod: string) {
+    return this.subjectsRepository.removeSubjectsByPeriod(idPeriod);
+  }
 }
