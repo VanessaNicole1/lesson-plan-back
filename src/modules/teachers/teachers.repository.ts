@@ -33,8 +33,8 @@ export class TeachersRepository {
     return this.prisma.teacher.findFirst({
       where: {
         userId,
-        periodId
-      }
+        periodId,
+      },
     });
   }
 
@@ -44,38 +44,49 @@ export class TeachersRepository {
         userId,
         AND: {
           periodId: {
-            in: periodIds
-          }
-        }
-      }
-    })
-  };
+            in: periodIds,
+          },
+        },
+      },
+    });
+  }
 
   findTeachersByUser(userId: string) {
     return this.prisma.teacher.findMany({
       where: {
-        userId
-      }
-    })
-  };
+        userId,
+      },
+    });
+  }
 
   findTeachersEvents(teacherId: string) {
     return this.prisma.teacherEventsConfig.findMany({
       where: {
-        teacherId: teacherId
-      }
+        teacherId: teacherId,
+      },
     });
   }
 
-  updateTeacherEventConfig(id: string, updateTeacherEventConfigDto: UpdateTeacherEventConfigDto) {
+  updateTeacherEventConfig(
+    id: string,
+    updateTeacherEventConfigDto: UpdateTeacherEventConfigDto,
+  ) {
     const { metadata } = updateTeacherEventConfigDto;
     return this.prisma.teacherEventsConfig.update({
       where: {
-        id
+        id,
       },
       data: {
-        metadata
-      }
-    })
-  };
+        metadata,
+      },
+    });
+  }
+
+  removeTeachersByPeriod(idPeriod: string) {
+    return this.prisma.teacher.deleteMany({
+      where: {
+        userId: idPeriod,
+      },
+    });
+  }
 }
