@@ -36,7 +36,12 @@ export class LessonPlansService {
     return this.lessonPlansRepository.create(createLessonPlanDto);
   }
 
-  update(id: string, updateLessonPlanDto: UpdateLessonPlanDto) {
+  update(id: string, updateLessonPlanDto: UpdateLessonPlanDto, files: Array<Express.Multer.File>) {
+    const resources = [];
+    for (let i = 0; i < files.length; i++) {
+      resources.push(files[i].filename);
+    }
+    updateLessonPlanDto['resources'] = resources;
     return this.lessonPlansRepository.update(id, updateLessonPlanDto);
   }
 

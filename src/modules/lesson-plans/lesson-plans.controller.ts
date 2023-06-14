@@ -48,8 +48,18 @@ export class LessonPlansController {
 
   // TODO: Complete this method
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLessonPlanDto: UpdateLessonPlanDto) {
-    return this.lessonPlansService.update(id, updateLessonPlanDto);
+  @UseInterceptors(FilesInterceptor('files', null, {
+    storage: diskStorage({
+      destination: './uploads',
+      filename: (req, file, callback) => {
+        const filename = path.parse(file.originalname).name.replace(/\s/g, '') + Date.now();
+        const extension = path.parse(file.originalname).ext;
+        callback(null, `${filename}${extension}`);
+      }
+    })
+  }))
+  update(@Param('id') id: string, @Body() updateLessonPlanDto: UpdateLessonPlanDto, @UploadedFiles() files: Array<Express.Multer.File>) {
+    return this.lessonPlansService.update(id, updateLessonPlanDto, files);
   }
 
   @Delete(':id')
