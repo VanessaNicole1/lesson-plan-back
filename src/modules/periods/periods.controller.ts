@@ -1,4 +1,12 @@
-import { Controller, Get, Body, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Delete,
+  Query,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { PeriodsService } from './periods.service';
 import { FilterPeriodDto } from './dto/filter-period.dto';
 import { I18n, I18nContext } from 'nestjs-i18n';
@@ -8,7 +16,8 @@ export class PeriodsController {
   constructor(private readonly periodsService: PeriodsService) {}
 
   @Get()
-  findAll(@Body() filterPeriodDto?: FilterPeriodDto) {
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  findAll(@Query() filterPeriodDto: FilterPeriodDto) {
     return this.periodsService.findAll(filterPeriodDto);
   }
 
