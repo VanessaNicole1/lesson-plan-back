@@ -3,11 +3,14 @@ import { CreateLessonPlanDto } from './dto/create-lesson-plan.dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan.dto';
 import { LessonPlansRepository } from './lesson-plans.repository';
 import { SchedulesService } from '../schedules/schedules.service';
-import * as fs from 'fs'
+import * as fs from 'fs';
 
 @Injectable()
 export class LessonPlansService {
-  constructor (private lessonPlansRepository: LessonPlansRepository, private scheduleService: SchedulesService) {}
+  constructor(
+    private lessonPlansRepository: LessonPlansRepository,
+    private scheduleService: SchedulesService,
+  ) {}
 
   findAll() {
     return this.lessonPlansRepository.findAll();
@@ -21,7 +24,10 @@ export class LessonPlansService {
     return this.lessonPlansRepository.findLessonPlanBySchedule(scheduleId);
   }
 
-  async create(createLessonPlanDto: CreateLessonPlanDto, files: Array<Express.Multer.File>) {
+  async create(
+    createLessonPlanDto: CreateLessonPlanDto,
+    files: Array<Express.Multer.File>,
+  ) {
     const resources = [];
     for (let i = 0; i < files.length; i++) {
       resources.push(files[i].filename);
@@ -32,11 +38,15 @@ export class LessonPlansService {
     createLessonPlanDto = {
       ...createLessonPlanDto,
       scheduleId: currentSchedule.id,
-    }
+    };
     return this.lessonPlansRepository.create(createLessonPlanDto);
   }
 
-  update(id: string, updateLessonPlanDto: UpdateLessonPlanDto, files: Array<Express.Multer.File>) {
+  update(
+    id: string,
+    updateLessonPlanDto: UpdateLessonPlanDto,
+    files: Array<Express.Multer.File>,
+  ) {
     const resources = [];
     for (let i = 0; i < files.length; i++) {
       resources.push(files[i].filename);
@@ -48,9 +58,13 @@ export class LessonPlansService {
   async remove(id: string) {
     const lessonPlan = await this.findOne(id);
     const validationsTracking = lessonPlan.validationsTracking;
-    const validatedLessonPlans = validationsTracking.filter((tracking) => tracking.isValidated === true);
+    const validatedLessonPlans = validationsTracking.filter(
+      (tracking) => tracking.isValidated === true,
+    );
     if (validatedLessonPlans.length > 0) {
-      throw new BadRequestException('El plan de clases no puede ser eliminado ya que ya tiene una validación por parte de un estudiante')
+      throw new BadRequestException(
+        'El plan de clases no puede ser eliminado ya que ya tiene una validación por parte de un estudiante',
+      );
     }
     const resources = lessonPlan.resources;
     for (let i = 0; i < resources.length; i++) {
