@@ -47,4 +47,12 @@ export class SchedulesRepository {
       }
     })
   };
+  
+  findByTeacher(teacherId: string) {
+    return this.prisma.schedule.findMany({
+      where: {
+        teacherId,
+      },
+    });
+  }
 }
