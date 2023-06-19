@@ -1,43 +1,32 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
-  Patch,
   Param,
-  Delete,
 } from '@nestjs/common';
 import { PeriodsService } from './periods.service';
-import { CreatePeriodDto } from './dto/create-period.dto';
-import { UpdatePeriodDto } from './dto/update-period.dto';
 import { FilterPeriodDto } from './dto/filter-period.dto';
+import { I18n, I18nContext } from 'nestjs-i18n';
 
 @Controller('periods')
 export class PeriodsController {
   constructor(private readonly periodsService: PeriodsService) {}
 
-  @Post('create')
-  create(@Body() createPeriodDto: CreatePeriodDto) {
-    return this.periodsService.create(createPeriodDto);
-  }
-
-  @Post()
+  @Get()
   findAll(@Body() filterPeriodDto?: FilterPeriodDto) {
     return this.periodsService.findAll(filterPeriodDto);
   }
 
+  @Get('active')
+  findActivePeriods() {
+    return this.periodsService.findActivePeriods();
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.periodsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePeriodDto: UpdatePeriodDto) {
-    return this.periodsService.update(+id, updatePeriodDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.periodsService.remove(+id);
+  findOne(
+    @Param('id') id: string,
+    @I18n() i18nContext: I18nContext
+  ) {
+    return this.periodsService.findOne(id, i18nContext);
   }
 }

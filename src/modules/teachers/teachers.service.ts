@@ -1,10 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { isEmailDomainValid } from '../../utils/email.utils';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { FilterTeacherDto } from './dto/filter-teacher.dto';
-import { UpdateTeacherDto } from './dto/update-teacher.dto';
 import { TeachersRepository } from './teachers.repository';
-import { I18nContext } from 'nestjs-i18n';
+import { I18nContext, I18nService } from 'nestjs-i18n';
+import { UsersService } from '../users/users.service';
+import { PeriodsService } from '../periods/periods.service';
+import { UpdateTeacherEventConfigDto } from './dto/update-teacher-config.dto';
 
 @Injectable()
 export class TeachersService {
@@ -12,26 +14,63 @@ export class TeachersService {
 
   constructor(
     private teachersRepository: TeachersRepository,
+    private usersService: UsersService,
+    private periodService: PeriodsService,
+    private i18nService: I18nService
   ) {}
-
-  create(createTeacherDto: CreateTeacherDto) {
-    return 'This action adds a new teacher';
-  }
 
   findAll(filterTeacherDto?: FilterTeacherDto) {
     return this.teachersRepository.findAll(filterTeacherDto);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} teacher`;
+  async findTeacherByUserInActivePeriod(periodId: string, userId: string, i18nContext: I18nContext = undefined) {
+    const i18n = i18nContext || this.i18nService;
+    const period = await this.periodService.findOne(periodId);
+    const user = await this.usersService.findOne(userId);
+    const teacher = await this.teachersRepository.findTeacherByUserInActivePeriod(period.id, user.id);
+
+    if (!teacher) {
+      throw new NotFoundException(i18n.t(`${this.baseI18nKey}.common.NOT_ASSIGNED_TEACHER`));
+    }
+
+    return teacher;
   }
 
-  update(id: number, updateTeacherDto: UpdateTeacherDto) {
-    return `This action updates a #${id} teacher`;
+  async findTeachersByUser(userId: string, i18nContext: I18nContext = undefined ) {
+    const i18n = i18nContext || this.i18nService;
+    const teachers = await this.teachersRepository.findTeachersByUser(userId);
+
+    if (teachers.length === 0) {
+      throw new NotFoundException(i18n.t(`${this.baseI18nKey}.common.NOT_ASSIGNED_TEACHER`));
+    }
+
+    return teachers;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} teacher`;
+  async findTeacherActivePeriodsByUser(userId: string, i18nContext: I18nContext = undefined) {
+    const i18n = i18nContext || this.i18nService;
+    const user = await this.usersService.findOne(userId);
+    await this.findTeachersByUser(userId, i18nContext);
+
+    const activePeriods = await this.periodService.findActivePeriods();
+    const activePeriodsIds = activePeriods.map(activePeriod => activePeriod.id);
+    const activePeriodsByTeacher = await this.teachersRepository.findTeacherActivePeriodsByUser(activePeriodsIds, user.id);
+
+    if (!activePeriodsByTeacher) {
+      throw new BadRequestException(
+        i18n.t(`${this.baseI18nKey}.findTeacherActivePeriodsByUser.NOT_TEACHERS_IN_ACTIVE_PERIODS`)
+      );
+    }
+
+    const activePeriodsIdsByTeacher = activePeriodsByTeacher.map(activePeriod => activePeriod.periodId);
+    const activePeriodsInformation = this.periodService.findManyByPeriodIds(activePeriodsIdsByTeacher);
+    
+    return activePeriodsInformation;
+  }
+
+  async findTeacherEventsInActivePeriod(periodId: string, userId: string) {
+    const teacher = await this.findTeacherByUserInActivePeriod(periodId, userId);
+    return this.teachersRepository.findTeachersEvents(teacher.id);
   }
 
   validateTeacherEmail(createTeacherDto: CreateTeacherDto, i18nContext: I18nContext) {
@@ -109,5 +148,9 @@ export class TeachersService {
     }
 
     return duplicatedInfo;
+  }
+
+  updateTeacherEventConfig(id: string, updateTeacherEventConfigDto: UpdateTeacherEventConfigDto) {
+    return this.teachersRepository.updateTeacherEventConfig(id, updateTeacherEventConfigDto);
   }
 }

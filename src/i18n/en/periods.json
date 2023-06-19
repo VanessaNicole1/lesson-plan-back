@@ -2,6 +2,9 @@
   "service": {
     "validateDates": {
       "GREATER_END_DATE": "End date must be greater than start date."
+    },
+    "findOne": {
+      "PERIOD_DOES_NOT_EXIST": "Period with {id} does not exist."
     }
   }
 }

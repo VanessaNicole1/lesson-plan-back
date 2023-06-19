@@ -1,0 +1,7 @@
+{
+  "service": {
+    "findOne": {
+      "SCHEDULE_DOES_NOT_EXIST": "Schedule with id '{id}' does not exist."
+    }
+  }
+}

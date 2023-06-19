@@ -2,6 +2,9 @@
   "service": {
     "validateDates": {
       "GREATER_END_DATE": "La fecha de fin del periodo debe ser mayor a la fecha de inicio"
+    },
+    "findOne": {
+      "PERIOD_DOES_NOT_EXIST": "Periodo con id: '{id}' no existe"
     }
   }
 }

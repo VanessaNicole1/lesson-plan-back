@@ -1,35 +1,46 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { I18nContext, I18nService } from 'nestjs-i18n';
 import { CreatePeriodDto } from './dto/create-period.dto';
 import { FilterPeriodDto } from './dto/filter-period.dto';
-import { UpdatePeriodDto } from './dto/update-period.dto';
 import { PeriodsRepository } from './periods.repository';
-import { I18nContext } from 'nestjs-i18n';
 
 @Injectable()
 export class PeriodsService {
 
   readonly baseI18nKey = 'periods.service';
 
-  constructor(private periodsRepository: PeriodsRepository) {}
-
-  create(createPeriodDto: CreatePeriodDto) {
-    return 'This action adds a new period';
-  }
+  constructor(
+    private periodsRepository: PeriodsRepository,
+    private i18nService: I18nService
+  ) {}
 
   findAll(filterPeriodDto?: FilterPeriodDto) {
     return this.periodsRepository.findAll(filterPeriodDto);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} period`;
+  findActivePeriods() {
+    return this.periodsRepository.findActivePeriods();
   }
 
-  update(id: number, updatePeriodDto: UpdatePeriodDto) {
-    return `This action updates a #${id} period`;
+  findManyByPeriodIds(periodIds: string[]) {
+    return this.periodsRepository.findByPeriodIds(periodIds);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} period`;
+  async findOne(id: string, i18nContext: I18nContext = undefined) {
+    const i18n = i18nContext || this.i18nService;
+    const period = await this.periodsRepository.findOne(id);
+
+    if (!period) {
+      throw new NotFoundException(
+        i18n.t(`${this.baseI18nKey}.findOne.PERIOD_DOES_NOT_EXIST`, { 
+          args: {
+            id
+          }
+        })
+      );
+    }
+    
+    return period;
   }
 
   validateDates(createPeriodDto: CreatePeriodDto, i18nContext: I18nContext) {

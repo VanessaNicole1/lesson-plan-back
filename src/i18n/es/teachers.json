@@ -1,8 +1,14 @@
 {
   "service": {
+    "common": {
+      "NOT_ASSIGNED_TEACHER": "El usuario no tiene ningún docente asignado."
+    },
     "validateTeachers": {
       "SAME_SUBJECT": "Los siguientes docentes tienen asignadas la misma materia en el mismo ciclo: \n",
       "SAME_SUBJECT_TEACHERS": "- Docentes: {first} y {second} - Materia: {subject} - Ciclo: {grade}\n"
+    },
+    "findTeacherActivePeriodsByUser": {
+      "NOT_TEACHERS_IN_ACTIVE_PERIODS": "El docente no está participando en ningún periodo activo."
     }
   },
   "dtos": {
