@@ -32,4 +32,30 @@ export class PeriodsRepository {
       },
     });
   }
+
+  findOne(id: string) {
+    return this.prisma.period.findUnique({
+      where: {
+        id
+      }
+    });
+  }
+
+  findActivePeriods() {
+    return this.prisma.period.findMany({
+      where: {
+        isActive: true
+      }
+    });
+  }
+
+  findByPeriodIds(periodIds: string[]) {
+    return this.prisma.period.findMany({
+      where: {
+        id: {
+          in: periodIds
+        }
+      }
+    })
+  }
 }

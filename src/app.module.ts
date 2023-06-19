@@ -32,6 +32,7 @@ import { SchedulesModule } from './modules/schedules/schedules.module';
       ]
     }),
     CommonModule,
+    SchedulesModule,
     UsersModule,
     PeriodsModule,
     DegreesModule,
@@ -40,7 +41,6 @@ import { SchedulesModule } from './modules/schedules/schedules.module';
     LessonPlansModule,
     ManagersModule,
     RolesModule,
-    SchedulesModule,
     StudentsModule,
     SubjectsModule,
     TeachersModule,

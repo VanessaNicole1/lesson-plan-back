@@ -7,7 +7,6 @@ import { StudentsService } from '../students/students.service';
 import { TeachersService } from '../teachers/teachers.service';
 import { UsersService } from '../users/users.service';
 import { CreateInitialProcessDto } from './dto/create-initial-process.dto';
-import { UpdateInitialProcessDto } from './dto/update-initial-process.dto';
 import { InitialProcessRepository } from './initial-process.repository';
 import { Role } from '../../utils/enums/roles.enum';
 import { SendEmailService } from '../common/services/send-email.service';
@@ -83,21 +82,5 @@ export class InitialProcessService {
     this.sendEmailService.sendEmail(managerLessonPlanStartEmail, manager.email);
 
     return createInitialProcessDto;
-  }
-
-  findAll() {
-    return this.initialProcessRepository.findAll();
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} initialProcess`;
-  }
-
-  update(id: number, updateInitialProcessDto: UpdateInitialProcessDto) {
-    return `This action updates a #${id} initialProcess`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} initialProcess`;
   }
 }

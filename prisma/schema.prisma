@@ -28,10 +28,11 @@ model Degree {
 }
 
 model Manager {
-  id     String  @id @default(uuid())
-  degree Degree?
-  user   User    @relation(fields: [userId], references: [id])
-  userId String
+  id       String  @id @default(uuid())
+  degree   Degree?
+  user     User    @relation(fields: [userId], references: [id])
+  userId   String
+  periodId String
 }
 
 model Grade {
@@ -42,6 +43,7 @@ model Grade {
   degreeId  String
   students  Student[]
   schedules Schedule[]
+  periodId  String
 }
 
 model Student {
@@ -51,26 +53,37 @@ model Student {
   lessonPlansValidation LessonPlanValidationTracking[]
   user                  User                           @relation(fields: [userId], references: [id])
   userId                String
+  periodId              String
 }
 
 model Teacher {
-  id        String     @id @default(uuid())
-  schedules Schedule[]
-  user      User       @relation(fields: [userId], references: [id])
-  userId    String
+  id           String               @id @default(uuid())
+  schedules    Schedule[]
+  user         User                 @relation(fields: [userId], references: [id])
+  userId       String
+  eventsConfig TeacherEventsConfig[]
+  periodId     String
+}
+
+model TeacherEventsConfig {
+  id        String   @id @default(uuid())
+  eventName String
+  metadata  Json?
+  periodId  String
+  teacher   Teacher? @relation(fields: [teacherId], references: [id])
+  teacherId String 
 }
 
 model Subject {
   id        String     @id @default(uuid())
   name      String
   schedules Schedule[]
+  periodId  String
 }
 
 model Schedule {
   id          String       @id @default(uuid())
-  startHour   String
-  endHour     String
-  day         String
+  metadata    Json?
   grade       Grade        @relation(fields: [gradeId], references: [id])
   gradeId     String
   subject     Subject      @relation(fields: [subjectId], references: [id])
@@ -78,6 +91,7 @@ model Schedule {
   teacher     Teacher      @relation(fields: [teacherId], references: [id])
   teacherId   String
   lessonPlans LessonPlan[]
+  periodId    String
 }
 
 model LessonPlan {
@@ -89,6 +103,7 @@ model LessonPlan {
   scheduleId          String
   resources           Json?
   validationsTracking LessonPlanValidationTracking[]
+  periodId            String
 }
 
 model LessonPlanValidationTracking {
@@ -135,8 +150,8 @@ model RegisterConfig {
 }
 
 model PeriodConfig {
-  id                        String   @id @default(uuid())
+  id                        String @id @default(uuid())
   minimumStudentsToEvaluate Int
-  period                    Period   @relation(fields: [periodId], references: [id])
-  periodId                  String   @unique
+  period                    Period @relation(fields: [periodId], references: [id])
+  periodId                  String @unique
 }

@@ -3,11 +3,12 @@ import { PrismaService } from '../common/services/prisma.service';
 import { CreateInitialProcessDto } from './dto/create-initial-process.dto';
 import { getFullYearTest, getMonth } from './../../utils/date.utils';
 import { I18nContext } from 'nestjs-i18n';
+import { removeDuplicatesByKey } from '../../utils/array.utils';
 
 @Injectable()
 export class InitialProcessRepository {
   constructor(private prisma: PrismaService) {}
-    
+  
   readonly baseI18nKey = 'initial-process.repository';
 
   async create(createInitialProcessDto: CreateInitialProcessDto, roleIds, i18nContext: I18nContext) {
@@ -15,6 +16,7 @@ export class InitialProcessRepository {
     const userTeachers = [];
     const grades = [];
     const { period, degree, manager, students, teachers, minimumStudents } = createInitialProcessDto;
+
     const { minimumStudentsToEvaluate } = minimumStudents;
     const { studentRoleId, teacherRoleId } = roleIds;
     const uniqueGrades = [
@@ -79,7 +81,11 @@ export class InitialProcessRepository {
         });
   
         const createdManager = await tx.manager.create({
-          data: manager,
+          data: {
+            ...manager,
+            periodId: createdPeriod.id
+          },
+          
         });
   
         const createdDegree = await tx.degree.create({
@@ -96,6 +102,7 @@ export class InitialProcessRepository {
               number: grade.numberParallel,
               parallel: grade.parallel,
               degreeId: createdDegree.id,
+              periodId: createdPeriod.id
             },
           });
   
@@ -125,6 +132,7 @@ export class InitialProcessRepository {
                 data: {
                   gradeId: createdGrade.id,
                   userId: userAttachedToStudent.id,
+                  periodId: createdPeriod.id
                 },
               });
             } else {
@@ -151,6 +159,7 @@ export class InitialProcessRepository {
                 data: {
                   gradeId: createdGrade.id,
                   userId: createdUser.id,
+                  periodId: createdPeriod.id
                 },
               });
             }
@@ -166,9 +175,10 @@ export class InitialProcessRepository {
             });
   
             let createdTeacher;
-  
+            let userAssignedToTeacher;
+          
             if (userAttachedToTeacher) {
-              await tx.user.update({
+              userAssignedToTeacher = await tx.user.update({
                 where: {
                   email: userAttachedToTeacher.email
                 },
@@ -180,15 +190,8 @@ export class InitialProcessRepository {
                   }
                 }
               });
-
-              userTeachers.push(userAttachedToTeacher);
-              createdTeacher = await tx.teacher.create({
-                data: {
-                  userId: userAttachedToTeacher.id,
-                },
-              });
             } else {
-              const createdUser = await tx.user.create({
+              userAssignedToTeacher = await tx.user.create({
                 data: {
                   name: teacher.name,
                   lastName: teacher.lastName,
@@ -205,32 +208,18 @@ export class InitialProcessRepository {
                   registerConfig: {},
                 }
               });
-
-              userTeachers.push({...createdUser });
-  
-              createdTeacher = await tx.teacher.create({
-                data: {
-                  userId: createdUser.id,
-                },
-              });
             }
+
+            userTeachers.push({ ...userAssignedToTeacher });
+
+            createdTeacher = await this.createTeacher(tx, userAssignedToTeacher.id, createdPeriod.id);
   
             let subjectInDatabase = await tx.subject.findFirst({
               where: {
                 name: {
                   equals: subject.name,
                 },
-                schedules: {
-                  some: {
-                    grade: {
-                      degree: {
-                        period: {
-                          id: createdPeriod.id,
-                        },
-                      },
-                    },
-                  },
-                },
+                periodId: createdPeriod.id
               },
             });
   
@@ -238,6 +227,7 @@ export class InitialProcessRepository {
               subjectInDatabase = await tx.subject.create({
                 data: {
                   name: subject.name,
+                  periodId: createdPeriod.id
                 },
               });
             }
@@ -247,9 +237,7 @@ export class InitialProcessRepository {
                 gradeId: createdGrade.id,
                 teacherId: createdTeacher.id,
                 subjectId: subjectInDatabase.id,
-                day: 'UNDEFINED',
-                startHour: 'UNDEFINED',
-                endHour: 'UNDEFINED',
+                periodId: createdPeriod.id
               },
             });
           }
@@ -262,17 +250,41 @@ export class InitialProcessRepository {
         });
       });
   
-      return [userStudents, userTeachers];
+      return [userStudents, removeDuplicatesByKey(userTeachers, 'email')];
     } catch (error) {
       throw new InternalServerErrorException(`${i18nContext.t(`${this.baseI18nKey}.create.INTERNAL_SERVER_ERROR_EXCEPTION`)}`);
     }
   }
 
-  findAll() {
-    return [
-      {
-        name: 'Fake initial Process',
-      },
-    ];
+  async createTeacher(transaction, attachedUserId: string, periodId: string ) {
+    const teacherInCurrentPeriod = await transaction.teacher.findFirst({
+      where: {
+        userId: attachedUserId,
+        periodId: periodId
+      }
+    })
+
+    if (!teacherInCurrentPeriod) {
+      return await transaction.teacher.create({
+        data: {
+          userId: attachedUserId,
+          periodId: periodId,
+          eventsConfig: {
+            create: [
+              {
+                eventName: 'AD2',
+                periodId: periodId,
+              },
+              {
+                eventName: 'Notificaciones Personalizadas',
+                periodId: periodId,
+              }
+            ]
+          }
+        },
+      }); 
+    }
+
+    return teacherInCurrentPeriod;
   }
 }

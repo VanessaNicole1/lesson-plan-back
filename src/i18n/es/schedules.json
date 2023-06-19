@@ -1,0 +1,7 @@
+{
+  "service": {
+    "findOne": {
+      "SCHEDULE_DOES_NOT_EXIST": "Horario con id: '{id}' no existe"
+    }
+  }
+}

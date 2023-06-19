@@ -3,47 +3,49 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   HttpCode,
   UseFilters,
+  Query,
+  Put,
 } from '@nestjs/common';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { TeachersService } from './teachers.service';
-import { CreateTeacherDto } from './dto/create-teacher.dto';
-import { UpdateTeacherDto } from './dto/update-teacher.dto';
 import { ValidateTeachersDto } from './dto/validate-teachers.dto';
 import { FilterTeacherDto } from './dto/filter-teacher.dto';
 import { DtoArrayErrorExceptionFilter } from '../common/exception-filters/dto-array-error-exception.filter';
+import { UpdateTeacherEventConfigDto } from './dto/update-teacher-config.dto';
 
 @Controller('teachers')
 export class TeachersController {
   constructor(private readonly teachersService: TeachersService) {}
 
   @Post()
-  create(@Body() createTeacherDto: CreateTeacherDto) {
-    return this.teachersService.create(createTeacherDto);
-  }
-
-  @Post()
   findAll(@Body() filterTeacherDto: FilterTeacherDto) {
     return this.teachersService.findAll(filterTeacherDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.teachersService.findOne(+id);
+  @Get(':id/active-periods')
+  findTeacherActivePeriodsByUser(
+    @Param('id') id: string,
+    @I18n() i18nContext: I18nContext
+  ) {
+    return this.teachersService.findTeacherActivePeriodsByUser(id, i18nContext);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTeacherDto: UpdateTeacherDto) {
-    return this.teachersService.update(+id, updateTeacherDto);
+  @Get('/period/:periodId')
+  findTeachersByUserInActivePeriod(
+    @Param('periodId') periodId: string, @Body() bodyRequest,
+    @I18n() i18nContext: I18nContext
+  ) {
+    const { userId } = bodyRequest;
+    return this.teachersService.findTeacherByUserInActivePeriod(periodId, userId, i18nContext);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.teachersService.remove(+id);
+  @Get('events')
+  findTeacherEventsInActivePeriod(@Query() query) {
+    const { userId, periodId } = query;
+    return this.teachersService.findTeacherEventsInActivePeriod(periodId, userId);
   }
 
   @Post('validate')
@@ -55,5 +57,10 @@ export class TeachersController {
   ) {
     const { teachers } = validateTeachersDto;
     return this.teachersService.validateTeachers(teachers, i18n);
+  }
+
+  @Put('/event-config/:id')
+  updateEventConfig(@Param('id') id: string, @Body() updateTeacherEventConfigDto: UpdateTeacherEventConfigDto) {
+    return this.teachersService.updateTeacherEventConfig(id, updateTeacherEventConfigDto);
   }
 }
