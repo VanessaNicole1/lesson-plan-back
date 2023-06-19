@@ -1,11 +1,11 @@
-import { IsArray, IsNotEmpty, IsString } from "class-validator";
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 
-export class ValidateLessonPlanDto {
-    @IsNotEmpty()
-    @IsString()
-    lessonPlanId: string;
+export class CreateLessonPlanTrackingDto {
+  @IsNotEmpty()
+  @IsString()
+  lessonPlanId: string;
 
-    @IsNotEmpty()
-    @IsArray()
-    students?: string[];
+  @IsNotEmpty()
+  @IsArray()
+  students?: string[];
 }
