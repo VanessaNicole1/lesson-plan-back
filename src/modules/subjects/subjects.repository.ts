@@ -129,11 +129,11 @@ export class SubjectsRepository {
     };
   }
 
-  removeSubjectsByPeriod(idPeriod: string) {
+  removeSubjectsByPeriod(periodId: string) {
     return this.prisma.subject.deleteMany({
       where: {
-        idPeriod
-      }
+        periodId,
+      },
     });
   }
 }

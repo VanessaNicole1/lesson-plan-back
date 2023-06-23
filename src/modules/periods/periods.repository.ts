@@ -9,8 +9,7 @@ export class PeriodsRepository {
   findAll(filterPeriodDto: FilterPeriodDto = {}) {
     const { isActive, idManagerUser } = filterPeriodDto;
     // TODO: Validate when isActive is false since the value to undefined is false
-    const activePeriod =
-      (isActive === 'true' && true) || (isActive === 'false' && false);
+    const activePeriod = isActive !== undefined ? (isActive === 'true' && true) || (isActive === 'false' && false) : undefined;
     return this.prisma.period.findMany({
       where: {
         isActive: activePeriod,
