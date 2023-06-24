@@ -8,9 +8,11 @@ export class PeriodsRepository {
 
   findAll(filterPeriodDto: FilterPeriodDto = {}) {
     const { isActive, idManagerUser } = filterPeriodDto;
+    // TODO: Validate when isActive is false since the value to undefined is false
+    const activePeriod = isActive !== undefined ? (isActive === 'true' && true) || (isActive === 'false' && false) : undefined;
     return this.prisma.period.findMany({
       where: {
-        isActive,
+        isActive: activePeriod,
         degree: {
           manager: {
             user: {
@@ -36,16 +38,24 @@ export class PeriodsRepository {
   findOne(id: string) {
     return this.prisma.period.findUnique({
       where: {
-        id
-      }
+        id,
+      },
+    });
+  }
+
+  remove(id: string) {
+    return this.prisma.period.delete({
+      where: {
+        id,
+      },
     });
   }
 
   findActivePeriods() {
     return this.prisma.period.findMany({
       where: {
-        isActive: true
-      }
+        isActive: true,
+      },
     });
   }
 
@@ -53,9 +63,9 @@ export class PeriodsRepository {
     return this.prisma.period.findMany({
       where: {
         id: {
-          in: periodIds
-        }
-      }
-    })
+          in: periodIds,
+        },
+      },
+    });
   }
 }

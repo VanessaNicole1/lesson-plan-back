@@ -20,7 +20,7 @@ model Period {
 model Degree {
   id        String  @id @default(uuid())
   name      String
-  period    Period  @relation(fields: [periodId], references: [id])
+  period    Period  @relation(fields: [periodId], references: [id], onDelete: Cascade)
   periodId  String  @unique
   manager   Manager @relation(fields: [managerId], references: [id])
   managerId String  @unique
@@ -39,7 +39,7 @@ model Grade {
   id        String     @id @default(uuid())
   number    String
   parallel  String
-  degree    Degree     @relation(fields: [degreeId], references: [id])
+  degree    Degree     @relation(fields: [degreeId], references: [id], onDelete: Cascade)
   degreeId  String
   students  Student[]
   schedules Schedule[]
@@ -48,7 +48,7 @@ model Grade {
 
 model Student {
   id                    String                         @id @default(uuid())
-  grade                 Grade                          @relation(fields: [gradeId], references: [id])
+  grade                 Grade                          @relation(fields: [gradeId], references: [id], onDelete: Cascade)
   gradeId               String
   lessonPlansValidation LessonPlanValidationTracking[]
   user                  User                           @relation(fields: [userId], references: [id])
@@ -84,7 +84,10 @@ model Subject {
 model Schedule {
   id          String       @id @default(uuid())
   metadata    Json?
-  grade       Grade        @relation(fields: [gradeId], references: [id])
+  startHour   String
+  endHour     String
+  day         String
+  grade       Grade        @relation(fields: [gradeId], references: [id], onDelete: Cascade)
   gradeId     String
   subject     Subject      @relation(fields: [subjectId], references: [id])
   subjectId   String
@@ -99,7 +102,7 @@ model LessonPlan {
   date                DateTime
   topic               String
   content             Json?
-  schedule            Schedule                       @relation(fields: [scheduleId], references: [id])
+  schedule            Schedule                       @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   scheduleId          String
   resources           Json?
   validationsTracking LessonPlanValidationTracking[]
@@ -108,7 +111,7 @@ model LessonPlan {
 
 model LessonPlanValidationTracking {
   isValidated  Boolean    @default(false)
-  lessonPlan   LessonPlan @relation(fields: [lessonPlanId], references: [id])
+  lessonPlan   LessonPlan @relation(fields: [lessonPlanId], references: [id], onDelete: Cascade)
   lessonPlanId String
   student      Student    @relation(fields: [studentId], references: [id])
   studentId    String
@@ -152,6 +155,6 @@ model RegisterConfig {
 model PeriodConfig {
   id                        String @id @default(uuid())
   minimumStudentsToEvaluate Int
-  period                    Period @relation(fields: [periodId], references: [id])
+  period                    Period @relation(fields: [periodId], references: [id], onDelete: Cascade)
   periodId                  String @unique
 }

@@ -8,14 +8,19 @@ import { removeDuplicatesByKey } from '../../utils/array.utils';
 @Injectable()
 export class InitialProcessRepository {
   constructor(private prisma: PrismaService) {}
-  
+
   readonly baseI18nKey = 'initial-process.repository';
 
-  async create(createInitialProcessDto: CreateInitialProcessDto, roleIds, i18nContext: I18nContext) {
+  async create(
+    createInitialProcessDto: CreateInitialProcessDto,
+    roleIds,
+    i18nContext: I18nContext,
+  ) {
     const userStudents = [];
     const userTeachers = [];
     const grades = [];
-    const { period, degree, manager, students, teachers, minimumStudents } = createInitialProcessDto;
+    const { period, degree, manager, students, teachers, minimumStudents } =
+      createInitialProcessDto;
 
     const { minimumStudentsToEvaluate } = minimumStudents;
     const { studentRoleId, teacherRoleId } = roleIds;
@@ -33,13 +38,13 @@ export class InitialProcessRepository {
         const studentsFromUniqueGrade = students.filter(
           (student) =>
             student.numberParallel === numberParallel &&
-            student.parallel === parallel
+            student.parallel === parallel,
         );
         const schedules = teachers
           .filter(
             (teacher) =>
               teacher.numberParallel === numberParallel &&
-              teacher.parallel === parallel
+              teacher.parallel === parallel,
           )
           .map((teacher) => {
             return {
@@ -53,7 +58,7 @@ export class InitialProcessRepository {
               },
             };
           });
-  
+
         grades.push({
           numberParallel,
           parallel,
@@ -61,15 +66,17 @@ export class InitialProcessRepository {
           schedules,
         });
       }
-  
+
       const { startDate, endDate } = period;
-      const startDateFormat = `${getMonth(startDate)} ${getFullYearTest(startDate)}`;
+      const startDateFormat = `${getMonth(startDate)} ${getFullYearTest(
+        startDate,
+      )}`;
       const endDateFormat = `${getMonth(endDate)} ${getFullYearTest(endDate)}`;
-  
+
       const { name: nameDegree } = degree;
-  
+
       let createdPeriod;
-  
+
       await this.prisma.$transaction(async (tx) => {
         createdPeriod = await tx.period.create({
           data: {
@@ -79,15 +86,14 @@ export class InitialProcessRepository {
             isActive: true,
           },
         });
-  
+
         const createdManager = await tx.manager.create({
           data: {
             ...manager,
-            periodId: createdPeriod.id
+            periodId: createdPeriod.id,
           },
-          
         });
-  
+
         const createdDegree = await tx.degree.create({
           data: {
             ...degree,
@@ -95,36 +101,36 @@ export class InitialProcessRepository {
             managerId: createdManager.id,
           },
         });
-  
+
         for await (const grade of grades) {
           const createdGrade = await tx.grade.create({
             data: {
               number: grade.numberParallel,
               parallel: grade.parallel,
               degreeId: createdDegree.id,
-              periodId: createdPeriod.id
+              periodId: createdPeriod.id,
             },
           });
-  
+
           for (const student of grade.students) {
             const userAttachedToStudent = await tx.user.findUnique({
               where: {
                 email: student.email,
               },
             });
-  
+
             if (userAttachedToStudent) {
               await tx.user.update({
                 where: {
-                  email: userAttachedToStudent.email
+                  email: userAttachedToStudent.email,
                 },
                 data: {
                   roles: {
                     connect: {
-                      id: studentRoleId
-                    }
-                  }
-                }
+                      id: studentRoleId,
+                    },
+                  },
+                },
               });
 
               userStudents.push(userAttachedToStudent);
@@ -132,7 +138,7 @@ export class InitialProcessRepository {
                 data: {
                   gradeId: createdGrade.id,
                   userId: userAttachedToStudent.id,
-                  periodId: createdPeriod.id
+                  periodId: createdPeriod.id,
                 },
               });
             } else {
@@ -146,49 +152,49 @@ export class InitialProcessRepository {
                     connect: { id: studentRoleId },
                   },
                   registerConfig: {
-                    create: {}
-                  }
+                    create: {},
+                  },
                 },
                 include: {
-                  registerConfig: {}
-                }
+                  registerConfig: {},
+                },
               });
 
-              userStudents.push({...createdUser });
+              userStudents.push({ ...createdUser });
               await tx.student.create({
                 data: {
                   gradeId: createdGrade.id,
                   userId: createdUser.id,
-                  periodId: createdPeriod.id
+                  periodId: createdPeriod.id,
                 },
               });
             }
           }
-  
+
           for (const schedule of grade.schedules) {
             const { teacher, subject } = schedule;
-  
+
             const userAttachedToTeacher = await tx.user.findUnique({
               where: {
                 email: teacher.email,
               },
             });
-  
+
             let createdTeacher;
             let userAssignedToTeacher;
-          
+
             if (userAttachedToTeacher) {
               userAssignedToTeacher = await tx.user.update({
                 where: {
-                  email: userAttachedToTeacher.email
+                  email: userAttachedToTeacher.email,
                 },
                 data: {
                   roles: {
                     connect: {
-                      id: teacherRoleId
-                    }
-                  }
-                }
+                      id: teacherRoleId,
+                    },
+                  },
+                },
               });
             } else {
               userAssignedToTeacher = await tx.user.create({
@@ -201,43 +207,50 @@ export class InitialProcessRepository {
                     connect: { id: teacherRoleId },
                   },
                   registerConfig: {
-                    create: {}
-                  }
+                    create: {},
+                  },
                 },
                 include: {
                   registerConfig: {},
-                }
+                },
               });
             }
 
             userTeachers.push({ ...userAssignedToTeacher });
 
-            createdTeacher = await this.createTeacher(tx, userAssignedToTeacher.id, createdPeriod.id);
-  
+            createdTeacher = await this.createTeacher(
+              tx,
+              userAssignedToTeacher.id,
+              createdPeriod.id,
+            );
+
             let subjectInDatabase = await tx.subject.findFirst({
               where: {
                 name: {
                   equals: subject.name,
                 },
-                periodId: createdPeriod.id
+                periodId: createdPeriod.id,
               },
             });
-  
+
             if (!subjectInDatabase) {
               subjectInDatabase = await tx.subject.create({
                 data: {
                   name: subject.name,
-                  periodId: createdPeriod.id
+                  periodId: createdPeriod.id,
                 },
               });
             }
-  
+
             await tx.schedule.create({
               data: {
+                startHour: 'UNDEFINED',
+                endHour: 'UNDEFINED',
+                day: 'UNDEFINED',
                 gradeId: createdGrade.id,
                 teacherId: createdTeacher.id,
                 subjectId: subjectInDatabase.id,
-                periodId: createdPeriod.id
+                periodId: createdPeriod.id,
               },
             });
           }
@@ -246,23 +259,27 @@ export class InitialProcessRepository {
           data: {
             minimumStudentsToEvaluate,
             periodId: createdPeriod.id,
-          }
+          },
         });
       });
-  
+
       return [userStudents, removeDuplicatesByKey(userTeachers, 'email')];
     } catch (error) {
-      throw new InternalServerErrorException(`${i18nContext.t(`${this.baseI18nKey}.create.INTERNAL_SERVER_ERROR_EXCEPTION`)}`);
+      throw new InternalServerErrorException(
+        `${i18nContext.t(
+          `${this.baseI18nKey}.create.INTERNAL_SERVER_ERROR_EXCEPTION`,
+        )}`,
+      );
     }
   }
 
-  async createTeacher(transaction, attachedUserId: string, periodId: string ) {
+  async createTeacher(transaction, attachedUserId: string, periodId: string) {
     const teacherInCurrentPeriod = await transaction.teacher.findFirst({
       where: {
         userId: attachedUserId,
-        periodId: periodId
-      }
-    })
+        periodId: periodId,
+      },
+    });
 
     if (!teacherInCurrentPeriod) {
       return await transaction.teacher.create({
@@ -278,11 +295,11 @@ export class InitialProcessRepository {
               {
                 eventName: 'Notificaciones Personalizadas',
                 periodId: periodId,
-              }
-            ]
-          }
+              },
+            ],
+          },
         },
-      }); 
+      });
     }
 
     return teacherInCurrentPeriod;

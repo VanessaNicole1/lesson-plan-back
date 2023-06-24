@@ -1,4 +1,11 @@
+import { IsBoolean, IsOptional, IsString } from "class-validator";
+
 export class FilterPeriodDto {
-  isActive?: boolean;
+  @IsOptional()
+  @IsString()
+  isActive?: string;
+
+  @IsOptional()
+  @IsString()
   idManagerUser?: string;
 }

@@ -128,4 +128,12 @@ export class SubjectsRepository {
       message: 'Se actualizó con éxito la materia',
     };
   }
+
+  removeSubjectsByPeriod(periodId: string) {
+    return this.prisma.subject.deleteMany({
+      where: {
+        periodId,
+      },
+    });
+  }
 }
