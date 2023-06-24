@@ -84,9 +84,6 @@ model Subject {
 model Schedule {
   id          String       @id @default(uuid())
   metadata    Json?
-  startHour   String
-  endHour     String
-  day         String
   grade       Grade        @relation(fields: [gradeId], references: [id], onDelete: Cascade)
   gradeId     String
   subject     Subject      @relation(fields: [subjectId], references: [id])
