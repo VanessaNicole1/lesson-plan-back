@@ -244,9 +244,6 @@ export class InitialProcessRepository {
 
             await tx.schedule.create({
               data: {
-                startHour: 'UNDEFINED',
-                endHour: 'UNDEFINED',
-                day: 'UNDEFINED',
                 gradeId: createdGrade.id,
                 teacherId: createdTeacher.id,
                 subjectId: subjectInDatabase.id,
