@@ -45,14 +45,15 @@ export class LessonPlansRepository {
   }
 
   create(createLessonPlanDto: CreateLessonPlanDto) {
-    const { date, topic, content, scheduleId, resources } = createLessonPlanDto;
+    const { date, topic, content, scheduleId, resources, periodId } = createLessonPlanDto;
     return this.prisma.lessonPlan.create({
       data: {
         date: new Date(date),
         topic,
         content,
-        scheduleId,
         resources,
+        periodId,
+        scheduleId
       }
     })
   }
