@@ -9,11 +9,9 @@ export class LessonPlansTrackingRepository {
   create(createLessonPlanTrackingDto: CreateLessonPlanTrackingDto) {
     const { lessonPlanId, students } = createLessonPlanTrackingDto;
 
-    // const lessonPlansTracking = students.map((student) => { lessonPlanId, studentId: student });
-    // return this.prisma.lessonPlanValidationTracking.create({
-    //   data: {
-    //     lessonPlanId
-    //   }
-    // })
+    const lessonPlansTracking = students.map((studentId) => ({ lessonPlanId, studentId }));
+    return this.prisma.lessonPlanValidationTracking.createMany({
+      data: lessonPlansTracking
+    })
   }
 }

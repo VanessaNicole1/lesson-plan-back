@@ -6,6 +6,7 @@ import { LessonPlansTrackingService } from './lesson-plan-tracking.service';
 @Module({
   imports: [],
   controllers: [LessonPlansTrackingController],
-  providers: [LessonPlansTrackingService, LessonPlansTrackingRepository]
+  providers: [LessonPlansTrackingService, LessonPlansTrackingRepository],
+  exports: [LessonPlansTrackingService]
 })
 export class LessonPlanValidationTrackingModule {}
