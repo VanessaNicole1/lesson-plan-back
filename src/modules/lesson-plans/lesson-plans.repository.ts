@@ -58,7 +58,7 @@ export class LessonPlansRepository {
         purposeOfClass,
         bibliography,
         notification,
-        notificationDate
+        notificationDate: new Date(notificationDate)
       }
     })
   }

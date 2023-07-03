@@ -50,5 +50,5 @@ export class CreateLessonPlanDto {
   notification: string;
 
   @IsOptional()
-  notificationDate: Date;
+  notificationDate: Date | null;
 }
