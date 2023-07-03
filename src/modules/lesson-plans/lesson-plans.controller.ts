@@ -59,6 +59,11 @@ export class LessonPlansController {
     @Body() createLessonPlanDto: CreateLessonPlanDto,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
+    const currentStudents = createLessonPlanDto.students.split(',').map(String);
+    createLessonPlanDto = {
+      ...createLessonPlanDto,
+      students: currentStudents
+    }
     return this.lessonPlansService.create(createLessonPlanDto, files);
   }
 

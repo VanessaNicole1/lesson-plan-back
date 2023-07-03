@@ -8,6 +8,14 @@ import {
 
 export class CreateLessonPlanDto {
   @IsNotEmpty()
+  @IsString()
+  periodId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  scheduleId: string;
+
+  @IsNotEmpty()
   @IsDateString()
   date: Date;
 
@@ -17,17 +25,30 @@ export class CreateLessonPlanDto {
 
   @IsNotEmpty()
   @IsString()
-  content: string;
+  description: string;
 
   @IsNotEmpty()
   @IsString()
-  scheduleId: string;
+  content: string;
+
+  @IsNotEmpty()
+  students: any;
+
+  @IsNotEmpty()
+  @IsString()
+  purposeOfClass: string;
+
+  @IsNotEmpty()
+  @IsString()
+  bibliography: string;
 
   @IsOptional()
   @IsArray()
   resources?: string[];
 
   @IsNotEmpty()
-  @IsString()
-  periodId: string;
+  notification: string;
+
+  @IsOptional()
+  notificationDate: Date;
 }

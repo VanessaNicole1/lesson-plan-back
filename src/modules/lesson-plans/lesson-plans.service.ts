@@ -4,12 +4,16 @@ import { UpdateLessonPlanDto } from './dto/update-lesson-plan.dto';
 import { LessonPlansRepository } from './lesson-plans.repository';
 import { SchedulesService } from '../schedules/schedules.service';
 import * as fs from 'fs';
+import { LessonPlansTrackingService } from '../lesson-plan-validation-tracking/lesson-plan-tracking.service';
+import { SendEmailService } from '../common/services/send-email.service';
 
 @Injectable()
 export class LessonPlansService {
   constructor(
     private lessonPlansRepository: LessonPlansRepository,
     private scheduleService: SchedulesService,
+    private lessonPlansTrackingService : LessonPlansTrackingService,
+    private emailService: SendEmailService,
   ) {}
 
   findAll() {
@@ -28,6 +32,7 @@ export class LessonPlansService {
     createLessonPlanDto: CreateLessonPlanDto,
     files: Array<Express.Multer.File>,
   ) {
+    const { students, notification } = createLessonPlanDto;
     const resources = [];
     for (let i = 0; i < files.length; i++) {
       resources.push(files[i].filename);
@@ -39,7 +44,21 @@ export class LessonPlansService {
       ...createLessonPlanDto,
       scheduleId: currentSchedule.id,
     };
-    return this.lessonPlansRepository.create(createLessonPlanDto);
+
+    const lessonPlanCreated = await this.lessonPlansRepository.create(createLessonPlanDto);
+
+    if (lessonPlanCreated) {
+      await this.lessonPlansTrackingService.create({lessonPlanId: lessonPlanCreated.id, students});
+    }
+
+    // TODO: Notify the grading of the lesson plan
+    if (notification === 'yes') {
+      // return this.emailService.sendEmail();
+    } else {
+      // return;
+    }
+    
+    return lessonPlanCreated;
   }
 
   update(
