@@ -82,6 +82,7 @@ export class LessonPlansController {
       }),
     }),
   )
+  
   update(
     @Param('id') id: string,
     @Body() updateLessonPlanDto: UpdateLessonPlanDto,
