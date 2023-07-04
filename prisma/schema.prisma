@@ -57,9 +57,9 @@ model Student {
 }
 
 model Teacher {
-  id           String               @id @default(uuid())
+  id           String                @id @default(uuid())
   schedules    Schedule[]
-  user         User                 @relation(fields: [userId], references: [id])
+  user         User                  @relation(fields: [userId], references: [id])
   userId       String
   eventsConfig TeacherEventsConfig[]
   periodId     String
@@ -71,7 +71,7 @@ model TeacherEventsConfig {
   metadata  Json?
   periodId  String
   teacher   Teacher? @relation(fields: [teacherId], references: [id])
-  teacherId String 
+  teacherId String
 }
 
 model Subject {
@@ -98,12 +98,19 @@ model LessonPlan {
   id                  String                         @id @default(uuid())
   date                DateTime
   topic               String
-  content             Json?
+  content             String?
+  description         String?
+  purposeOfClass      String?
+  bibliography        String?
   schedule            Schedule                       @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   scheduleId          String
-  resources           Json?
+  notification        String?
+  notificationDate    DateTime?
+  resources           String[]
+  hasQualified        Boolean                        @default(false)
   validationsTracking LessonPlanValidationTracking[]
   periodId            String
+  createdAt           DateTime                       @default(now())
 }
 
 model LessonPlanValidationTracking {

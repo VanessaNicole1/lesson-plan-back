@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../common/services/prisma.service';
 import { UpdateScheduleDto } from './dto/update-schedule.dto';
 
@@ -10,12 +10,17 @@ export class SchedulesRepository {
     return this.prisma.schedule.findMany();
   }
 
-  findOne(id: string) {
-    return this.prisma.schedule.findUnique({
+  async findOne(id: string) {
+    const schedule = await this.prisma.schedule.findUnique({
       where: {
         id,
       },
     });
+
+    if (!schedule) {
+      throw new NotFoundException(`Calendario con id "${id}" no encontrado`);
+    }
+    return schedule;
   }
 
   findSchedulesByTeacherInActivePeriod(periodId: string, teacherId: string) {
@@ -42,4 +47,12 @@ export class SchedulesRepository {
       }
     })
   };
+  
+  findByTeacher(teacherId: string) {
+    return this.prisma.schedule.findMany({
+      where: {
+        teacherId,
+      },
+    });
+  }
 }

@@ -45,4 +45,8 @@ export class SchedulesService {
     const schedule = await this.schedulesRepository.findOne(id)
     return this.schedulesRepository.update(schedule.id, updateScheduleDto);
   }
+
+  findByTeacher(teacherId: string) {
+    return this.schedulesRepository.findByTeacher(teacherId);
+  }
 }

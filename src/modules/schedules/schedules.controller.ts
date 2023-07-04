@@ -36,4 +36,9 @@ export class SchedulesController {
   update(@Param('id') id: string, @Body() updateScheduleDto: UpdateScheduleDto) {
     return this.schedulesService.update(id, updateScheduleDto);
   }
+  
+  @Get('teacher/:teacherId')
+  findByTeacher(@Param('teacherId') teacherId: string) {
+    return this.schedulesService.findByTeacher(teacherId);
+  }
 }
