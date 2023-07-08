@@ -1,7 +1,9 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { isEmailDomainValid } from '../../utils/email.utils';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
@@ -11,6 +13,7 @@ import { I18nContext, I18nService } from 'nestjs-i18n';
 import { UsersService } from '../users/users.service';
 import { PeriodsService } from '../periods/periods.service';
 import { UpdateTeacherEventConfigDto } from './dto/update-teacher-config.dto';
+import { SchedulesService } from '../schedules/schedules.service';
 
 @Injectable()
 export class TeachersService {
@@ -21,7 +24,49 @@ export class TeachersService {
     private usersService: UsersService,
     private periodService: PeriodsService,
     private i18nService: I18nService,
+    @Inject(forwardRef(() => SchedulesService)) private schedulesService: SchedulesService
   ) {}
+
+  async findTeachersWithEmptyAD2OrCustomNotificationsInActivePeriods() {
+    const activePeriods = await this.periodService.findActivePeriods();
+    const activePeriodIds = activePeriods.map(activePeriod => activePeriod.id);
+    const teacherEventsConfig = await this.teachersRepository.findTeacherEventsConfigByPeriodIds(activePeriodIds);
+    const emptyTeacherEventsConfig = this.getEmptyEventsConfig(teacherEventsConfig);
+    const teacherIds = [...new Set(emptyTeacherEventsConfig.map(eventConfig => eventConfig.teacherId))];
+    const teachers = await this.teachersRepository.findAllByTeacherIds(teacherIds as string[]);
+    const teachersInformation = [];
+
+    teachers.forEach(teacher => {
+      const teacherEventsConfig = emptyTeacherEventsConfig.filter(eventConfig => eventConfig.teacherId === teacher.id);
+      const teacherInformation = {
+        ...teacher,
+        eventsConfig: teacherEventsConfig
+      }
+      teachersInformation.push(teacherInformation); 
+    });
+
+    return teachersInformation;
+  }
+
+  async findTeachersWithEmptySchedulesConfigInActivePeriods() {
+    const activePeriods = await this.periodService.findActivePeriods();
+    const activePeriodIds = activePeriods.map(activePeriod => activePeriod.id);
+    const schedulesWithEmptyConfig = await this.schedulesService.findEmptySchedulesConfigByPeriodIds(activePeriodIds);
+    const teacherIds = [...new Set(schedulesWithEmptyConfig.map(schedule => schedule.teacherId))];
+    const teachers = await this.teachersRepository.findAllByTeacherIds(teacherIds);
+    const teachersInformation = [];
+
+    teachers.forEach(teacher => {
+      const teacherShedulesWithEmptyConfig = schedulesWithEmptyConfig.filter(schedule => schedule.teacherId === teacher.id);
+      const teacherInformation = {
+        ...teacher,
+        schedules: teacherShedulesWithEmptyConfig,
+      }
+      teachersInformation.push(teacherInformation); 
+    });
+
+    return teachersInformation;
+  }
 
   findAll(filterTeacherDto?: FilterTeacherDto) {
     return this.teachersRepository.findAll(filterTeacherDto);
@@ -204,5 +249,17 @@ export class TeachersService {
 
   removeTeachersByPeriod(idPeriod: string) {
     return this.teachersRepository.removeTeachersByPeriod(idPeriod);
+  }
+
+  getEmptyEventsConfig(eventsConfig) {
+    return eventsConfig.filter(eventConfig => {
+      if (!eventConfig.metadata) {
+        return true;
+      }
+
+      if ((eventConfig.metadata as any).days.length === 0) {
+        return true;
+      }
+    });
   }
 }

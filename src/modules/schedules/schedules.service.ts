@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { UpdateScheduleDto } from './dto/update-schedule.dto';
 import { SchedulesRepository } from './schedules.repository';
 import { TeachersService } from '../teachers/teachers.service';
@@ -11,7 +11,7 @@ export class SchedulesService {
 
   constructor (
     private schedulesRepository: SchedulesRepository,
-    private teacherService: TeachersService,
+    @Inject(forwardRef(() => TeachersService)) private teacherService: TeachersService,
     private i18nService: I18nService
   ) {}
 
@@ -22,6 +22,22 @@ export class SchedulesService {
   async findSchedulesByUsterInActivePeriod(periodId: string, userId: string) {
     const teacher = await this.teacherService.findTeacherByUserInActivePeriod(periodId, userId);
     return this.schedulesRepository.findSchedulesByTeacherInActivePeriod(periodId, teacher.id);
+  };
+
+  async findEmptySchedulesConfigByPeriodIds(activePeriodIds: string[]) {
+    const schedules = await this.schedulesRepository.findAllByPeriodIds(activePeriodIds);
+
+    const emptySchedules = schedules.filter(schedule => {
+      if (!schedule.metadata) {
+        return true;
+      }
+
+      if ((schedule.metadata as any).days.length === 0) {
+        return true;
+      }
+    });
+
+    return emptySchedules;
   };
 
   async findOne(id: string, i18nContext: I18nContext = undefined) {

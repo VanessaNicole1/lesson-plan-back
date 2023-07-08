@@ -7,6 +7,19 @@ import { UpdateTeacherEventConfigDto } from './dto/update-teacher-config.dto';
 export class TeachersRepository {
   constructor(private prisma: PrismaService) {}
 
+  findAllByTeacherIds(teacherIds: string[]) {
+    return this.prisma.teacher.findMany({
+      where: {
+        id: {
+          in: teacherIds
+        }
+      },
+      include: {
+        user: true
+      }
+    });
+  };
+
   async findAll(filterTeacherDto?: FilterTeacherDto) {
     const { periodId } = filterTeacherDto;
     return await this.prisma.teacher.findMany({
@@ -58,6 +71,31 @@ export class TeachersRepository {
       },
     });
   }
+
+  findTeacherEventsByPeriodIdsAndTeacherIds(periodIds: string[], teacherIds: string[]) {
+    return this.prisma.teacherEventsConfig.findMany({
+      where: {
+        periodId: {
+          in: periodIds
+        },
+        AND: {
+          teacherId: {
+            in: teacherIds
+          }
+        }
+      }
+    })
+  }
+
+  findTeacherEventsConfigByPeriodIds(periodIds: string[]) {
+    return this.prisma.teacherEventsConfig.findMany({
+      where: {
+        periodId: {
+          in: periodIds
+        }
+      }
+    })
+  };
 
   findTeachersEvents(teacherId: string) {
     return this.prisma.teacherEventsConfig.findMany({
