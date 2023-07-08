@@ -23,5 +23,4 @@ export class TeacherNotLessonPlanForAWeekEmail implements EmailStrategy {
   getSubject(): string {
     return 'Docente  - Elaboración de planificación Faltante';
   }
-
 }
