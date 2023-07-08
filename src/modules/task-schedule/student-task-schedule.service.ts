@@ -3,6 +3,7 @@ import { Cron } from '@nestjs/schedule';
 import { SendEmailService } from '../common/services/send-email.service';
 import { SendFakeEmailService } from '../common/services/send-fake-email.service';
 import { StudentValidateLessonPlanEmail } from '../common/strategies/email/student/validate-lesson-plan.strategy';
+import { StudentEndDateToValidateLessonPlanEmail } from '../common/strategies/email/student/end-date-to-validate-lesson-plan.strategy';
 
 @Injectable()
 export class StudentTaskScheduleService {
@@ -17,5 +18,11 @@ export class StudentTaskScheduleService {
   async studentValidateLessonPlanNotification() {
     const validateLessonPlanEmail = new StudentValidateLessonPlanEmail('', '', '', '', '', '');
     this.emailService.sendEmail(validateLessonPlanEmail, 'email');
+  }
+
+  // Every day at 8 am.
+  async studentEndDateToValidateLessonPlanNotification () {
+    const endDateToValidateLessonPlanEmail = new StudentEndDateToValidateLessonPlanEmail('', '', '', '', '');
+    this.emailService.sendEmail(endDateToValidateLessonPlanEmail, 'email');
   }
 }
