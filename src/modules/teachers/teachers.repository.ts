@@ -127,4 +127,17 @@ export class TeachersRepository {
       },
     });
   }
+
+  findTeacherPeriodsByUser(periodIds: string[], userId: string) {
+    return this.prisma.teacher.findMany({
+      where: {
+        userId,
+        AND: {
+          periodId: {
+            in: periodIds,
+          },
+        },
+      },
+    });
+  }
 }
