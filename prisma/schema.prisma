@@ -119,6 +119,7 @@ model LessonPlanValidationTracking {
   lessonPlanId String
   student      Student    @relation(fields: [studentId], references: [id])
   studentId    String
+  periodId     String?
 
   @@id([lessonPlanId, studentId])
 }
