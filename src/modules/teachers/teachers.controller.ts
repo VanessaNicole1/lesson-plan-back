@@ -28,24 +28,32 @@ export class TeachersController {
   @Get(':id/active-periods')
   findTeacherActivePeriodsByUser(
     @Param('id') id: string,
-    @I18n() i18nContext: I18nContext
+    @I18n() i18nContext: I18nContext,
   ) {
     return this.teachersService.findTeacherActivePeriodsByUser(id, i18nContext);
   }
 
   @Get('/period/:periodId')
   findTeachersByUserInActivePeriod(
-    @Param('periodId') periodId: string, @Body() bodyRequest,
-    @I18n() i18nContext: I18nContext
+    @Param('periodId') periodId: string,
+    @Body() bodyRequest,
+    @I18n() i18nContext: I18nContext,
   ) {
     const { userId } = bodyRequest;
-    return this.teachersService.findTeacherByUserInActivePeriod(periodId, userId, i18nContext);
+    return this.teachersService.findTeacherByUserInActivePeriod(
+      periodId,
+      userId,
+      i18nContext,
+    );
   }
 
   @Get('events')
   findTeacherEventsInActivePeriod(@Query() query) {
     const { userId, periodId } = query;
-    return this.teachersService.findTeacherEventsInActivePeriod(periodId, userId);
+    return this.teachersService.findTeacherEventsInActivePeriod(
+      periodId,
+      userId,
+    );
   }
 
   @Post('validate')
@@ -53,14 +61,28 @@ export class TeachersController {
   @UseFilters(new DtoArrayErrorExceptionFilter(/teachers\.\d+\./))
   validateTeachers(
     @Body() validateTeachersDto: ValidateTeachersDto,
-    @I18n() i18n: I18nContext
+    @I18n() i18n: I18nContext,
   ) {
     const { teachers } = validateTeachersDto;
     return this.teachersService.validateTeachers(teachers, i18n);
   }
 
   @Put('/event-config/:id')
-  updateEventConfig(@Param('id') id: string, @Body() updateTeacherEventConfigDto: UpdateTeacherEventConfigDto) {
-    return this.teachersService.updateTeacherEventConfig(id, updateTeacherEventConfigDto);
+  updateEventConfig(
+    @Param('id') id: string,
+    @Body() updateTeacherEventConfigDto: UpdateTeacherEventConfigDto,
+  ) {
+    return this.teachersService.updateTeacherEventConfig(
+      id,
+      updateTeacherEventConfigDto,
+    );
+  }
+
+  @Get(':id/periods')
+  findTeacherPeriodsByUser(
+    @Param('id') id: string,
+    @I18n() i18nContext: I18nContext,
+  ) {
+    return this.teachersService.findTeacherPeriodsByUser(id, i18nContext);
   }
 }

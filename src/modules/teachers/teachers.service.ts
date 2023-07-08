@@ -24,25 +24,40 @@ export class TeachersService {
     private usersService: UsersService,
     private periodService: PeriodsService,
     private i18nService: I18nService,
-    @Inject(forwardRef(() => SchedulesService)) private schedulesService: SchedulesService
+    @Inject(forwardRef(() => SchedulesService))
+    private schedulesService: SchedulesService,
   ) {}
 
   async findTeachersWithEmptyAD2OrCustomNotificationsInActivePeriods() {
     const activePeriods = await this.periodService.findActivePeriods();
-    const activePeriodIds = activePeriods.map(activePeriod => activePeriod.id);
-    const teacherEventsConfig = await this.teachersRepository.findTeacherEventsConfigByPeriodIds(activePeriodIds);
-    const emptyTeacherEventsConfig = this.getEmptyEventsConfig(teacherEventsConfig);
-    const teacherIds = [...new Set(emptyTeacherEventsConfig.map(eventConfig => eventConfig.teacherId))];
-    const teachers = await this.teachersRepository.findAllByTeacherIds(teacherIds as string[]);
+    const activePeriodIds = activePeriods.map(
+      (activePeriod) => activePeriod.id,
+    );
+    const teacherEventsConfig =
+      await this.teachersRepository.findTeacherEventsConfigByPeriodIds(
+        activePeriodIds,
+      );
+    const emptyTeacherEventsConfig =
+      this.getEmptyEventsConfig(teacherEventsConfig);
+    const teacherIds = [
+      ...new Set(
+        emptyTeacherEventsConfig.map((eventConfig) => eventConfig.teacherId),
+      ),
+    ];
+    const teachers = await this.teachersRepository.findAllByTeacherIds(
+      teacherIds as string[],
+    );
     const teachersInformation = [];
 
-    teachers.forEach(teacher => {
-      const teacherEventsConfig = emptyTeacherEventsConfig.filter(eventConfig => eventConfig.teacherId === teacher.id);
+    teachers.forEach((teacher) => {
+      const teacherEventsConfig = emptyTeacherEventsConfig.filter(
+        (eventConfig) => eventConfig.teacherId === teacher.id,
+      );
       const teacherInformation = {
         ...teacher,
-        eventsConfig: teacherEventsConfig
-      }
-      teachersInformation.push(teacherInformation); 
+        eventsConfig: teacherEventsConfig,
+      };
+      teachersInformation.push(teacherInformation);
     });
 
     return teachersInformation;
@@ -50,19 +65,32 @@ export class TeachersService {
 
   async findTeachersWithEmptySchedulesConfigInActivePeriods() {
     const activePeriods = await this.periodService.findActivePeriods();
-    const activePeriodIds = activePeriods.map(activePeriod => activePeriod.id);
-    const schedulesWithEmptyConfig = await this.schedulesService.findEmptySchedulesConfigByPeriodIds(activePeriodIds);
-    const teacherIds = [...new Set(schedulesWithEmptyConfig.map(schedule => schedule.teacherId))];
-    const teachers = await this.teachersRepository.findAllByTeacherIds(teacherIds);
+    const activePeriodIds = activePeriods.map(
+      (activePeriod) => activePeriod.id,
+    );
+    const schedulesWithEmptyConfig =
+      await this.schedulesService.findEmptySchedulesConfigByPeriodIds(
+        activePeriodIds,
+      );
+    const teacherIds = [
+      ...new Set(
+        schedulesWithEmptyConfig.map((schedule) => schedule.teacherId),
+      ),
+    ];
+    const teachers = await this.teachersRepository.findAllByTeacherIds(
+      teacherIds,
+    );
     const teachersInformation = [];
 
-    teachers.forEach(teacher => {
-      const teacherShedulesWithEmptyConfig = schedulesWithEmptyConfig.filter(schedule => schedule.teacherId === teacher.id);
+    teachers.forEach((teacher) => {
+      const teacherShedulesWithEmptyConfig = schedulesWithEmptyConfig.filter(
+        (schedule) => schedule.teacherId === teacher.id,
+      );
       const teacherInformation = {
         ...teacher,
         schedules: teacherShedulesWithEmptyConfig,
-      }
-      teachersInformation.push(teacherInformation); 
+      };
+      teachersInformation.push(teacherInformation);
     });
 
     return teachersInformation;
@@ -252,7 +280,7 @@ export class TeachersService {
   }
 
   getEmptyEventsConfig(eventsConfig) {
-    return eventsConfig.filter(eventConfig => {
+    return eventsConfig.filter((eventConfig) => {
       if (!eventConfig.metadata) {
         return true;
       }
@@ -261,5 +289,39 @@ export class TeachersService {
         return true;
       }
     });
+  }
+
+  async findTeacherPeriodsByUser(
+    userId: string,
+    i18nContext: I18nContext = undefined,
+  ) {
+    const i18n = i18nContext || this.i18nService;
+    const user = await this.usersService.findOne(userId);
+    await this.findTeachersByUser(userId, i18nContext);
+
+    const periods = await this.periodService.findAll();
+    const periodsIds = periods.map((activePeriod) => activePeriod.id);
+    const periodsByTeacher =
+      await this.teachersRepository.findTeacherActivePeriodsByUser(
+        periodsIds,
+        user.id,
+      );
+
+    if (!periodsByTeacher) {
+      throw new BadRequestException(
+        i18n.t(
+          `${this.baseI18nKey}.findTeacherActivePeriodsByUser.NOT_TEACHERS_IN_ACTIVE_PERIODS`,
+        ),
+      );
+    }
+
+    const activePeriodsIdsByTeacher = periodsByTeacher.map(
+      (activePeriod) => activePeriod.periodId,
+    );
+    const periodsInformation = this.periodService.findManyByPeriodIds(
+      activePeriodsIdsByTeacher,
+    );
+
+    return periodsInformation;
   }
 }
