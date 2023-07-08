@@ -1,7 +1,7 @@
 import { EmailStrategy } from '../../../interfaces/email/email-strategy.interface';
 import { getEmailTemplate } from '../../../../../utils/template.utils';
 
-export class TeacherMissingStudentsToGradedLessonPlanEmail implements EmailStrategy {
+export class TeacherMissingStudentsToValidateLessonPlanEmail implements EmailStrategy {
   
   constructor (
     private readonly periodDisplayName: string,
@@ -19,12 +19,13 @@ export class TeacherMissingStudentsToGradedLessonPlanEmail implements EmailStrat
       subjectName: this.subjectName,
       students: this.students,
       lessonPlanDate: this.lessonPlanDate,
-      maxQualifyDate: this.maxQualifyDate
+      maxQualifyDate: this.maxQualifyDate,
+      url: ''
     }
     return data;
   }
   getTemplate(data: any) {
-    return getEmailTemplate('templates/teacher/missing-students-to-graded-lp.html', data);
+    return getEmailTemplate('templates/teacher/missing-students-to-validate-lp.html', data);
   }
   getSubject(): string {
     return `Docente - Estudiantes pendientes de calificar Plan de Clase`;
