@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AcceptLanguageResolver, I18nModule } from 'nestjs-i18n';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -18,6 +19,7 @@ import { TeachersModule } from './modules/teachers/teachers.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RegisterConfigModule } from './modules/register-config/register-config.module';
 import { SchedulesModule } from './modules/schedules/schedules.module';
+import { TaskScheduleModule } from './modules/task-schedule/task-schedule.module';
 
 @Module({
   imports: [
@@ -32,6 +34,7 @@ import { SchedulesModule } from './modules/schedules/schedules.module';
       ]
     }),
     CommonModule,
+    ScheduleModule.forRoot(),
     SchedulesModule,
     UsersModule,
     PeriodsModule,
@@ -45,7 +48,8 @@ import { SchedulesModule } from './modules/schedules/schedules.module';
     SubjectsModule,
     TeachersModule,
     AuthModule,
-    RegisterConfigModule
+    RegisterConfigModule,
+    TaskScheduleModule
   ],
   controllers: [AppController],
   providers: [AppService],
