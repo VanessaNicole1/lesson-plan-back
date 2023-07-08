@@ -7,6 +7,7 @@ import { PeriodsService } from '../periods/periods.service';
 import { TeacherAD2NotFilledEmail } from '../common/strategies/email/teacher/ad2-not-filled.strategy';
 import { SendFakeEmailService } from '../common/services/send-fake-email.service';
 import { TeacherNotLessonPlanForAWeekEmail } from '../common/strategies/email/teacher/not-lesson-plan-for-a-week.strategy';
+import { TeacherMissingStudentsToGradedLessonPlanEmail } from '../common/strategies/email/teacher/missing-students-to-graded-lp.strategy';
 
 @Injectable()
 export class TaskScheduleService {
@@ -56,5 +57,18 @@ export class TaskScheduleService {
     // TODO: Do not forget to put all the necessary logic here!
     const notLessonPlanForAWeekEmail = new TeacherNotLessonPlanForAWeekEmail('', '');
     this.emailService.sendEmail(notLessonPlanForAWeekEmail, 'email')
+  }
+
+  // Every day 
+  async teacherMissingStudentsToGradedLessonPlanNotification() {
+    const missingStudentsToGradedLessonPlanEmail = new TeacherMissingStudentsToGradedLessonPlanEmail(
+      '',
+      '',
+      '',
+      [],
+      '',
+      ''
+    );
+    this.emailService.sendEmail(missingStudentsToGradedLessonPlanEmail, 'email');
   }
 }
