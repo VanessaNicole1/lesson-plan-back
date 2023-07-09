@@ -120,10 +120,10 @@ export class TeachersRepository {
     });
   }
 
-  removeTeachersByPeriod(idPeriod: string) {
+  removeTeachersByPeriod(periodId: string) {
     return this.prisma.teacher.deleteMany({
       where: {
-        userId: idPeriod,
+        periodId,
       },
     });
   }
