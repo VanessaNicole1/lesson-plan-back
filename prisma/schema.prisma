@@ -15,6 +15,7 @@ model Period {
   isActive     Boolean?
   degree       Degree?
   periodConfig PeriodConfig?
+  createdAt    DateTime      @default(now())
 }
 
 model Degree {
