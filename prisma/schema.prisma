@@ -70,7 +70,7 @@ model TeacherEventsConfig {
   eventName String
   metadata  Json?
   periodId  String
-  teacher   Teacher? @relation(fields: [teacherId], references: [id])
+  teacher   Teacher? @relation(fields: [teacherId], references: [id], onDelete: Cascade)
   teacherId String
 }
 
