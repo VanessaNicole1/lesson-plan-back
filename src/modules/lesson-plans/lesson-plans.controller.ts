@@ -62,8 +62,8 @@ export class LessonPlansController {
     const currentStudents = createLessonPlanDto.students.split(',').map(String);
     createLessonPlanDto = {
       ...createLessonPlanDto,
-      students: currentStudents
-    }
+      students: currentStudents,
+    };
     return this.lessonPlansService.create(createLessonPlanDto, files);
   }
 
@@ -82,7 +82,6 @@ export class LessonPlansController {
       }),
     }),
   )
-  
   update(
     @Param('id') id: string,
     @Body() updateLessonPlanDto: UpdateLessonPlanDto,

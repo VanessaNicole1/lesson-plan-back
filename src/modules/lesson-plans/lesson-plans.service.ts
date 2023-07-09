@@ -12,7 +12,7 @@ export class LessonPlansService {
   constructor(
     private lessonPlansRepository: LessonPlansRepository,
     private scheduleService: SchedulesService,
-    private lessonPlansTrackingService : LessonPlansTrackingService,
+    private lessonPlansTrackingService: LessonPlansTrackingService,
     private emailService: SendEmailService,
   ) {}
 
@@ -40,15 +40,23 @@ export class LessonPlansService {
     createLessonPlanDto['resources'] = resources;
     const { scheduleId } = createLessonPlanDto;
     const currentSchedule = await this.scheduleService.findOne(scheduleId);
+    if (notification === 'yes') {
+      delete createLessonPlanDto.notificationDate
+    }
     createLessonPlanDto = {
       ...createLessonPlanDto,
       scheduleId: currentSchedule.id,
     };
 
-    const lessonPlanCreated = await this.lessonPlansRepository.create(createLessonPlanDto);
+    const lessonPlanCreated = await this.lessonPlansRepository.create(
+      createLessonPlanDto,
+    );
 
     if (lessonPlanCreated) {
-      await this.lessonPlansTrackingService.create({lessonPlanId: lessonPlanCreated.id, students});
+      await this.lessonPlansTrackingService.create({
+        lessonPlanId: lessonPlanCreated.id,
+        students,
+      });
     }
 
     // TODO: Notify the grading of the lesson plan
@@ -57,7 +65,7 @@ export class LessonPlansService {
     } else {
       // return;
     }
-    
+
     return lessonPlanCreated;
   }
 
