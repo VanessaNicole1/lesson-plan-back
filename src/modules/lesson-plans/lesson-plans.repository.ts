@@ -58,7 +58,7 @@ export class LessonPlansRepository {
         purposeOfClass,
         bibliography,
         notification,
-        notificationDate: new Date(notificationDate)
+        notificationDate: notificationDate === undefined ? null : new Date(notificationDate)
       }
     })
   }
