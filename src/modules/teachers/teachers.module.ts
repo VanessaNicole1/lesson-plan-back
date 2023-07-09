@@ -9,7 +9,7 @@ import { SchedulesModule } from '../schedules/schedules.module';
 @Module({
   imports: [
     UsersModule,
-    PeriodsModule,
+    forwardRef(() => PeriodsModule),
     forwardRef(() => SchedulesModule)
   ],
   controllers: [TeachersController],

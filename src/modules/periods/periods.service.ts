@@ -1,12 +1,16 @@
+import { SubjectsService } from './../subjects/subjects.service';
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { I18nContext, I18nService } from 'nestjs-i18n';
 import { CreatePeriodDto } from './dto/create-period.dto';
 import { FilterPeriodDto } from './dto/filter-period.dto';
 import { PeriodsRepository } from './periods.repository';
+import { TeachersService } from '../teachers/teachers.service';
 
 @Injectable()
 export class PeriodsService {
@@ -14,7 +18,9 @@ export class PeriodsService {
 
   constructor(
     private periodsRepository: PeriodsRepository,
+    private subjectService: SubjectsService,
     private i18nService: I18nService,
+    private teacherService: TeachersService,
   ) {}
 
   findAll(filterPeriodDto?: FilterPeriodDto) {
@@ -46,8 +52,11 @@ export class PeriodsService {
     return period;
   }
 
-  remove(id: string) {
-    return this.periodsRepository.remove(id);
+  async remove(id: string) {
+    const periodDeleted =  await this.periodsRepository.remove(id);
+    await this.teacherService.removeTeachersByPeriod(id);
+    await this.subjectService.removeSubjectsByPeriod(id);
+    return periodDeleted;
   }
 
   validateDates(createPeriodDto: CreatePeriodDto, i18nContext: I18nContext) {

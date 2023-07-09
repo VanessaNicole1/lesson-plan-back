@@ -22,6 +22,7 @@ export class TeachersService {
   constructor(
     private teachersRepository: TeachersRepository,
     private usersService: UsersService,
+    @Inject(forwardRef(() => PeriodsService))
     private periodService: PeriodsService,
     private i18nService: I18nService,
     @Inject(forwardRef(() => SchedulesService))

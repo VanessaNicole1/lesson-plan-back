@@ -117,7 +117,7 @@ model LessonPlanValidationTracking {
   isValidated  Boolean    @default(false)
   lessonPlan   LessonPlan @relation(fields: [lessonPlanId], references: [id], onDelete: Cascade)
   lessonPlanId String
-  student      Student    @relation(fields: [studentId], references: [id])
+  student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId    String
   periodId     String?
 
