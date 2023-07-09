@@ -8,4 +8,6 @@ export class CreateLessonPlanTrackingDto {
   @IsNotEmpty()
   @IsArray()
   students?: string[];
+
+  periodId?: string;
 }

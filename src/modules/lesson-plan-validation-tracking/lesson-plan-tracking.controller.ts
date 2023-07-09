@@ -7,9 +7,4 @@ export class LessonPlansTrackingController {
   constructor(
     private readonly lessonPlansTrackingService: LessonPlansTrackingService,
   ) {}
-
-  @Post()
-  create(@Body() createLessonPlanTrackingDto: CreateLessonPlanTrackingDto) {
-    return this.lessonPlansTrackingService.create(createLessonPlanTrackingDto);
-  }
 }

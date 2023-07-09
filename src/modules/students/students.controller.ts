@@ -8,42 +8,35 @@ import {
   Delete,
   HttpCode,
   UseFilters,
+  Query,
 } from '@nestjs/common';
 import { StudentsService } from './students.service';
-import { CreateStudentDto } from './dto/create-student.dto';
-import { UpdateStudentDto } from './dto/update-student.dto';
 import { ValidateStudentsDto } from './dto/validate-students.dto';
 import { FilterStudentDto } from './dto/filter-student.dto';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { DtoArrayErrorExceptionFilter } from '../common/exception-filters/dto-array-error-exception.filter';
+import { GetLessonPlansDto } from './dto/get-lesson-plans.dto';
 
 @Controller('students')
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
 
-  @Post('create')
-  create(@Body() createStudentDto: CreateStudentDto) {
-    return this.studentsService.create(createStudentDto);
+  @Get('/lesson-plans')
+  getLessonPlansInActivePeriods(@Query() getLessonPlansDto: GetLessonPlansDto) {
+    return this.studentsService.getLessonPlansInActivePeriods(getLessonPlansDto);
+  }
+
+  @Get(':id/active-periods')
+  findTeacherActivePeriodsByUser(
+    @Param('id') id: string,
+    @I18n() i18nContext: I18nContext,
+  ) {
+    return this.studentsService.findStudentActivePeriodsByUser(id, i18nContext);
   }
 
   @Post()
   findAll(@Body() filterStudentDto: FilterStudentDto) {
     return this.studentsService.findAll(filterStudentDto);
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.studentsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto) {
-    return this.studentsService.update(+id, updateStudentDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.studentsService.remove(+id);
   }
 
   @Post('validate')
@@ -56,4 +49,6 @@ export class StudentsController {
     const { students } = validateStudentsDto;
     return this.studentsService.validateStudents(students, i18nContext);
   }
+
+  
 }

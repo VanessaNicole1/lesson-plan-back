@@ -1,14 +1,18 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { I18nContext, I18nService } from 'nestjs-i18n';
+import { Exception } from 'handlebars';
 import {
   getDuplicatedEmails,
   isEmailDomainValid,
 } from '../../utils/email.utils';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { FilterStudentDto } from './dto/filter-student.dto';
-import { UpdateStudentDto } from './dto/update-student.dto';
 import { StudentsRepository } from './students.repository';
-import { I18nContext } from 'nestjs-i18n';
 import { ValidateStudentsNumberDto } from './dto/validate-students-number.dto';
+import { GetLessonPlansDto } from './dto/get-lesson-plans.dto';
+import { PeriodsService } from '../periods/periods.service';
+import { LessonPlansTrackingService } from '../lesson-plan-validation-tracking/lesson-plan-tracking.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class StudentsService {
@@ -16,26 +20,73 @@ export class StudentsService {
 
   readonly initialProcessBaseI18nKey = 'initial-process.repository';
   
-  constructor(private studentsRepository: StudentsRepository) {}
+  constructor(
+    private studentsRepository: StudentsRepository,
+    private periodService: PeriodsService,
+    private usersService: UsersService,
+    private lessonPlanTrackingService: LessonPlansTrackingService,
+    private i18nService: I18nService,
+  ) {}
 
-  create(createStudentDto: CreateStudentDto) {
-    return 'This action adds a new student';
+  async getLessonPlansInActivePeriods(getLessonPlansDto: GetLessonPlansDto) {
+    const { isValidated, userId, periodId } = getLessonPlansDto;
+    const activePeriod = await this.periodService.findOne(periodId);
+    const studentsAssignedToUser = await this.getStudentsByUserInActivePeriods(userId, activePeriod.id);
+    const studentIds = studentsAssignedToUser.map(students => students.id);
+    
+    if (studentsAssignedToUser.length === 0) {
+      throw new Exception('User does not have any assigned student in active periods.');
+    }
+
+    return this.lessonPlanTrackingService.getLessonPlansByStudentsAndPeriods(isValidated.toUpperCase() === 'TRUE', studentIds, [activePeriod.id]);
+  }
+
+  async findStudentsByUser(
+    userId: string,
+    i18nContext: I18nContext = undefined,
+  ) {
+    const i18n = i18nContext || this.i18nService;
+    const students = await this.studentsRepository.findStudentsByUser(userId);
+
+    if (students.length === 0) {
+      throw new NotFoundException(
+        i18n.t(`${this.baseI18nKey}.common.NOT_ASSIGNED_TEACHER`),
+      );
+    }
+
+    return students;
+  }
+
+  async findStudentActivePeriodsByUser(
+    userId: string,
+    i18nContext: I18nContext = undefined,
+  ) {
+    const i18n = i18nContext || this.i18nService;
+    const user = await this.usersService.findOne(userId);
+    await this.findStudentsByUser(userId, i18nContext);
+
+    const activePeriods = await this.periodService.findActivePeriods();
+    const activePeriodsIds = activePeriods.map((activePeriod) => activePeriod.id);
+    const activePeriodsByStudent = await this.studentsRepository.findStudentsInPeriodsByUser(activePeriodsIds, user.id);
+
+    if (!activePeriodsByStudent) {
+      throw new BadRequestException(
+        i18n.t(
+          `${this.baseI18nKey}.findTeacherActivePeriodsByUser.NOT_TEACHERS_IN_ACTIVE_PERIODS`,
+        ),
+      );
+    }
+
+    const activePeriodsIdsByTeacher = activePeriodsByStudent.map((activePeriod) => activePeriod.periodId);
+    return this.periodService.findManyByPeriodIds(activePeriodsIdsByTeacher);;
   }
 
   findAll(filterStudentDto?: FilterStudentDto) {
     return this.studentsRepository.findAll(filterStudentDto);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} student`;
-  }
-
-  update(id: number, updateStudentDto: UpdateStudentDto) {
-    return `This action updates a #${id} student`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} student`;
+  getStudentsByUserInActivePeriods(userId: string, activePeriodIds: string) {
+    return this.studentsRepository.getStudentsByUserAndPeriod(userId, activePeriodIds);
   }
 
   validateStudentEmail(createStudentDto: CreateStudentDto, i18nContext: I18nContext) {
