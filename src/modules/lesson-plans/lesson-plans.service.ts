@@ -56,6 +56,7 @@ export class LessonPlansService {
       await this.lessonPlansTrackingService.create({
         lessonPlanId: lessonPlanCreated.id,
         students,
+        periodId: createLessonPlanDto.periodId
       });
     }
 

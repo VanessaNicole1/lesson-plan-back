@@ -8,6 +8,10 @@ export class LessonPlansTrackingService {
     private lessonPlansTrackingRepository: LessonPlansTrackingRepository,
   ) {}
 
+  getLessonPlansByStudentsAndPeriods(isValidated: boolean, studentIds: string[], periodIds: string[]) {
+    return this.lessonPlansTrackingRepository.getLessonPlansByStudentsAndPeriods(isValidated, studentIds, periodIds);
+  }
+
   create(createLessonPlanTrackingDto: CreateLessonPlanTrackingDto) {
     return this.lessonPlansTrackingRepository.create(
       createLessonPlanTrackingDto,
