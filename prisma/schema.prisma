@@ -96,22 +96,23 @@ model Schedule {
 }
 
 model LessonPlan {
-  id                  String                         @id @default(uuid())
-  date                DateTime
-  topic               String
-  content             String?
-  description         String?
-  purposeOfClass      String?
-  bibliography        String?
-  schedule            Schedule                       @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
-  scheduleId          String
-  notification        String?
-  notificationDate    DateTime?
-  resources           String[]
-  hasQualified        Boolean                        @default(false)
-  validationsTracking LessonPlanValidationTracking[]
-  periodId            String
-  createdAt           DateTime                       @default(now())
+  id                    String                         @id @default(uuid())
+  date                  DateTime
+  topic                 String
+  content               String?
+  description           String?
+  purposeOfClass        String?
+  bibliography          String?
+  schedule              Schedule                       @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  scheduleId            String
+  notification          String?
+  maximumValidationDate DateTime?
+  notificationDate      DateTime?
+  resources             String[]
+  hasQualified          Boolean                        @default(false)
+  validationsTracking   LessonPlanValidationTracking[]
+  periodId              String
+  createdAt             DateTime                       @default(now())
 }
 
 model LessonPlanValidationTracking {
