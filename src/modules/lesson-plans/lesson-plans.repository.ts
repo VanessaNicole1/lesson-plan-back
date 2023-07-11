@@ -114,4 +114,15 @@ export class LessonPlansRepository {
     });
     return deleteLessonPlan;
   }
+
+  async removeResource(id: string, resources: any) {
+    await this.prisma.lessonPlan.update({
+      where: {
+        id,
+      },
+      data: {
+        resources: resources,
+      }
+    });
+  }
 }

@@ -6,6 +6,7 @@ import { SchedulesService } from '../schedules/schedules.service';
 import * as fs from 'fs';
 import { LessonPlansTrackingService } from '../lesson-plan-validation-tracking/lesson-plan-tracking.service';
 import { SendEmailService } from '../common/services/send-email.service';
+import { DeleteResourceDto } from './dto/delete-resource.dto';
 
 @Injectable()
 export class LessonPlansService {
@@ -100,5 +101,14 @@ export class LessonPlansService {
       fs.unlinkSync(`./uploads/${resource}`);
     }
     return this.lessonPlansRepository.remove(id);
+  }
+
+  async removeResource(id: string, deleteResourceDto: DeleteResourceDto) {
+    const { name } = deleteResourceDto;
+    const lessonPlan = await this.findOne(id);
+    const resources = lessonPlan.resources;
+    const currentResources = resources.filter((resource) => resource !== name);
+    await this.lessonPlansRepository.removeResource(id, currentResources);
+    await fs.unlinkSync(`./uploads/${name}`);
   }
 }
