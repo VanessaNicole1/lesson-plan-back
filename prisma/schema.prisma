@@ -108,7 +108,7 @@ model LessonPlan {
   notification          String?
   maximumValidationDate DateTime?
   notificationDate      DateTime?
-  resources             String[]
+  resources             Json?
   hasQualified          Boolean                        @default(false)
   validationsTracking   LessonPlanValidationTracking[]
   periodId              String

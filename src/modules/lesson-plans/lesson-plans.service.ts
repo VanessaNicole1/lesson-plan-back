@@ -36,7 +36,14 @@ export class LessonPlansService {
     const { students, notification } = createLessonPlanDto;
     const resources = [];
     for (let i = 0; i < files.length; i++) {
-      resources.push(files[i].filename);
+      const file = files[i];
+      const resource = {
+        name: file.originalname,
+        url: file.filename,
+        createdDate: new Date(),
+        size: file.size
+      }
+      resources.push(resource);
     }
     createLessonPlanDto['resources'] = resources;
     const { scheduleId } = createLessonPlanDto;
@@ -84,31 +91,31 @@ export class LessonPlansService {
     return this.lessonPlansRepository.update(id, updateLessonPlanDto);
   }
 
-  async remove(id: string) {
-    const lessonPlan = await this.findOne(id);
-    const validationsTracking = lessonPlan.validationsTracking;
-    const validatedLessonPlans = validationsTracking.filter(
-      (tracking) => tracking.isValidated === true,
-    );
-    if (validatedLessonPlans.length > 0) {
-      throw new BadRequestException(
-        'El plan de clases no puede ser eliminado ya que ya tiene una validación por parte de un estudiante',
-      );
-    }
-    const resources = lessonPlan.resources;
-    for (let i = 0; i < resources.length; i++) {
-      const resource = resources[i];
-      fs.unlinkSync(`./uploads/${resource}`);
-    }
-    return this.lessonPlansRepository.remove(id);
-  }
+  // async remove(id: string) {
+  //   const lessonPlan = await this.findOne(id);
+  //   const validationsTracking = lessonPlan.validationsTracking;
+  //   const validatedLessonPlans = validationsTracking.filter(
+  //     (tracking) => tracking.isValidated === true,
+  //   );
+  //   if (validatedLessonPlans.length > 0) {
+  //     throw new BadRequestException(
+  //       'El plan de clases no puede ser eliminado ya que ya tiene una validación por parte de un estudiante',
+  //     );
+  //   }
+  //   const resources = lessonPlan.resources;
+  //   for (let i = 0; i < resources.length; i++) {
+  //     const resource = resources[i];
+  //     fs.unlinkSync(`./uploads/${resource}`);
+  //   }
+  //   return this.lessonPlansRepository.remove(id);
+  // }
 
-  async removeResource(id: string, deleteResourceDto: DeleteResourceDto) {
-    const { name } = deleteResourceDto;
-    const lessonPlan = await this.findOne(id);
-    const resources = lessonPlan.resources;
-    const currentResources = resources.filter((resource) => resource !== name);
-    await this.lessonPlansRepository.removeResource(id, currentResources);
-    await fs.unlinkSync(`./uploads/${name}`);
-  }
+  // async removeResource(id: string, deleteResourceDto: DeleteResourceDto) {
+  //   const { name } = deleteResourceDto;
+  //   const lessonPlan = await this.findOne(id);
+  //   const resources = lessonPlan.resources;
+  //   const currentResources = resources.filter((resource) => resource !== name);
+  //   await this.lessonPlansRepository.removeResource(id, currentResources);
+  //   await fs.unlinkSync(`./uploads/${name}`);
+  // }
 }
