@@ -116,14 +116,14 @@ model LessonPlan {
 }
 
 model LessonPlanValidationTracking {
+  id           String     @id @default(uuid())
   isValidated  Boolean    @default(false)
   lessonPlan   LessonPlan @relation(fields: [lessonPlanId], references: [id], onDelete: Cascade)
   lessonPlanId String
   student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId    String
   periodId     String?
-
-  @@id([lessonPlanId, studentId])
+  isAgree      Boolean?
 }
 
 model User {
