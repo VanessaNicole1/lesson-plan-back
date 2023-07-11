@@ -11,7 +11,20 @@ export class LessonPlansRepository {
     return {
       include: {
         validationsTracking: true,
-        schedule: true,
+        schedule: {
+          include: {
+            grade: {
+              include: {
+                degree: {
+                  include: {
+                    period: true,
+                  },
+                },
+              },
+            },
+            subject: true,
+          },
+        },
       },
     };
   }
@@ -29,7 +42,9 @@ export class LessonPlansRepository {
     });
 
     if (!lessonPlan) {
-      throw new NotFoundException(`Plan de clases con id "${id}" no encontrado`);
+      throw new NotFoundException(
+        `Plan de clases con id "${id}" no encontrado`,
+      );
     }
 
     return lessonPlan;
@@ -40,12 +55,24 @@ export class LessonPlansRepository {
       where: {
         scheduleId,
       },
-      ...this.getAdittionalData()
-    })
+      ...this.getAdittionalData(),
+    });
   }
 
   create(createLessonPlanDto: CreateLessonPlanDto) {
-    const { periodId, scheduleId, date, topic, description, content, purposeOfClass, bibliography, resources, notification, notificationDate } = createLessonPlanDto;
+    const {
+      periodId,
+      scheduleId,
+      date,
+      topic,
+      description,
+      content,
+      purposeOfClass,
+      bibliography,
+      resources,
+      notification,
+      notificationDate,
+    } = createLessonPlanDto;
     return this.prisma.lessonPlan.create({
       data: {
         periodId,
@@ -58,9 +85,10 @@ export class LessonPlansRepository {
         purposeOfClass,
         bibliography,
         notification,
-        notificationDate: notificationDate === undefined ? null : new Date(notificationDate)
-      }
-    })
+        notificationDate:
+          notificationDate === undefined ? null : new Date(notificationDate),
+      },
+    });
   }
 
   async update(id: string, updateLessonPlanDto: UpdateLessonPlanDto) {
@@ -71,7 +99,7 @@ export class LessonPlansRepository {
       },
       data: {
         ...updateLessonPlanDto,
-        date: updateLessonPlanDto.date && new Date(updateLessonPlanDto.date)
+        date: updateLessonPlanDto.date && new Date(updateLessonPlanDto.date),
       },
       ...this.getAdittionalData(),
     });
@@ -85,5 +113,16 @@ export class LessonPlansRepository {
       },
     });
     return deleteLessonPlan;
+  }
+
+  async removeResource(id: string, resources: any) {
+    await this.prisma.lessonPlan.update({
+      where: {
+        id,
+      },
+      data: {
+        resources: resources,
+      }
+    });
   }
 }

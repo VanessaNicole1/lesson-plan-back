@@ -96,33 +96,34 @@ model Schedule {
 }
 
 model LessonPlan {
-  id                  String                         @id @default(uuid())
-  date                DateTime
-  topic               String
-  content             String?
-  description         String?
-  purposeOfClass      String?
-  bibliography        String?
-  schedule            Schedule                       @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
-  scheduleId          String
-  notification        String?
-  notificationDate    DateTime?
-  resources           String[]
-  hasQualified        Boolean                        @default(false)
-  validationsTracking LessonPlanValidationTracking[]
-  periodId            String
-  createdAt           DateTime                       @default(now())
+  id                    String                         @id @default(uuid())
+  date                  DateTime
+  topic                 String
+  content               String?
+  description           String?
+  purposeOfClass        String?
+  bibliography          String?
+  schedule              Schedule                       @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  scheduleId            String
+  notification          String?
+  maximumValidationDate DateTime?
+  notificationDate      DateTime?
+  resources             Json?
+  hasQualified          Boolean                        @default(false)
+  validationsTracking   LessonPlanValidationTracking[]
+  periodId              String
+  createdAt             DateTime                       @default(now())
 }
 
 model LessonPlanValidationTracking {
+  id           String     @id @default(uuid())
   isValidated  Boolean    @default(false)
   lessonPlan   LessonPlan @relation(fields: [lessonPlanId], references: [id], onDelete: Cascade)
   lessonPlanId String
   student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId    String
   periodId     String?
-
-  @@id([lessonPlanId, studentId])
+  isAgree      Boolean?
 }
 
 model User {

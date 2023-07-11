@@ -16,6 +16,7 @@ import { UpdateLessonPlanDto } from './dto/update-lesson-plan.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'path';
+import { DeleteResourceDto } from './dto/delete-resource.dto';
 
 @Controller('lesson-plans')
 export class LessonPlansController {
@@ -90,8 +91,13 @@ export class LessonPlansController {
     return this.lessonPlansService.update(id, updateLessonPlanDto, files);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.lessonPlansService.remove(id);
-  }
+  // @Post('resource/:id')
+  // async removeResource(@Param('id') id: string, @Body() deleteResourceDto: DeleteResourceDto) {
+  //   return await this.lessonPlansService.removeResource(id, deleteResourceDto);
+  // }
+
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.lessonPlansService.remove(id);
+  // }
 }
