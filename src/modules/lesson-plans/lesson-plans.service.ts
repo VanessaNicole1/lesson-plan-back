@@ -91,24 +91,24 @@ export class LessonPlansService {
     return this.lessonPlansRepository.update(id, updateLessonPlanDto);
   }
 
-  // async remove(id: string) {
-  //   const lessonPlan = await this.findOne(id);
-  //   const validationsTracking = lessonPlan.validationsTracking;
-  //   const validatedLessonPlans = validationsTracking.filter(
-  //     (tracking) => tracking.isValidated === true,
-  //   );
-  //   if (validatedLessonPlans.length > 0) {
-  //     throw new BadRequestException(
-  //       'El plan de clases no puede ser eliminado ya que ya tiene una validación por parte de un estudiante',
-  //     );
-  //   }
-  //   const resources = lessonPlan.resources;
-  //   for (let i = 0; i < resources.length; i++) {
-  //     const resource = resources[i];
-  //     fs.unlinkSync(`./uploads/${resource}`);
-  //   }
-  //   return this.lessonPlansRepository.remove(id);
-  // }
+  async remove(id: string) {
+    const lessonPlan = await this.findOne(id);
+    const validationsTracking = lessonPlan.validationsTracking;
+    const validatedLessonPlans = validationsTracking.filter(
+      (tracking) => tracking.isValidated === true,
+    );
+    if (validatedLessonPlans.length > 0) {
+      throw new BadRequestException(
+        'El plan de clases no puede ser eliminado ya que ya tiene una validación por parte de un estudiante',
+      );
+    }
+    const resources = lessonPlan.resources as any[];
+    for (let i = 0; i < resources.length; i++) {
+      const resource = resources[i].url;
+      fs.unlinkSync(`./uploads/${resource}`);
+    }
+    return this.lessonPlansRepository.remove(id);
+  }
 
   // async removeResource(id: string, deleteResourceDto: DeleteResourceDto) {
   //   const { name } = deleteResourceDto;

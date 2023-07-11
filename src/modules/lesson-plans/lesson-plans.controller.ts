@@ -96,8 +96,8 @@ export class LessonPlansController {
   //   return await this.lessonPlansService.removeResource(id, deleteResourceDto);
   // }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.lessonPlansService.remove(id);
-  // }
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.lessonPlansService.remove(id);
+  }
 }
