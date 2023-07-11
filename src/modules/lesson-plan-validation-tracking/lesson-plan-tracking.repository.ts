@@ -6,6 +6,18 @@ import { CreateLessonPlanTrackingDto } from './dto/validate-lesson-plan.dto';
 export class LessonPlansTrackingRepository {
   constructor(private prisma: PrismaService) {}
 
+
+  getLessonPlanTrackingByLessonPlanIdAndPeriod(lessonPlanId: string, periodId: string) {
+    return this.prisma.lessonPlanValidationTracking.findFirst({
+      where: {
+        lessonPlanId,
+        AND: {
+          periodId
+        }
+      }
+    })
+  };
+
   getLessonPlansByStudentsAndPeriods(isValidated: boolean, studentIds: string[], periodIds: string[]) {
     return this.prisma.lessonPlanValidationTracking.findMany({
       where: {

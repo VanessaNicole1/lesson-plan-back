@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../common/services/prisma.service';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan.dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan.dto';
@@ -41,21 +41,26 @@ export class LessonPlansRepository {
     return this.prisma.lessonPlan.findMany();
   }
 
-  async findOne(id: string) {
-    const lessonPlan = await this.prisma.lessonPlan.findUnique({
+  findOne(id: string) {
+    return this.prisma.lessonPlan.findUnique({
       where: {
         id,
       },
-      ...this.getAdittionalData(),
+      include: {
+        validationsTracking: true,
+        schedule: {
+          include: {
+            grade: true,
+            teacher: {
+              include: {
+                user: true
+              }
+            },
+            subject: true,
+          }
+        },
+      }
     });
-
-    if (!lessonPlan) {
-      throw new NotFoundException(
-        `Plan de clases con id "${id}" no encontrado`,
-      );
-    }
-
-    return lessonPlan;
   }
 
   findLessonPlanBySchedule(scheduleId: string) {
