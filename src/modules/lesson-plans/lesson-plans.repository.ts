@@ -10,7 +10,15 @@ export class LessonPlansRepository {
   private getAdittionalData() {
     return {
       include: {
-        validationsTracking: true,
+        validationsTracking: {
+          include: {
+            student: {
+              include: {
+                user: true,
+              }
+            },
+          }
+        },
         schedule: {
           include: {
             grade: {
@@ -38,7 +46,7 @@ export class LessonPlansRepository {
       where: {
         id,
       },
-      ...this.getAdittionalData(),
+      ...this.getAdittionalData()
     });
 
     if (!lessonPlan) {
@@ -92,14 +100,34 @@ export class LessonPlansRepository {
   }
 
   async update(id: string, updateLessonPlanDto: UpdateLessonPlanDto) {
+    const {
+      periodId,
+      date,
+      topic,
+      description,
+      content,
+      purposeOfClass,
+      bibliography,
+      resources,
+      notification,
+      notificationDate,
+    } = updateLessonPlanDto;
     await this.findOne(id);
+    delete updateLessonPlanDto.students;
     const updatedLessonPlan = await this.prisma.lessonPlan.update({
       where: {
         id,
       },
       data: {
-        ...updateLessonPlanDto,
-        date: updateLessonPlanDto.date && new Date(updateLessonPlanDto.date),
+        periodId,
+        topic,
+        description,
+        content,
+        purposeOfClass,
+        bibliography,
+        resources,
+        date: new Date(date),
+        notificationDate: new Date(notificationDate)
       },
       ...this.getAdittionalData(),
     });

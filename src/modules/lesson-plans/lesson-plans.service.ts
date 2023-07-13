@@ -78,17 +78,43 @@ export class LessonPlansService {
     return lessonPlanCreated;
   }
 
-  update(
+  async update(
     id: string,
     updateLessonPlanDto: UpdateLessonPlanDto,
     files: Array<Express.Multer.File>,
   ) {
+    const currentLessonPlan = await this.findOne(id);
+    const { students } = updateLessonPlanDto;
     const resources = [];
     for (let i = 0; i < files.length; i++) {
-      resources.push(files[i].filename);
+      const file = files[i];
+      const resource = {
+        name: file.originalname,
+        url: file.filename,
+        createdDate: new Date(),
+        size: file.size
+      }
+      resources.push(resource);
     }
-    updateLessonPlanDto['resources'] = resources;
-    return this.lessonPlansRepository.update(id, updateLessonPlanDto);
+    const lessonPlanResources = currentLessonPlan.resources as any[];
+    let newResources = [];
+    if (lessonPlanResources.length > 0) {
+      newResources = [...resources, ...lessonPlanResources];
+      resources.push(lessonPlanResources);
+    }
+    updateLessonPlanDto['resources'] = newResources;
+
+    await this.lessonPlansTrackingService.removeLessonPlansTrackingByLessonPlan(id);
+
+    const lessonPlanUpdated = await this.lessonPlansRepository.update(id, updateLessonPlanDto);
+    if (lessonPlanUpdated) {
+      await this.lessonPlansTrackingService.create({
+        lessonPlanId: lessonPlanUpdated.id,
+        students,
+        periodId: updateLessonPlanDto.periodId,
+      })
+    }
+    // TODO: Notify to students
   }
 
   async remove(id: string) {
@@ -110,12 +136,12 @@ export class LessonPlansService {
     return this.lessonPlansRepository.remove(id);
   }
 
-  // async removeResource(id: string, deleteResourceDto: DeleteResourceDto) {
-  //   const { name } = deleteResourceDto;
-  //   const lessonPlan = await this.findOne(id);
-  //   const resources = lessonPlan.resources;
-  //   const currentResources = resources.filter((resource) => resource !== name);
-  //   await this.lessonPlansRepository.removeResource(id, currentResources);
-  //   await fs.unlinkSync(`./uploads/${name}`);
-  // }
+  async removeResource(id: string, deleteResourceDto: DeleteResourceDto) {
+    const { name } = deleteResourceDto;
+    const lessonPlan = await this.findOne(id);
+    const resources = lessonPlan.resources as any[];
+    const currentResources = resources.filter((resource) => resource.url !== name);
+    await this.lessonPlansRepository.removeResource(id, currentResources);
+    await fs.unlinkSync(`./uploads/${name}`);
+  }
 }
