@@ -97,7 +97,10 @@ export class LessonPlansController {
   }
 
   @Post('resource/:id')
-  async removeResource(@Param('id') id: string, @Body() deleteResourceDto: DeleteResourceDto) {
+  async removeResource(
+    @Param('id') id: string,
+    @Body() deleteResourceDto: DeleteResourceDto,
+  ) {
     return await this.lessonPlansService.removeResource(id, deleteResourceDto);
   }
 

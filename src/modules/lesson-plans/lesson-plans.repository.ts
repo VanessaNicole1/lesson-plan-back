@@ -15,9 +15,9 @@ export class LessonPlansRepository {
             student: {
               include: {
                 user: true,
-              }
+              },
             },
-          }
+          },
         },
         schedule: {
           include: {
@@ -46,7 +46,7 @@ export class LessonPlansRepository {
       where: {
         id,
       },
-      ...this.getAdittionalData()
+      ...this.getAdittionalData(),
     });
 
     if (!lessonPlan) {
@@ -80,6 +80,7 @@ export class LessonPlansRepository {
       resources,
       notification,
       notificationDate,
+      deadlineDate,
     } = createLessonPlanDto;
     return this.prisma.lessonPlan.create({
       data: {
@@ -91,6 +92,7 @@ export class LessonPlansRepository {
         resources,
         description,
         purposeOfClass,
+        maximumValidationDate: new Date(deadlineDate),
         bibliography,
         notification,
         notificationDate:
@@ -109,8 +111,8 @@ export class LessonPlansRepository {
       purposeOfClass,
       bibliography,
       resources,
-      notification,
       notificationDate,
+      deadlineDate,
     } = updateLessonPlanDto;
     await this.findOne(id);
     delete updateLessonPlanDto.students;
@@ -127,7 +129,8 @@ export class LessonPlansRepository {
         bibliography,
         resources,
         date: new Date(date),
-        notificationDate: new Date(notificationDate)
+        notificationDate: new Date(notificationDate),
+        maximumValidationDate: new Date(deadlineDate),
       },
       ...this.getAdittionalData(),
     });
@@ -150,7 +153,7 @@ export class LessonPlansRepository {
       },
       data: {
         resources: resources,
-      }
+      },
     });
   }
 }
