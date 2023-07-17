@@ -111,7 +111,7 @@ export class LessonPlansRepository {
       purposeOfClass,
       bibliography,
       resources,
-      notificationDate,
+      // notificationDate,
       deadlineDate,
     } = updateLessonPlanDto;
     await this.findOne(id);
@@ -129,7 +129,7 @@ export class LessonPlansRepository {
         bibliography,
         resources,
         date: new Date(date),
-        notificationDate: new Date(notificationDate),
+        // notificationDate: new Date(notificationDate),
         maximumValidationDate: new Date(deadlineDate),
       },
       ...this.getAdittionalData(),

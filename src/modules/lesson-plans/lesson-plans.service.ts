@@ -84,8 +84,7 @@ export class LessonPlansService {
     files: Array<Express.Multer.File>,
   ) {
     const currentLessonPlan = await this.findOne(id);
-    const { students, deadlineDate } = updateLessonPlanDto;
-    console.log('deadlineDate', typeof deadlineDate);
+    const { students, deadlineNotification } = updateLessonPlanDto;
     const resources = [];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -113,12 +112,6 @@ export class LessonPlansService {
       id,
       updateLessonPlanDto,
     );
-
-    if (
-      new Date(deadlineDate) > new Date(currentLessonPlan.maximumValidationDate)
-    ) {
-      console.log('Notify to students that the deadline has changed');
-    }
     if (lessonPlanUpdated) {
       await this.lessonPlansTrackingService.create({
         lessonPlanId: lessonPlanUpdated.id,
@@ -127,6 +120,10 @@ export class LessonPlansService {
       });
     }
     // TODO: Notify to students
+    if (deadlineNotification === 'yes') {
+      const lessonPlanTracking = await this.lessonPlansTrackingService.findLessonPlanTrackingByLessonPlanId(lessonPlanUpdated.id);
+      console.log('LESSON PLANS TRACKING', lessonPlanTracking);
+    }
   }
 
   async remove(id: string) {
