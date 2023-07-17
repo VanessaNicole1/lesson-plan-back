@@ -21,4 +21,8 @@ export class LessonPlansTrackingService {
   removeLessonPlansTrackingByLessonPlan(lessonPlanId: string) {
     return this.lessonPlansTrackingRepository.removeLessonPlansTrackingByLessonPlan(lessonPlanId);
   }
+
+  findLessonPlanTrackingByLessonPlanId(lessonPlanId: string) {
+    return this.lessonPlansTrackingRepository.findLessonPlanTrackingByLessonPlanId(lessonPlanId);
+  }
 }

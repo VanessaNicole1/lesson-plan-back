@@ -56,4 +56,21 @@ export class LessonPlansTrackingRepository {
       },
     });
   }
+
+  findLessonPlanTrackingByLessonPlanId(lessonPlanId: string) {
+    return this.prisma.lessonPlanValidationTracking.findMany({
+      where: {
+        lessonPlanId: {
+          equals: lessonPlanId,
+        },
+      },
+      include: {
+        student: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+  }
 }
