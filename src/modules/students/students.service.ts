@@ -78,7 +78,7 @@ export class StudentsService {
       throw new Exception('User is not allowed to validate the requested lesson plan');
     }
     
-    return lessonPlan;
+    return { lessonPlan, lessonPlanTracking: lessonPlanTrackingRecord };
   }
 
   async findStudentActivePeriodsByUser(
