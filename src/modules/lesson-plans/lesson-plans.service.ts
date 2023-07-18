@@ -7,6 +7,9 @@ import * as fs from 'fs';
 import { LessonPlansTrackingService } from '../lesson-plan-validation-tracking/lesson-plan-tracking.service';
 import { SendEmailService } from '../common/services/send-email.service';
 import { DeleteResourceDto } from './dto/delete-resource.dto';
+import { StudentValidateLessonPlanEmail } from '../common/strategies/email/student/validate-lesson-plan.strategy';
+import { SendFakeEmailService } from '../common/services/send-fake-email.service';
+import { PeriodsService } from '../periods/periods.service';
 
 @Injectable()
 export class LessonPlansService {
@@ -14,7 +17,9 @@ export class LessonPlansService {
     private lessonPlansRepository: LessonPlansRepository,
     private scheduleService: SchedulesService,
     private lessonPlansTrackingService: LessonPlansTrackingService,
-    private emailService: SendEmailService,
+    private periodService: PeriodsService,
+    // private emailService: SendEmailService,
+    private emailService: SendFakeEmailService,
   ) {}
 
   findAll() {
@@ -33,7 +38,7 @@ export class LessonPlansService {
     createLessonPlanDto: CreateLessonPlanDto,
     files: Array<Express.Multer.File>,
   ) {
-    const { students, notification } = createLessonPlanDto;
+    const { students, notification, periodId, date, deadlineDate } = createLessonPlanDto;
     const resources = [];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -41,15 +46,15 @@ export class LessonPlansService {
         name: file.originalname,
         url: file.filename,
         createdDate: new Date(),
-        size: file.size
-      }
+        size: file.size,
+      };
       resources.push(resource);
     }
     createLessonPlanDto['resources'] = resources;
     const { scheduleId } = createLessonPlanDto;
     const currentSchedule = await this.scheduleService.findOne(scheduleId);
     if (notification === 'yes') {
-      delete createLessonPlanDto.notificationDate
+      delete createLessonPlanDto.notificationDate;
     }
     createLessonPlanDto = {
       ...createLessonPlanDto,
@@ -64,12 +69,23 @@ export class LessonPlansService {
       await this.lessonPlansTrackingService.create({
         lessonPlanId: lessonPlanCreated.id,
         students,
-        periodId: createLessonPlanDto.periodId
+        periodId: createLessonPlanDto.periodId,
       });
     }
 
-    // TODO: Notify the grading of the lesson plan
     if (notification === 'yes') {
+      const currentPeriod = await this.periodService.findOne(periodId);
+      const periodDisplayName = currentPeriod.displayName;
+      const subjectName = currentSchedule.subject.name;
+      const teacherName = currentSchedule.teacher.user.displayName;
+      const lessonPlanDate = new Date(date).toDateString();
+      const lessonPlansTracking = await this.lessonPlansTrackingService.findLessonPlanTrackingByLessonPlanId(lessonPlanCreated.id);
+      for (let i = 0; i < lessonPlansTracking.length; i++) {
+        const lessonPlanTracking = lessonPlansTracking[i];
+        const studentDisplayName = lessonPlanTracking.student.user.displayName;
+        const validateLessonPlanEmail = new StudentValidateLessonPlanEmail(periodDisplayName, studentDisplayName, subjectName, teacherName, lessonPlanDate, new Date(deadlineDate).toString());
+        this.emailService.sendEmail(validateLessonPlanEmail, 'email');
+      }
       // return this.emailService.sendEmail();
     } else {
       // return;
@@ -78,17 +94,52 @@ export class LessonPlansService {
     return lessonPlanCreated;
   }
 
-  update(
+  async update(
     id: string,
     updateLessonPlanDto: UpdateLessonPlanDto,
     files: Array<Express.Multer.File>,
   ) {
+    const currentLessonPlan = await this.findOne(id);
+    const { students, deadlineNotification } = updateLessonPlanDto;
     const resources = [];
     for (let i = 0; i < files.length; i++) {
-      resources.push(files[i].filename);
+      const file = files[i];
+      const resource = {
+        name: file.originalname,
+        url: file.filename,
+        createdDate: new Date(),
+        size: file.size,
+      };
+      resources.push(resource);
     }
-    updateLessonPlanDto['resources'] = resources;
-    return this.lessonPlansRepository.update(id, updateLessonPlanDto);
+    const lessonPlanResources = currentLessonPlan.resources as any[];
+    let newResources = [];
+    if (lessonPlanResources && lessonPlanResources.length > 0) {
+      newResources = [...resources, ...lessonPlanResources];
+      resources.push(lessonPlanResources);
+    }
+    updateLessonPlanDto['resources'] = newResources;
+
+    await this.lessonPlansTrackingService.removeLessonPlansTrackingByLessonPlan(
+      id,
+    );
+
+    const lessonPlanUpdated = await this.lessonPlansRepository.update(
+      id,
+      updateLessonPlanDto,
+    );
+    if (lessonPlanUpdated) {
+      await this.lessonPlansTrackingService.create({
+        lessonPlanId: lessonPlanUpdated.id,
+        students,
+        periodId: updateLessonPlanDto.periodId,
+      });
+    }
+    // TODO: Notify to students
+    if (deadlineNotification === 'yes') {
+      const lessonPlanTracking = await this.lessonPlansTrackingService.findLessonPlanTrackingByLessonPlanId(lessonPlanUpdated.id);
+      console.log('LESSON PLANS TRACKING', lessonPlanTracking);
+    }
   }
 
   async remove(id: string) {
@@ -110,12 +161,14 @@ export class LessonPlansService {
     return this.lessonPlansRepository.remove(id);
   }
 
-  // async removeResource(id: string, deleteResourceDto: DeleteResourceDto) {
-  //   const { name } = deleteResourceDto;
-  //   const lessonPlan = await this.findOne(id);
-  //   const resources = lessonPlan.resources;
-  //   const currentResources = resources.filter((resource) => resource !== name);
-  //   await this.lessonPlansRepository.removeResource(id, currentResources);
-  //   await fs.unlinkSync(`./uploads/${name}`);
-  // }
+  async removeResource(id: string, deleteResourceDto: DeleteResourceDto) {
+    const { name } = deleteResourceDto;
+    const lessonPlan = await this.findOne(id);
+    const resources = lessonPlan.resources as any[];
+    const currentResources = resources.filter(
+      (resource) => resource.url !== name,
+    );
+    await this.lessonPlansRepository.removeResource(id, currentResources);
+    await fs.unlinkSync(`./uploads/${name}`);
+  }
 }

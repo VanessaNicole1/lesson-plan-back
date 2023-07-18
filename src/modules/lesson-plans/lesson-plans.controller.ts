@@ -88,13 +88,21 @@ export class LessonPlansController {
     @Body() updateLessonPlanDto: UpdateLessonPlanDto,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
+    const currentStudents = updateLessonPlanDto.students.split(',').map(String);
+    updateLessonPlanDto = {
+      ...updateLessonPlanDto,
+      students: currentStudents,
+    };
     return this.lessonPlansService.update(id, updateLessonPlanDto, files);
   }
 
-  // @Post('resource/:id')
-  // async removeResource(@Param('id') id: string, @Body() deleteResourceDto: DeleteResourceDto) {
-  //   return await this.lessonPlansService.removeResource(id, deleteResourceDto);
-  // }
+  @Post('resource/:id')
+  async removeResource(
+    @Param('id') id: string,
+    @Body() deleteResourceDto: DeleteResourceDto,
+  ) {
+    return await this.lessonPlansService.removeResource(id, deleteResourceDto);
+  }
 
   @Delete(':id')
   remove(@Param('id') id: string) {

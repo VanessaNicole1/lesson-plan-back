@@ -10,7 +10,15 @@ export class LessonPlansRepository {
   private getAdittionalData() {
     return {
       include: {
-        validationsTracking: true,
+        validationsTracking: {
+          include: {
+            student: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
         schedule: {
           include: {
             grade: {
@@ -72,6 +80,7 @@ export class LessonPlansRepository {
       resources,
       notification,
       notificationDate,
+      deadlineDate,
     } = createLessonPlanDto;
     return this.prisma.lessonPlan.create({
       data: {
@@ -83,6 +92,7 @@ export class LessonPlansRepository {
         resources,
         description,
         purposeOfClass,
+        maximumValidationDate: new Date(deadlineDate),
         bibliography,
         notification,
         notificationDate:
@@ -92,14 +102,35 @@ export class LessonPlansRepository {
   }
 
   async update(id: string, updateLessonPlanDto: UpdateLessonPlanDto) {
+    const {
+      periodId,
+      date,
+      topic,
+      description,
+      content,
+      purposeOfClass,
+      bibliography,
+      resources,
+      // notificationDate,
+      deadlineDate,
+    } = updateLessonPlanDto;
     await this.findOne(id);
+    delete updateLessonPlanDto.students;
     const updatedLessonPlan = await this.prisma.lessonPlan.update({
       where: {
         id,
       },
       data: {
-        ...updateLessonPlanDto,
-        date: updateLessonPlanDto.date && new Date(updateLessonPlanDto.date),
+        periodId,
+        topic,
+        description,
+        content,
+        purposeOfClass,
+        bibliography,
+        resources,
+        date: new Date(date),
+        // notificationDate: new Date(notificationDate),
+        maximumValidationDate: new Date(deadlineDate),
       },
       ...this.getAdittionalData(),
     });
@@ -122,7 +153,7 @@ export class LessonPlansRepository {
       },
       data: {
         resources: resources,
-      }
+      },
     });
   }
 }

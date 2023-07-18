@@ -40,6 +40,9 @@ export class PeriodsRepository {
       where: {
         id,
       },
+      include: {
+        periodConfig: true,
+      }
     });
   }
 
