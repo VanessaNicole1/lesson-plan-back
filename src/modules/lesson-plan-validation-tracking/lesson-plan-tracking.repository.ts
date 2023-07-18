@@ -49,7 +49,7 @@ export class LessonPlansTrackingRepository {
     })
   }
 
-  removeLessonPlansTrackingByLessonPlan(lessonPlanId) {
+  removeLessonPlansTrackingByLessonPlan(lessonPlanId: string) {
     return this.prisma.lessonPlanValidationTracking.deleteMany({
       where: {
         lessonPlanId,

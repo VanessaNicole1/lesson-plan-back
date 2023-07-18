@@ -7,6 +7,9 @@ import * as fs from 'fs';
 import { LessonPlansTrackingService } from '../lesson-plan-validation-tracking/lesson-plan-tracking.service';
 import { SendEmailService } from '../common/services/send-email.service';
 import { DeleteResourceDto } from './dto/delete-resource.dto';
+import { StudentValidateLessonPlanEmail } from '../common/strategies/email/student/validate-lesson-plan.strategy';
+import { SendFakeEmailService } from '../common/services/send-fake-email.service';
+import { PeriodsService } from '../periods/periods.service';
 
 @Injectable()
 export class LessonPlansService {
@@ -14,7 +17,9 @@ export class LessonPlansService {
     private lessonPlansRepository: LessonPlansRepository,
     private scheduleService: SchedulesService,
     private lessonPlansTrackingService: LessonPlansTrackingService,
-    private emailService: SendEmailService,
+    private periodService: PeriodsService,
+    // private emailService: SendEmailService,
+    private emailService: SendFakeEmailService,
   ) {}
 
   findAll() {
@@ -33,7 +38,7 @@ export class LessonPlansService {
     createLessonPlanDto: CreateLessonPlanDto,
     files: Array<Express.Multer.File>,
   ) {
-    const { students, notification } = createLessonPlanDto;
+    const { students, notification, periodId, date, deadlineDate } = createLessonPlanDto;
     const resources = [];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -68,8 +73,19 @@ export class LessonPlansService {
       });
     }
 
-    // TODO: Notify the grading of the lesson plan
     if (notification === 'yes') {
+      const currentPeriod = await this.periodService.findOne(periodId);
+      const periodDisplayName = currentPeriod.displayName;
+      const subjectName = currentSchedule.subject.name;
+      const teacherName = currentSchedule.teacher.user.displayName;
+      const lessonPlanDate = new Date(date).toDateString();
+      const lessonPlansTracking = await this.lessonPlansTrackingService.findLessonPlanTrackingByLessonPlanId(lessonPlanCreated.id);
+      for (let i = 0; i < lessonPlansTracking.length; i++) {
+        const lessonPlanTracking = lessonPlansTracking[i];
+        const studentDisplayName = lessonPlanTracking.student.user.displayName;
+        const validateLessonPlanEmail = new StudentValidateLessonPlanEmail(periodDisplayName, studentDisplayName, subjectName, teacherName, lessonPlanDate, new Date(deadlineDate).toString());
+        this.emailService.sendEmail(validateLessonPlanEmail, 'email');
+      }
       // return this.emailService.sendEmail();
     } else {
       // return;

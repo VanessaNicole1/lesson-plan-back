@@ -30,6 +30,15 @@ export class SchedulesRepository {
       where: {
         id,
       },
+      include: {
+        subject: true,
+        grade: true,
+        teacher: {
+          include: {
+            user: true,
+          }
+        }
+      }
     });
   }
 
