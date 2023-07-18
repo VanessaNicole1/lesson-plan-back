@@ -11,6 +11,7 @@ import { CreatePeriodDto } from './dto/create-period.dto';
 import { FilterPeriodDto } from './dto/filter-period.dto';
 import { PeriodsRepository } from './periods.repository';
 import { TeachersService } from '../teachers/teachers.service';
+import { Exception } from 'handlebars';
 
 @Injectable()
 export class PeriodsService {
@@ -29,6 +30,17 @@ export class PeriodsService {
 
   findActivePeriods() {
     return this.periodsRepository.findActivePeriods();
+  }
+
+  async findActivePeriodById(periodId: string) {
+    const period = await this.periodsRepository.findActivePeriodById(periodId);
+
+    if (!period) {
+      // Add i18n
+      throw new Exception('Period is not active')
+    }
+
+    return period;
   }
 
   findManyByPeriodIds(periodIds: string[]) {

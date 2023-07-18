@@ -13,6 +13,7 @@ import { PeriodsModule } from '../periods/periods.module';
     PeriodsModule,
   ],
   controllers: [LessonPlansController],
-  providers: [LessonPlansService, LessonPlansRepository]
+  providers: [LessonPlansService, LessonPlansRepository],
+  exports: [LessonPlansService]
 })
 export class LessonPlansModule {}

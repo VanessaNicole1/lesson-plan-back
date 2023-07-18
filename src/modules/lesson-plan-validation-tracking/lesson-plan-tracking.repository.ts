@@ -1,10 +1,44 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../common/services/prisma.service';
 import { CreateLessonPlanTrackingDto } from './dto/validate-lesson-plan.dto';
+import { UpdateLessonPlanTrackingDto } from './dto/update-lesson-plan-tracking.dto';
 
 @Injectable()
 export class LessonPlansTrackingRepository {
   constructor(private prisma: PrismaService) {}
+
+  findOne(id: string) {
+    return this.prisma.lessonPlanValidationTracking.findUnique({
+      where: {
+        id
+      }
+    })
+  };
+
+  update(id: string, lessonPlanTrackingDto: UpdateLessonPlanTrackingDto) {
+    const { isAgree, isValidated } = lessonPlanTrackingDto;
+    return this.prisma.lessonPlanValidationTracking.update({
+      where: {
+        id
+      },
+      data: {
+        isValidated,
+        isAgree
+      }
+    });
+  }
+
+
+  getLessonPlanTrackingByLessonPlanIdAndPeriod(lessonPlanId: string, periodId: string) {
+    return this.prisma.lessonPlanValidationTracking.findFirst({
+      where: {
+        lessonPlanId,
+        AND: {
+          periodId
+        }
+      }
+    })
+  };
 
   getLessonPlansByStudentsAndPeriods(isValidated: boolean, studentIds: string[], periodIds: string[]) {
     return this.prisma.lessonPlanValidationTracking.findMany({

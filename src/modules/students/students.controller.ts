@@ -3,9 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   HttpCode,
   UseFilters,
   Query,
@@ -24,6 +22,15 @@ export class StudentsController {
   @Get('/lesson-plans')
   getLessonPlansInActivePeriods(@Query() getLessonPlansDto: GetLessonPlansDto) {
     return this.studentsService.getLessonPlansInActivePeriods(getLessonPlansDto);
+  }
+  
+  @Get(':userId/lesson-plan-to-validate')
+  getLessonPlanIfStudentIsAllowedToValidate(
+    @Param('userId') userId: string,
+    @Query() queryParams
+  ) {
+    const { lessonPlanId } = queryParams;
+    return this.studentsService.getLessonPlanIfStudentIsAllowedToValidate(userId, lessonPlanId);
   }
 
   @Get(':id/active-periods')

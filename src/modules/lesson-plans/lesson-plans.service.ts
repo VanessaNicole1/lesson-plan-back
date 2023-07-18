@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan.dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan.dto';
 import { LessonPlansRepository } from './lesson-plans.repository';
@@ -26,8 +26,14 @@ export class LessonPlansService {
     return this.lessonPlansRepository.findAll();
   }
 
-  findOne(id: string) {
-    return this.lessonPlansRepository.findOne(id);
+  async findOne(id: string) {
+    const lessonPlan = await this.lessonPlansRepository.findOne(id);
+
+    if (!lessonPlan) {
+      throw new NotFoundException(`Plan de clases con id "${id}" no encontrado`);
+    }
+
+    return lessonPlan;
   }
 
   findLessonPlanBySchedule(scheduleId: string) {

@@ -13,6 +13,7 @@ import { GetLessonPlansDto } from './dto/get-lesson-plans.dto';
 import { PeriodsService } from '../periods/periods.service';
 import { LessonPlansTrackingService } from '../lesson-plan-validation-tracking/lesson-plan-tracking.service';
 import { UsersService } from '../users/users.service';
+import { LessonPlansService } from '../lesson-plans/lesson-plans.service';
 
 @Injectable()
 export class StudentsService {
@@ -25,13 +26,14 @@ export class StudentsService {
     private periodService: PeriodsService,
     private usersService: UsersService,
     private lessonPlanTrackingService: LessonPlansTrackingService,
+    private lessonPlanService: LessonPlansService,
     private i18nService: I18nService,
   ) {}
 
   async getLessonPlansInActivePeriods(getLessonPlansDto: GetLessonPlansDto) {
     const { isValidated, userId, periodId } = getLessonPlansDto;
     const activePeriod = await this.periodService.findOne(periodId);
-    const studentsAssignedToUser = await this.getStudentsByUserInActivePeriods(userId, activePeriod.id);
+    const studentsAssignedToUser = await this.getStudentsByUserInActivePeriod(userId, activePeriod.id);
     const studentIds = studentsAssignedToUser.map(students => students.id);
     
     if (studentsAssignedToUser.length === 0) {
@@ -55,6 +57,28 @@ export class StudentsService {
     }
 
     return students;
+  }
+
+  async getLessonPlanIfStudentIsAllowedToValidate(userId: string, lessonPlanId: string) {
+    const lessonPlan = await this.lessonPlanService.findOne(lessonPlanId);
+    const activePeriod = await this.periodService.findActivePeriodById(lessonPlan.periodId);
+    const studentsAssignedToUser = await this.getStudentsByUserInActivePeriod(userId, activePeriod.id);
+
+    if (studentsAssignedToUser.length === 0) {
+      // TODO: Add I18N
+      throw new Exception('User has not assigned any student in requested period');
+    }
+
+    const lessonPlanTrackingRecord = await this.lessonPlanTrackingService.getLessonPlanTrackingByLessonPlanIdAndPeriod(lessonPlanId, activePeriod.id);
+
+    const studentToValidateLessonPlan = studentsAssignedToUser.find(student => lessonPlanTrackingRecord.studentId === student.id);
+    
+    if (!studentToValidateLessonPlan) {
+      // TODO: Add I18N
+      throw new Exception('User is not allowed to validate the requested lesson plan');
+    }
+    
+    return { lessonPlan, lessonPlanTracking: lessonPlanTrackingRecord };
   }
 
   async findStudentActivePeriodsByUser(
@@ -85,8 +109,8 @@ export class StudentsService {
     return this.studentsRepository.findAll(filterStudentDto);
   }
 
-  getStudentsByUserInActivePeriods(userId: string, activePeriodIds: string) {
-    return this.studentsRepository.getStudentsByUserAndPeriod(userId, activePeriodIds);
+  getStudentsByUserInActivePeriod(userId: string, activePeriodId: string) {
+    return this.studentsRepository.getStudentsByUserAndPeriod(userId, activePeriodId);
   }
 
   validateStudentEmail(createStudentDto: CreateStudentDto, i18nContext: I18nContext) {

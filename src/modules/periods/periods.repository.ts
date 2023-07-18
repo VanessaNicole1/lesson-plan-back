@@ -6,6 +6,17 @@ import { FilterPeriodDto } from './dto/filter-period.dto';
 export class PeriodsRepository {
   constructor(private prisma: PrismaService) {}
 
+  findActivePeriodById(periodId: string) {
+    return this.prisma.period.findFirst({
+      where: {
+        id: periodId,
+        AND: {
+          isActive: true
+        }
+      }
+    })
+  };
+
   findAll(filterPeriodDto: FilterPeriodDto = {}) {
     const { isActive, idManagerUser } = filterPeriodDto;
     // TODO: Validate when isActive is false since the value to undefined is false
