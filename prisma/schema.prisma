@@ -97,6 +97,7 @@ model Schedule {
 
 model LessonPlan {
   id                    String                         @id @default(uuid())
+  lessonPlanNumber      Int?
   date                  DateTime
   topic                 String
   content               String?
