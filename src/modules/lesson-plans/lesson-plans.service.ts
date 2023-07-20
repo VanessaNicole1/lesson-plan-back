@@ -123,8 +123,10 @@ export class LessonPlansService {
     if (lessonPlanResources && lessonPlanResources.length > 0) {
       newResources = [...resources, ...lessonPlanResources];
       resources.push(lessonPlanResources);
+      updateLessonPlanDto['resources'] = newResources;
+    } else {
+      updateLessonPlanDto['resources'] = resources;
     }
-    updateLessonPlanDto['resources'] = newResources;
 
     await this.lessonPlansTrackingService.removeLessonPlansTrackingByLessonPlan(
       id,
@@ -144,7 +146,6 @@ export class LessonPlansService {
     // TODO: Notify to students
     if (deadlineNotification === 'yes') {
       const lessonPlanTracking = await this.lessonPlansTrackingService.findLessonPlanTrackingByLessonPlanId(lessonPlanUpdated.id);
-      console.log('LESSON PLANS TRACKING', lessonPlanTracking);
     }
   }
 
