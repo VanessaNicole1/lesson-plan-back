@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>PDF Report</title>
+  <style>
+    body {
+      font-size: 14px; /* Change the font size here as needed */
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+    }
+    .cell-background {
+      background-color: #FFD9BC;
+    }
+
+    .header {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .degree {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+      font-weight: bold;
+      font-size: medium;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .period {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img width="140" height="60" src="{{unlImageURL}}">
+    <h4>COORDINACIÓN GENERAL DE DOCENCIA</h4>
+    <img width="150" height="60" src="{{cisImageURL}}">
+  </div>
+
+  <hr />
+  
+  <div class="degree">
+    <div>FACULTAD DE LA ENERGÍA, LAS INDUSTRIAS Y LOS RECURSOS NATURALES NO RENOVABLES</div>
+    <div>CARRERA DE COMPUTACIÓN</div>
+  </div>
+
+  <div class="period">
+    <div>
+      <b>PLAN DE CLASE NRO:</b>
+      <span style="border: 1px solid black; padding-left: 20px; padding-right: 20px; margin-left: 5px;">01</span>
+    </div>
+    <div>
+      <b>PERIODO ACADÉMICO:</b>
+      <span style="border: 1px solid black; padding-left: 10px; padding-right: 10px; margin-left: 5px;">Octubre 2019 - Marzo 2020</span>
+    </div>
+  </div>
+
+  <br />
+
+  <div class="tables">
+    <table>
+      <tr>
+        <th class="cell-background"><b>ASIGNATURA:</b></th>
+        <td><b>{{subjectName}}</b></td>
+        <th class="cell-background"><b>CÓDIGO</b></th>
+        <td>{{code}}</td>
+        <th class="cell-background"><b>CICLO/MÓDULO</b></th>
+        <td><b>{{cicle}}</b></td>
+        <th class="cell-background"><b>PARALELO:</b></th>
+        <td><b>{{parallel}}</b></td>
+      </tr>
+      <tr>
+        <th class="cell-background"><b>FECHA</b></th>
+        <td>{{date}}</td>
+        <th class="cell-background"><b>JORNADA</b></th>
+        <td><b>Matutina</b></td>
+        <th class="cell-background"><b>DOCENTE</b></th>
+        <td colspan="3">{{teacherName}}</td>
+      </tr>
+    </table>
+  
+    <br />
+  
+    <table style="width: 100%;">
+      <tr>
+        <th style="width: 10%;" class="cell-background">TEMA</th>
+        <td style="width: 20%;">{{topic}}</td>
+        <th style="width: 20%;" class="cell-background">BIBLIOGRAFÍA</th>
+        <td colspan="4">{{bibContent}}</td>
+      </tr>
+      <tr>
+        <th class="cell-background" colspan="2">OBJETIVOS DE LA CLASE</th>
+        <td colspan="7">{{objectives}}</td>
+      </tr>
+      <tr>
+        <th class="cell-background" colspan="2">RESULTADOS DE APRENDIZAJE AL QUE CONTRIBUYE</th>
+        <td colspan="6">{{results}}</td>
+      </tr>
+      <tr>
+        <th colspan="4">Actividades</th>
+        <th colspan="2">Recursos Y/O MATERIALES</th>
+        <th colspan="2">EVALUACIÓN</th>
+      </tr>
+      <tr>
+        <td colspan="4">{{{activities}}}</td>
+        <td colspan="2">{{resources}}</td>
+        <td colspan="2">{{evaluations}}</td>
+      </tr>
+      <tr>
+        <td colspan="8"><b>OBSERVACIONES:</b> {{observations}}</td>
+      </tr>
+      <tr>
+        <th colspan="3">ESTUDIANTES</th>
+        <td colspan="5">
+          <ul>
+            {{#each students}}
+              <li>{{this.displayName}}</li>
+            {{/each}}
+          </ul>
+        </td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>

@@ -15,6 +15,7 @@ import { LessonPlansTrackingService } from '../lesson-plan-validation-tracking/l
 import { UsersService } from '../users/users.service';
 import { LessonPlansService } from '../lesson-plans/lesson-plans.service';
 
+// TODO: Add i18n
 @Injectable()
 export class StudentsService {
   readonly baseI18nKey = 'students.service';
@@ -65,7 +66,6 @@ export class StudentsService {
     const studentsAssignedToUser = await this.getStudentsByUserInActivePeriod(userId, activePeriod.id);
 
     if (studentsAssignedToUser.length === 0) {
-      // TODO: Add I18N
       throw new Exception('User has not assigned any student in requested period');
     }
 
@@ -74,7 +74,6 @@ export class StudentsService {
     const studentToValidateLessonPlan = studentsAssignedToUser.find(student => lessonPlanTrackingRecord.studentId === student.id);
     
     if (!studentToValidateLessonPlan) {
-      // TODO: Add I18N
       throw new Exception('User is not allowed to validate the requested lesson plan');
     }
     
