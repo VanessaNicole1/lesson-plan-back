@@ -162,4 +162,50 @@ export class LessonPlansRepository {
       },
     });
   }
+
+  findLessonPlansForTeacherReport(from: Date, to: Date, periodId: string, subjectId: string, teacherId: string, gradeId: string) {
+    // TODO: Check for just qualified lessonPlans
+    return this.prisma.lessonPlan.findMany({
+      where: {
+        periodId,
+        schedule: {
+          subject: {
+            id: subjectId
+          },
+          teacher: {
+            id: teacherId
+          },
+          grade: {
+            id: gradeId
+          }
+        },
+        createdAt: {
+          gte: from,
+          lte: to
+        }
+      },
+      include: {
+        schedule: {
+          include: {
+            teacher: {
+              include: {
+                user: true
+              }
+            },
+            subject: true,
+            grade: true
+          }
+        },
+        validationsTracking: {
+          include: {
+            student: {
+              include: {
+                user: true
+              }
+            }
+          }
+        }
+      }
+    })
+  }
 }

@@ -16,11 +16,6 @@ import { FilterSubjectDto } from './dto/filter-subject.dto';
 export class SubjectsController {
   constructor(private readonly subjectsService: SubjectsService) {}
 
-  @Post('create')
-  create(@Body() createSubjectDto: CreateSubjectDto) {
-    return this.subjectsService.create(createSubjectDto);
-  }
-
   @Post()
   findAll(@Body() filterSubjectDto?: FilterSubjectDto) {
     return this.subjectsService.findAll(filterSubjectDto);
@@ -36,8 +31,4 @@ export class SubjectsController {
     return this.subjectsService.update(id, updateSubjectDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.subjectsService.remove(+id);
-  }
 }

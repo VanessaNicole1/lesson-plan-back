@@ -9,7 +9,10 @@ import {
   UseInterceptors,
   UploadedFiles,
   Res,
+  Query,
+  Header,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { LessonPlansService } from './lesson-plans.service';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan.dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan.dto';
@@ -17,6 +20,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'path';
 import { DeleteResourceDto } from './dto/delete-resource.dto';
+import { LessonPlanReportDto } from '../common/dto/lesson-plan-report.dto';
 
 @Controller('lesson-plans')
 export class LessonPlansController {
@@ -25,6 +29,26 @@ export class LessonPlansController {
   @Get()
   findAll() {
     return this.lessonPlansService.findAll();
+  }
+
+  @Get('report/:userId')
+  @Header('Content-Type', 'application/pdf')
+  @Header('Content-Disposition', 'attachment; filename="report.pdf"')
+  async generateLessonPlanReportForTeacher(
+    @Param('userId') userId: string,
+    @Query() lessonPlanReportDto: LessonPlanReportDto,
+    @Res() res: Response
+  ) {
+    const report = await this.lessonPlansService.generateTeacherLessonPlanReport(userId, lessonPlanReportDto);
+    const buffer = Buffer.from(report.buffer);
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Length': report.length,
+      'Content-Disposition': 'attachment; filename=generated.pdf',
+    });
+
+    res.send(buffer);
   }
 
   @Get(':id')

@@ -10,6 +10,9 @@ import { DeleteResourceDto } from './dto/delete-resource.dto';
 import { StudentValidateLessonPlanEmail } from '../common/strategies/email/student/validate-lesson-plan.strategy';
 import { SendFakeEmailService } from '../common/services/send-fake-email.service';
 import { PeriodsService } from '../periods/periods.service';
+import { TeachersService } from '../teachers/teachers.service';
+import { LessonPlanReportDto } from '../common/dto/lesson-plan-report.dto';
+import { ReportsService } from '../common/services/reports.service';
 
 @Injectable()
 export class LessonPlansService {
@@ -20,6 +23,8 @@ export class LessonPlansService {
     private periodService: PeriodsService,
     // private emailService: SendEmailService,
     private emailService: SendFakeEmailService,
+    private teacherService: TeachersService,
+    private reportService: ReportsService
   ) {}
 
   findAll() {
@@ -177,5 +182,26 @@ export class LessonPlansService {
     );
     await this.lessonPlansRepository.removeResource(id, currentResources);
     await fs.unlinkSync(`./uploads/${name}`);
+  }
+
+  async generateTeacherLessonPlanReport(userId: string, lessonPlanReportDto: LessonPlanReportDto) {
+    const { from, to, periodId, subjectId, gradeId } = lessonPlanReportDto;
+    const period = await this.periodService.findActivePeriodById(periodId);
+    const teacher = await this.teacherService.findTeacherByUserInActivePeriod(period.id, userId);
+    const lessonPlans = await this.lessonPlansRepository.findLessonPlansForTeacherReport(
+      new Date(from),
+      new Date(to),
+      periodId,
+      subjectId,
+      teacher.id,
+      gradeId
+    ); 
+
+    if (lessonPlans.length === 0) {
+      throw new BadRequestException('El docente no tiene ningún plan de clase asigando');
+    }
+
+    const fileName = await this.reportService.generateMultipleLessonPlanReport(lessonPlans)
+    return fileName;
   }
 }
