@@ -46,21 +46,20 @@ export class LessonPlansRepository {
       where: {
         id,
       },
-      // include: {
-      //   validationsTracking: true,
-      //   schedule: {
-      //     include: {
-      //       grade: true,
-      //       teacher: {
-      //         include: {
-      //           user: true
-      //         }
-      //       },
-      //       subject: true,
-      //     }
-      //   },
-      // }
-      ...this.getAdittionalData(),
+      include: {
+        validationsTracking: true,
+        schedule: {
+          include: {
+            grade: true,
+            teacher: {
+              include: {
+                user: true
+              }
+            },
+            subject: true,
+          }
+        },
+      },
     });
   }
 
