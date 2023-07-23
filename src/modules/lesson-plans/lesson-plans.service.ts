@@ -5,14 +5,13 @@ import { LessonPlansRepository } from './lesson-plans.repository';
 import { SchedulesService } from '../schedules/schedules.service';
 import * as fs from 'fs';
 import { LessonPlansTrackingService } from '../lesson-plan-validation-tracking/lesson-plan-tracking.service';
-import { SendEmailService } from '../common/services/send-email.service';
 import { DeleteResourceDto } from './dto/delete-resource.dto';
 import { StudentValidateLessonPlanEmail } from '../common/strategies/email/student/validate-lesson-plan.strategy';
-import { SendFakeEmailService } from '../common/services/send-fake-email.service';
 import { PeriodsService } from '../periods/periods.service';
 import { TeachersService } from '../teachers/teachers.service';
 import { LessonPlanReportDto } from '../common/dto/lesson-plan-report.dto';
 import { ReportsService } from '../common/services/reports.service';
+import { SendEmailServiceWrapper } from '../common/services/send-email-wrapper.service';
 
 @Injectable()
 export class LessonPlansService {
@@ -21,8 +20,7 @@ export class LessonPlansService {
     private scheduleService: SchedulesService,
     private lessonPlansTrackingService: LessonPlansTrackingService,
     private periodService: PeriodsService,
-    // private emailService: SendEmailService,
-    private emailService: SendFakeEmailService,
+    private emailService: SendEmailServiceWrapper,
     private teacherService: TeachersService,
     private reportService: ReportsService
   ) {}

@@ -9,11 +9,10 @@ import { UsersService } from '../users/users.service';
 import { CreateInitialProcessDto } from './dto/create-initial-process.dto';
 import { InitialProcessRepository } from './initial-process.repository';
 import { Role } from '../../utils/enums/roles.enum';
-import { SendEmailService } from '../common/services/send-email.service';
 import { StudentLessonPlanStartEmail } from '../common/strategies/email/student/lesson-plan-start.strategy';
 import { TeacherLessonPlanStartEmail } from '../common/strategies/email/teacher/lesson-plan-start.strategy';
 import { ManagerLessonPlanStartEmail } from '../common/strategies/email/manager/lesson-plan-start.strategy';
-import { SendFakeEmailService } from '../common/services/send-fake-email.service';
+import { SendEmailServiceWrapper } from '../common/services/send-email-wrapper.service';
 
 @Injectable()
 export class InitialProcessService {
@@ -25,7 +24,7 @@ export class InitialProcessService {
     private teachersService: TeachersService,
     private gradesService: GradesService,
     private rolesService: RolesService,
-    private sendEmailService: SendFakeEmailService
+    private sendEmailService: SendEmailServiceWrapper
   ) {}
 
   async create(createInitialProcessDto: CreateInitialProcessDto, i18nContext: I18nContext) {
