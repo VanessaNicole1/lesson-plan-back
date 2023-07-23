@@ -77,7 +77,7 @@ export class TeachersService {
       ...new Set(
         schedulesWithEmptyConfig.map((schedule) => schedule.teacherId),
       ),
-    ];
+    ] as string[];
     const teachers = await this.teachersRepository.findAllByTeacherIds(
       teacherIds,
     );
