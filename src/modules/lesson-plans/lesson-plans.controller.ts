@@ -37,9 +37,13 @@ export class LessonPlansController {
   async generateLessonPlanReportForTeacher(
     @Param('userId') userId: string,
     @Query() lessonPlanReportDto: LessonPlanReportDto,
-    @Res() res: Response
+    @Res() res: Response,
   ) {
-    const report = await this.lessonPlansService.generateTeacherLessonPlanReport(userId, lessonPlanReportDto);
+    const report =
+      await this.lessonPlansService.generateTeacherLessonPlanReport(
+        userId,
+        lessonPlanReportDto,
+      );
     const buffer = Buffer.from(report.buffer);
 
     res.set({
@@ -97,7 +101,6 @@ export class LessonPlansController {
     return this.lessonPlansService.create(createLessonPlanDto, files);
   }
 
-  // TODO: Complete this method
   @Patch(':id')
   @UseInterceptors(
     FilesInterceptor('files', null, {

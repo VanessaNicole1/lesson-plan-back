@@ -12,10 +12,14 @@ export class LessonPlansTrackingService {
   ) {}
 
   async findOne(id: string) {
-    const lessonPlanTracking = await this.lessonPlansTrackingRepository.findOne(id);
+    const lessonPlanTracking = await this.lessonPlansTrackingRepository.findOne(
+      id,
+    );
 
     if (!lessonPlanTracking) {
-      throw new BadRequestException('There is not a lesson plan tracking with the requested id');
+      throw new BadRequestException(
+        'There is not a lesson plan tracking with the requested id',
+      );
     }
 
     return lessonPlanTracking;
@@ -23,19 +27,39 @@ export class LessonPlansTrackingService {
 
   async update(id: string, lessonPlanTrackingDto: UpdateLessonPlanTrackingDto) {
     const lessonPlanTracking = await this.findOne(id);
-    return this.lessonPlansTrackingRepository.update(lessonPlanTracking.id, lessonPlanTrackingDto);
-  };
-
-  getLessonPlansByStudentsAndPeriods(isValidated: boolean, studentIds: string[], periodIds: string[]) {
-    return this.lessonPlansTrackingRepository.getLessonPlansByStudentsAndPeriods(isValidated, studentIds, periodIds);
+    return this.lessonPlansTrackingRepository.update(
+      lessonPlanTracking.id,
+      lessonPlanTrackingDto,
+    );
   }
 
-  async getLessonPlanTrackingByLessonPlanIdAndPeriod(lessonPlanId: string, periodId: string) {
-    const lessonPlanTracking = await this.lessonPlansTrackingRepository.getLessonPlanTrackingByLessonPlanIdAndPeriod(lessonPlanId, periodId);
-    
+  getLessonPlansByStudentsAndPeriods(
+    isValidated: boolean,
+    studentIds: string[],
+    periodIds: string[],
+  ) {
+    return this.lessonPlansTrackingRepository.getLessonPlansByStudentsAndPeriods(
+      isValidated,
+      studentIds,
+      periodIds,
+    );
+  }
+
+  async getLessonPlanTrackingByLessonPlanIdAndPeriod(
+    lessonPlanId: string,
+    periodId: string,
+  ) {
+    const lessonPlanTracking =
+      await this.lessonPlansTrackingRepository.getLessonPlanTrackingByLessonPlanIdAndPeriod(
+        lessonPlanId,
+        periodId,
+      );
+
     if (!lessonPlanTracking) {
       // TODO: Add i18n
-      throw new Exception('There is not a lesson plan with the request parameters');
+      throw new Exception(
+        'There is not a lesson plan with the request parameters',
+      );
     }
 
     return lessonPlanTracking;
@@ -48,10 +72,14 @@ export class LessonPlansTrackingService {
   }
 
   removeLessonPlansTrackingByLessonPlan(lessonPlanId: string) {
-    return this.lessonPlansTrackingRepository.removeLessonPlansTrackingByLessonPlan(lessonPlanId);
+    return this.lessonPlansTrackingRepository.removeLessonPlansTrackingByLessonPlan(
+      lessonPlanId,
+    );
   }
 
   findLessonPlanTrackingByLessonPlanId(lessonPlanId: string) {
-    return this.lessonPlansTrackingRepository.findLessonPlanTrackingByLessonPlanId(lessonPlanId);
+    return this.lessonPlansTrackingRepository.findLessonPlanTrackingByLessonPlanId(
+      lessonPlanId,
+    );
   }
 }
