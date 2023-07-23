@@ -1,16 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
-import { SendEmailService } from '../common/services/send-email.service';
-import { SendFakeEmailService } from '../common/services/send-fake-email.service';
 import { StudentValidateLessonPlanEmail } from '../common/strategies/email/student/validate-lesson-plan.strategy';
 import { StudentEndDateToValidateLessonPlanEmail } from '../common/strategies/email/student/end-date-to-validate-lesson-plan.strategy';
+import { SendEmailServiceWrapper } from '../common/services/send-email-wrapper.service';
 
 @Injectable()
 export class StudentTaskScheduleService {
 
   constructor(
-    // private emailService: SendEmailService
-    private emailService: SendFakeEmailService
+    private emailService: SendEmailServiceWrapper
   ) {}
   
   // Just one time only if the lesson plan has the option notify later.
