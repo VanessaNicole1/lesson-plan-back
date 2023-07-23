@@ -56,6 +56,11 @@ export class LessonPlansController {
     return this.lessonPlansService.findOne(id);
   }
 
+  @Get('period/:id')
+  async findOneWithPeriod(@Param('id') id: string) {
+    return this.lessonPlansService.findOneWithPeriod(id);
+  }
+
   @Get('schedule/:scheduleId')
   findLessonPlanBySchedule(@Param('scheduleId') scheduleId: string) {
     return this.lessonPlansService.findLessonPlanBySchedule(scheduleId);

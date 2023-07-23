@@ -41,6 +41,16 @@ export class LessonPlansService {
     return lessonPlan;
   }
 
+  async findOneWithPeriod(id: string) {
+    const lessonPlan = await this.lessonPlansRepository.findOneWithPeriod(id);
+
+    if (!lessonPlan) {
+      throw new NotFoundException(`Plan de clases con id "${id}" no encontrado`);
+    }
+
+    return lessonPlan;
+  }
+
   findLessonPlanBySchedule(scheduleId: string) {
     return this.lessonPlansRepository.findLessonPlanBySchedule(scheduleId);
   }

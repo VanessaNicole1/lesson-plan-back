@@ -56,6 +56,7 @@ export class StudentsRepository {
       include: {
         user: true,
         grade: true,
+        lessonPlansValidation: true,
       },
     });
   }

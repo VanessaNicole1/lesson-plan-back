@@ -79,6 +79,15 @@ export class LessonPlansRepository {
     });
   }
 
+  findOneWithPeriod(id: string) {
+    return this.prisma.lessonPlan.findUnique({
+      where: {
+        id,
+      },
+      ...this.getAdittionalData(),
+    });
+  }
+
   findLessonPlanBySchedule(scheduleId: string) {
     return this.prisma.lessonPlan.findMany({
       where: {
