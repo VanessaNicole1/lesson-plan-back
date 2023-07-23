@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan.dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan.dto';
 import { LessonPlansRepository } from './lesson-plans.repository';
@@ -12,6 +16,7 @@ import { TeachersService } from '../teachers/teachers.service';
 import { LessonPlanReportDto } from '../common/dto/lesson-plan-report.dto';
 import { ReportsService } from '../common/services/reports.service';
 import { SendEmailServiceWrapper } from '../common/services/send-email-wrapper.service';
+import { StudentChangeDateToValidateLessonPlanEmail } from '../common/strategies/email/student/change-date-to-validate-lesson-plan.strategy';
 
 @Injectable()
 export class LessonPlansService {
@@ -22,7 +27,7 @@ export class LessonPlansService {
     private periodService: PeriodsService,
     private emailService: SendEmailServiceWrapper,
     private teacherService: TeachersService,
-    private reportService: ReportsService
+    private reportService: ReportsService,
   ) {}
 
   findAll() {
@@ -33,7 +38,9 @@ export class LessonPlansService {
     const lessonPlan = await this.lessonPlansRepository.findOne(id);
 
     if (!lessonPlan) {
-      throw new NotFoundException(`Plan de clases con id "${id}" no encontrado`);
+      throw new NotFoundException(
+        `Plan de clases con id "${id}" no encontrado`,
+      );
     }
 
     return lessonPlan;
@@ -43,7 +50,9 @@ export class LessonPlansService {
     const lessonPlan = await this.lessonPlansRepository.findOneWithPeriod(id);
 
     if (!lessonPlan) {
-      throw new NotFoundException(`Plan de clases con id "${id}" no encontrado`);
+      throw new NotFoundException(
+        `Plan de clases con id "${id}" no encontrado`,
+      );
     }
 
     return lessonPlan;
@@ -57,7 +66,8 @@ export class LessonPlansService {
     createLessonPlanDto: CreateLessonPlanDto,
     files: Array<Express.Multer.File>,
   ) {
-    const { students, notification, periodId, date, deadlineDate } = createLessonPlanDto;
+    const { students, notification, periodId, date, deadlineDate } =
+      createLessonPlanDto;
     const resources = [];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -98,11 +108,21 @@ export class LessonPlansService {
       const subjectName = currentSchedule.subject.name;
       const teacherName = currentSchedule.teacher.user.displayName;
       const lessonPlanDate = new Date(date).toDateString();
-      const lessonPlansTracking = await this.lessonPlansTrackingService.findLessonPlanTrackingByLessonPlanId(lessonPlanCreated.id);
+      const lessonPlansTracking =
+        await this.lessonPlansTrackingService.findLessonPlanTrackingByLessonPlanId(
+          lessonPlanCreated.id,
+        );
       for (let i = 0; i < lessonPlansTracking.length; i++) {
         const lessonPlanTracking = lessonPlansTracking[i];
         const studentDisplayName = lessonPlanTracking.student.user.displayName;
-        const validateLessonPlanEmail = new StudentValidateLessonPlanEmail(periodDisplayName, studentDisplayName, subjectName, teacherName, lessonPlanDate, new Date(deadlineDate).toString());
+        const validateLessonPlanEmail = new StudentValidateLessonPlanEmail(
+          periodDisplayName,
+          studentDisplayName,
+          subjectName,
+          teacherName,
+          lessonPlanDate,
+          new Date(deadlineDate).toString(),
+        );
         this.emailService.sendEmail(validateLessonPlanEmail, 'email');
       }
       // return this.emailService.sendEmail();
@@ -119,7 +139,7 @@ export class LessonPlansService {
     files: Array<Express.Multer.File>,
   ) {
     const currentLessonPlan = await this.findOne(id);
-    const { students, deadlineNotification } = updateLessonPlanDto;
+    const { students, deadlineNotification, periodId } = updateLessonPlanDto;
     const resources = [];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -141,24 +161,37 @@ export class LessonPlansService {
       updateLessonPlanDto['resources'] = resources;
     }
 
-    await this.lessonPlansTrackingService.removeLessonPlansTrackingByLessonPlan(
-      id,
-    );
-
     const lessonPlanUpdated = await this.lessonPlansRepository.update(
       id,
       updateLessonPlanDto,
     );
-    if (lessonPlanUpdated) {
-      await this.lessonPlansTrackingService.create({
-        lessonPlanId: lessonPlanUpdated.id,
-        students,
-        periodId: updateLessonPlanDto.periodId,
-      });
-    }
-    // TODO: Notify to students
+
+    // TODO: Is it necessary to notify again that the teacher has updated the information?
+
     if (deadlineNotification === 'yes') {
-      const lessonPlanTracking = await this.lessonPlansTrackingService.findLessonPlanTrackingByLessonPlanId(lessonPlanUpdated.id);
+      const currentPeriod = await this.periodService.findOne(periodId);
+      const periodDisplayName = currentPeriod.displayName;
+      const displayNameTeacher = lessonPlanUpdated.schedule.teacher.user.displayName;
+      const subjectName = lessonPlanUpdated.schedule.subject.name;
+      const lessonPlanDate = new Date(lessonPlanUpdated.date).toDateString();
+      const maxValidationLessonPlanDate = lessonPlanUpdated.maximumValidationDate;
+      const lessonPlansTracking = await this.lessonPlansTrackingService.findLessonPlanTrackingByLessonPlanId(
+        lessonPlanUpdated.id,
+      );
+      const lessonPlansTrackingNoValidated = lessonPlansTracking.filter((lessonPlanTracking) => !lessonPlanTracking.isValidated);
+      for (let i = 0; i < lessonPlansTrackingNoValidated.length; i++) {
+        const lessonPlanTracking = lessonPlansTrackingNoValidated[i];
+        const displayNameStudent = lessonPlanTracking.student.user.displayName;
+        const validateLessonPlanEmail = new StudentChangeDateToValidateLessonPlanEmail(
+          periodDisplayName,
+          displayNameStudent,
+          displayNameTeacher,
+          subjectName,
+          lessonPlanDate,
+          new Date(maxValidationLessonPlanDate).toString(),
+        );
+        this.emailService.sendEmail(validateLessonPlanEmail, 'email');
+      }
     }
   }
 
@@ -192,24 +225,33 @@ export class LessonPlansService {
     await fs.unlinkSync(`./uploads/${name}`);
   }
 
-  async generateTeacherLessonPlanReport(userId: string, lessonPlanReportDto: LessonPlanReportDto) {
+  async generateTeacherLessonPlanReport(
+    userId: string,
+    lessonPlanReportDto: LessonPlanReportDto,
+  ) {
     const { from, to, periodId, subjectId, gradeId } = lessonPlanReportDto;
     const period = await this.periodService.findActivePeriodById(periodId);
-    const teacher = await this.teacherService.findTeacherByUserInActivePeriod(period.id, userId);
-    const lessonPlans = await this.lessonPlansRepository.findLessonPlansForTeacherReport(
-      new Date(from),
-      new Date(to),
-      periodId,
-      subjectId,
-      teacher.id,
-      gradeId
-    ); 
+    const teacher = await this.teacherService.findTeacherByUserInActivePeriod(
+      period.id,
+      userId,
+    );
+    const lessonPlans =
+      await this.lessonPlansRepository.findLessonPlansForTeacherReport(
+        new Date(from),
+        new Date(to),
+        periodId,
+        subjectId,
+        teacher.id,
+        gradeId,
+      );
 
     if (lessonPlans.length === 0) {
       throw new BadRequestException();
     }
 
-    const fileName = await this.reportService.generateMultipleLessonPlanReport(lessonPlans)
+    const fileName = await this.reportService.generateMultipleLessonPlanReport(
+      lessonPlans,
+    );
     return fileName;
   }
 }
