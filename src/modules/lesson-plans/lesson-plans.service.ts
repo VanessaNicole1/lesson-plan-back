@@ -198,7 +198,7 @@ export class LessonPlansService {
     ); 
 
     if (lessonPlans.length === 0) {
-      throw new BadRequestException('El docente no tiene ningún plan de clase asigando');
+      throw new BadRequestException();
     }
 
     const fileName = await this.reportService.generateMultipleLessonPlanReport(lessonPlans)

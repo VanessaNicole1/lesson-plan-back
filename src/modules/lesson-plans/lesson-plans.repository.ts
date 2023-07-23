@@ -47,10 +47,26 @@ export class LessonPlansRepository {
         id,
       },
       include: {
-        validationsTracking: true,
+        validationsTracking: {
+          include: {
+            student: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
         schedule: {
           include: {
-            grade: true,
+            grade: {
+              include: {
+                degree: {
+                  include: {
+                    period: true,
+                  },
+                },
+              },
+            },
             teacher: {
               include: {
                 user: true

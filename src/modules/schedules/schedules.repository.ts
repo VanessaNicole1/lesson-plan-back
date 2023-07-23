@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../common/services/prisma.service';
 import { UpdateScheduleDto } from './dto/update-schedule.dto';
 import { FilterScheduleDto } from './dto/filter-schedule.dto';
