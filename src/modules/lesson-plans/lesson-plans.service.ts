@@ -108,10 +108,9 @@ export class LessonPlansService {
       const subjectName = currentSchedule.subject.name;
       const teacherName = currentSchedule.teacher.user.displayName;
       const lessonPlanDate = new Date(date).toDateString();
-      const lessonPlansTracking =
-        await this.lessonPlansTrackingService.findLessonPlanTrackingByLessonPlanId(
-          lessonPlanCreated.id,
-        );
+      const lessonPlansTracking = await this.lessonPlansTrackingService.findLessonPlanTrackingByLessonPlanId(
+        lessonPlanCreated.id,
+      );
       for (let i = 0; i < lessonPlansTracking.length; i++) {
         const lessonPlanTracking = lessonPlansTracking[i];
         const studentDisplayName = lessonPlanTracking.student.user.displayName;
@@ -127,6 +126,7 @@ export class LessonPlansService {
       }
       // return this.emailService.sendEmail();
     } else {
+      // TODO: Notify students with the specific date
       // return;
     }
 
