@@ -123,6 +123,7 @@ export class ReportsService {
 
       return file;
     } catch (error) {
+      console.warn('ERROR', error);
       throw new InternalServerErrorException('El reporte no pudo ser generado');
     }
   }
