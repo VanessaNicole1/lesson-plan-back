@@ -31,6 +31,11 @@ export class LessonPlansRepository {
               },
             },
             subject: true,
+            teacher: {
+              include: {
+                user: true,
+              }
+            },
           },
         },
       },
@@ -159,7 +164,6 @@ export class LessonPlansRepository {
         bibliography,
         resources,
         date: new Date(date),
-        // notificationDate: new Date(notificationDate),
         maximumValidationDate: new Date(deadlineDate),
       },
       ...this.getAdittionalData(),
