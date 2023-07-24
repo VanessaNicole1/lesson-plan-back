@@ -107,7 +107,9 @@ export class LessonPlansService {
       const periodDisplayName = currentPeriod.displayName;
       const subjectName = currentSchedule.subject.name;
       const teacherName = currentSchedule.teacher.user.displayName;
-      const lessonPlanDate = new Date(date).toDateString();
+      const lessonPlanDate = new Date(date);
+      const spanishLessonPlanDate = lessonPlanDate.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      const spanishMaxValidationLessonPlanDate = new Date(deadlineDate).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
       const lessonPlansTracking = await this.lessonPlansTrackingService.findLessonPlanTrackingByLessonPlanId(
         lessonPlanCreated.id,
       );
@@ -119,12 +121,11 @@ export class LessonPlansService {
           studentDisplayName,
           subjectName,
           teacherName,
-          lessonPlanDate,
-          new Date(deadlineDate).toString(),
+          spanishLessonPlanDate,
+          spanishMaxValidationLessonPlanDate,
         );
         this.emailService.sendEmail(validateLessonPlanEmail, lessonPlanTracking.student.user.email);
       }
-      // return this.emailService.sendEmail();
     } else {
       // TODO: Notify students with the specific date
       // return;
@@ -173,8 +174,10 @@ export class LessonPlansService {
       const periodDisplayName = currentPeriod.displayName;
       const displayNameTeacher = lessonPlanUpdated.schedule.teacher.user.displayName;
       const subjectName = lessonPlanUpdated.schedule.subject.name;
-      const lessonPlanDate = new Date(lessonPlanUpdated.date).toDateString();
+      const lessonPlanDate = new Date(lessonPlanUpdated.date);
+      const spanishLessonPlanDate = lessonPlanDate.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
       const maxValidationLessonPlanDate = lessonPlanUpdated.maximumValidationDate;
+      const spanishMaxValidationLessonPlanDate = maxValidationLessonPlanDate.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
       const lessonPlansTracking = await this.lessonPlansTrackingService.findLessonPlanTrackingByLessonPlanId(
         lessonPlanUpdated.id,
       );
@@ -187,8 +190,8 @@ export class LessonPlansService {
           displayNameStudent,
           displayNameTeacher,
           subjectName,
-          lessonPlanDate,
-          new Date(maxValidationLessonPlanDate).toString(),
+          spanishLessonPlanDate,
+          spanishMaxValidationLessonPlanDate,
         );
         this.emailService.sendEmail(validateLessonPlanEmail, lessonPlanTracking.student.user.email);
       }
