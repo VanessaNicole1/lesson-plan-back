@@ -5,7 +5,8 @@ export const getFullYearTest = (currentDate: Date) => {
 };
 
 export const getMonth = (currentDate: Date) => {
-  return new Date(currentDate).toLocaleString('default', { month: 'long' });
+  const monthName = new Date(currentDate).toLocaleDateString('es-ES', { month: 'long' });
+  return monthName.charAt(0).toUpperCase() + monthName.slice(1);
 };
 
 export const hasPassedAmountOfDays = (dateToCompare: Date, amountOfDays: number, expectedHours: number = 8) => {
