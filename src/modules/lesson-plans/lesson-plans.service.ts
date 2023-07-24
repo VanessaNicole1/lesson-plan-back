@@ -122,7 +122,7 @@ export class LessonPlansService {
           lessonPlanDate,
           new Date(deadlineDate).toString(),
         );
-        this.emailService.sendEmail(validateLessonPlanEmail, 'email');
+        this.emailService.sendEmail(validateLessonPlanEmail, lessonPlanTracking.student.user.email);
       }
       // return this.emailService.sendEmail();
     } else {
@@ -190,7 +190,7 @@ export class LessonPlansService {
           lessonPlanDate,
           new Date(maxValidationLessonPlanDate).toString(),
         );
-        this.emailService.sendEmail(validateLessonPlanEmail, 'email');
+        this.emailService.sendEmail(validateLessonPlanEmail, lessonPlanTracking.student.user.email);
       }
     }
   }
