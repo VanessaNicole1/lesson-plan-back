@@ -20,7 +20,6 @@ export class TeacherTaskScheduleService {
   
   
   @CronService.ProdCron('0 8 * * *') // Every day at 8am, after 3 days of period creation
-  @CronService.DevCron('*/10 * * * * *')
   async teacherScheduleNotFilledNotification() {
     const teachersWithEmptySchedulesConfig = await this.teacherService.findTeachersWithEmptySchedulesConfigInActivePeriods();
 
