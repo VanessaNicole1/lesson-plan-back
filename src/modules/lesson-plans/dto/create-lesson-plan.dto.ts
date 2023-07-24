@@ -42,6 +42,18 @@ export class CreateLessonPlanDto {
   @IsString()
   bibliography: string;
 
+  @IsNotEmpty()
+  @IsString()
+  materials: string;
+
+  @IsNotEmpty()
+  @IsString()
+  evaluation: string;
+
+  @IsNotEmpty()
+  @IsString()
+  comments: string;
+
   @IsOptional()
   @IsArray()
   resources?: string[];
