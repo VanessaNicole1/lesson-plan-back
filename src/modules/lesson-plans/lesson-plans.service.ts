@@ -261,4 +261,23 @@ export class LessonPlansService {
       console.warn("ERROR - Generate teacher lesson plan report", error);
     }
   }
+
+  async generateLessonPlanReport(
+    lessonPlanId: string,
+  ) {
+    try {
+      const lessonPlan = await this.lessonPlansRepository.findLessonPlanForReport(lessonPlanId);
+
+      if (!lessonPlan) {
+        throw new BadRequestException();
+      }
+
+      const fileName = await this.reportService.generateLessonPlanReport(
+        lessonPlan,
+      );
+      return fileName;
+    } catch (error) {
+      console.warn("ERROR - Generate teacher lesson plan report", error);
+    }
+  }
 }

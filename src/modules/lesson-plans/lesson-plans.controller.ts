@@ -140,4 +140,23 @@ export class LessonPlansController {
   remove(@Param('id') id: string) {
     return this.lessonPlansService.remove(id);
   }
+
+  @Get('unique-report/:lessonPlanId')
+  @Header('Content-Type', 'application/pdf')
+  @Header('Content-Disposition', 'attachment; filename="report.pdf"')
+  async generateLessonPlanReport(@Param('lessonPlanId') lessonPlanId: string, @Res() res: Response) {
+    const report =
+      await this.lessonPlansService.generateLessonPlanReport(
+        lessonPlanId,
+      );
+    const buffer = Buffer.from(report.buffer);
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Length': report.length,
+      'Content-Disposition': 'attachment; filename=generated.pdf',
+    });
+
+    res.send(buffer);
+  }
 }
