@@ -70,7 +70,7 @@ export class ReportsService {
     const template = fs.readFileSync(templatePath, 'utf-8');
     const compiledTemplate = handlebars.compile(template);
 
-    const browser = await puppeteer.launch({ headless: 'new' });
+    const browser = await puppeteer.launch({ executablePath: process.env.CHROMIUM_PATH, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
     const page = await browser.newPage();
 
     const data = this.getReportDataByLessonPlan(lessonPlan);
