@@ -1,3 +1,4 @@
+import { ManagersModule } from './../managers/managers.module';
 import { Module } from '@nestjs/common';
 import { PeriodsService } from './periods.service';
 import { PeriodsController } from './periods.controller';
@@ -6,7 +7,7 @@ import { TeachersModule } from '../teachers/teachers.module';
 import { SubjectsModule } from '../subjects/subjects.module';
 
 @Module({
-  imports: [TeachersModule, SubjectsModule],
+  imports: [TeachersModule, SubjectsModule, ManagersModule],
   controllers: [PeriodsController],
   providers: [PeriodsService, PeriodsRepository],
   exports: [PeriodsService]

@@ -12,6 +12,7 @@ import { FilterPeriodDto } from './dto/filter-period.dto';
 import { PeriodsRepository } from './periods.repository';
 import { TeachersService } from '../teachers/teachers.service';
 import { Exception } from 'handlebars';
+import { ManagersService } from '../managers/managers.service';
 
 @Injectable()
 export class PeriodsService {
@@ -22,6 +23,7 @@ export class PeriodsService {
     private subjectService: SubjectsService,
     private i18nService: I18nService,
     private teacherService: TeachersService,
+    private managerService: ManagersService,
   ) {}
 
   findAll(filterPeriodDto?: FilterPeriodDto) {
@@ -68,6 +70,7 @@ export class PeriodsService {
     const periodDeleted =  await this.periodsRepository.remove(id);
     await this.teacherService.removeTeachersByPeriod(id);
     await this.subjectService.removeSubjectsByPeriod(id);
+    await this.managerService.removeByperiod(id);
     return periodDeleted;
   }
 

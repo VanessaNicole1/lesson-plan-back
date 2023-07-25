@@ -27,4 +27,8 @@ export class ManagersService {
   remove(id: number) {
     return `This action removes a #${id} manager`;
   }
+
+  removeByperiod(periodId: string) {
+    return this.managersRepository.removeByperiod(periodId);
+  }
 }
