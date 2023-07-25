@@ -232,29 +232,33 @@ export class LessonPlansService {
     userId: string,
     lessonPlanReportDto: LessonPlanReportDto,
   ) {
-    const { from, to, periodId, subjectId, gradeId } = lessonPlanReportDto;
-    const period = await this.periodService.findActivePeriodById(periodId);
-    const teacher = await this.teacherService.findTeacherByUserInActivePeriod(
-      period.id,
-      userId,
-    );
-    const lessonPlans =
-      await this.lessonPlansRepository.findLessonPlansForTeacherReport(
-        new Date(from),
-        new Date(to),
-        periodId,
-        subjectId,
-        teacher.id,
-        gradeId,
+    try {
+      const { from, to, periodId, subjectId, gradeId } = lessonPlanReportDto;
+      const period = await this.periodService.findActivePeriodById(periodId);
+      const teacher = await this.teacherService.findTeacherByUserInActivePeriod(
+        period.id,
+        userId,
       );
+      const lessonPlans =
+        await this.lessonPlansRepository.findLessonPlansForTeacherReport(
+          new Date(from),
+          new Date(to),
+          periodId,
+          subjectId,
+          teacher.id,
+          gradeId,
+        );
 
-    if (lessonPlans.length === 0) {
-      throw new BadRequestException();
+      if (lessonPlans.length === 0) {
+        throw new BadRequestException();
+      }
+
+      const fileName = await this.reportService.generateMultipleLessonPlanReport(
+        lessonPlans,
+      );
+      return fileName;
+    } catch (error) {
+      console.warn("ERROR - Generate teacher lesson plan report", error);
     }
-
-    const fileName = await this.reportService.generateMultipleLessonPlanReport(
-      lessonPlans,
-    );
-    return fileName;
   }
 }
