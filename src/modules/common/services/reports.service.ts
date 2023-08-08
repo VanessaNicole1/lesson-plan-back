@@ -131,4 +131,41 @@ export class ReportsService {
   deleteFiles(paths: string[]) {
     paths.forEach(path => fs.unlinkSync(path))
   }
+
+  async generateLessonPlanReport(lessonPlan: any) {
+    try {
+      const singleReporPaths = [];
+      const templatePath = './reports/template.html';
+      const template = fs.readFileSync(templatePath, 'utf-8');
+      const compiledTemplate = handlebars.compile(template);
+
+      const browser = await puppeteer.launch({ headless: 'new' });
+      const page = await browser.newPage();
+      
+      const data = this.getReportDataByLessonPlan(lessonPlan);
+      const renderedHTML = compiledTemplate(data);
+
+      await page.setContent(renderedHTML, { waitUntil: 'domcontentloaded' });
+      const reportPath = `${generateUniqueIdentifier()}.pdf`;
+      singleReporPaths.push(reportPath);
+      await page.pdf({
+        path: reportPath,
+        format: 'A4',
+        printBackground: true,
+        landscape: true,
+      });
+
+      await browser.close();
+
+      const outputPath = `${generateUniqueIdentifier()}-merged.pdf`;
+      const file = await this.mergePDFs(singleReporPaths, outputPath);
+
+      this.deleteFiles(singleReporPaths);
+
+      return file;
+    } catch (error) {
+      console.warn('ERROR', error);
+      throw new InternalServerErrorException('El reporte no pudo ser generado');
+    }
+  }
 }

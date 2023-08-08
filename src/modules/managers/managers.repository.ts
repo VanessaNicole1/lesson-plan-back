@@ -21,4 +21,12 @@ export class ManagersRepository {
       },
     });
   }
+
+  removeByperiod(periodId: string) {
+    return this.prisma.manager.deleteMany({
+      where: {
+        periodId,
+      },
+    });
+  }
 }

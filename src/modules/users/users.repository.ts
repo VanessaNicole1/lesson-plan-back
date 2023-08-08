@@ -5,10 +5,11 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { FilterUserDto } from './dto/filter-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role as RoleEnum } from '../../utils/enums/roles.enum';
+import { RolesService } from '../roles/roles.service';
 
 @Injectable()
 export class UsersRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private rolesService: RolesService) {}
 
   private getAdittionalData() {
     return {
@@ -40,13 +41,36 @@ export class UsersRepository {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
+    const { phoneNumber, city, identificationCard, name, lastName, roleIds } = updateUserDto;
+    const disconnectRoles = [];
+    const currentRoles = await this.rolesService.findAll();
+    const currentRolesIds = currentRoles.map((role) => role.id);
+    for (const roleId in currentRolesIds) {
+      if(!roleIds.includes(currentRolesIds[roleId])) {
+        disconnectRoles.push(currentRolesIds[roleId]);
+      }
+    }
     await this.findOne(id);
+    const roles = roleIds?.map((roleId) => ({
+      id: roleId,
+    }));
+    const disconnectRolesIds = disconnectRoles?.map((roleId) => ({
+      id: roleId,
+    }));
     const updatedUser = await this.prisma.user.update({
       where: {
         id,
       },
       data: {
-        ...updateUserDto,
+        name,
+        lastName,
+        city,
+        identificationCard,
+        phoneNumber,
+        roles: {
+          connect: roles,
+          disconnect: disconnectRolesIds,
+        },
       },
       ...this.getAdittionalData(),
     });

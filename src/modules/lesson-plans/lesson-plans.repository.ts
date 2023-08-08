@@ -247,4 +247,34 @@ export class LessonPlansRepository {
       }
     })
   }
+
+  findLessonPlanForReport(id: string) {
+    return this.prisma.lessonPlan.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        schedule: {
+          include: {
+            teacher: {
+              include: {
+                user: true
+              }
+            },
+            subject: true,
+            grade: true
+          }
+        },
+        validationsTracking: {
+          include: {
+            student: {
+              include: {
+                user: true
+              }
+            }
+          }
+        }
+      }
+    })
+  }
 }
