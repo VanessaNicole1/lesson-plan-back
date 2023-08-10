@@ -28,7 +28,7 @@ export const getLastWeekFromMondayDay = () => {
   /**
    * Should be executed just on mondays.
    */
-  const currentDate = new Date("2023-08-14");
+  const currentDate = new Date();
 
   const oneDayInMiliseconds = 24 * 60 * 60 * 1000;
   const sevenDaysInMiliseconds = oneDayInMiliseconds * 7;

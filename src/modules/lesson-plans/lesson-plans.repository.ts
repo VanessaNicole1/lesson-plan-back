@@ -46,6 +46,12 @@ export class LessonPlansRepository {
     return this.prisma.lessonPlan.findMany();
   }
 
+  findAllWithAdittionalData() {
+    return this.prisma.lessonPlan.findMany({
+      ...this.getAdittionalData()
+    });
+  }
+
   findOne(id: string) {
     return this.prisma.lessonPlan.findUnique({
       where: {

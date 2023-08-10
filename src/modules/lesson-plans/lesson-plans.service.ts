@@ -131,11 +131,7 @@ export class LessonPlansService {
         );
         this.emailService.sendEmail(validateLessonPlanEmail, lessonPlanTracking.student.user.email);
       }
-    } else {
-      // TODO: Notify students with the specific date
-      // return;
     }
-
     return lessonPlanCreated;
   }
 
@@ -300,5 +296,20 @@ export class LessonPlansService {
 
   async validateLessonPlan(id: string) {
     return await this.lessonPlansRepository.validateLessonPlan(id);
+  }
+
+  async getStudentsToNotify() {
+    const currentDate = new Date().setHours(0, 0, 0, 0);
+    const lessonPlans = await this.lessonPlansRepository.findAllWithAdittionalData();
+    const matchingLessonPlans = [];
+    for (let i = 0; i < lessonPlans.length; i++) {
+      const lessonPlan = lessonPlans[i];
+      const notificationDate = new Date(lessonPlan.notificationDate).setHours(0, 0, 0, 0);
+      const areTheSameDates = new Date(currentDate).getTime() === new Date(notificationDate).getTime();
+      if (areTheSameDates) {
+        matchingLessonPlans.push(lessonPlan);
+      }
+    }
+    return matchingLessonPlans;
   }
 }
