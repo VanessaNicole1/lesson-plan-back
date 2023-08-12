@@ -15,10 +15,11 @@ export class StudentTaskScheduleService {
     private lessonPlanService: LessonPlansService,
   ) {}
   
+  // Every day at 8 am.
   // Just one time only if the lesson plan has the option notify later.
   // @Cron('0 8 * * *')
   async studentValidateLessonPlanNotification() {
-    const lessonPlans = await this.lessonPlanService.getStudentsToNotify();
+    const lessonPlans = await this.lessonPlanService.getLessonPlansToNotify();
     for (let i = 0; i < lessonPlans.length; i++) {
       const lessonPlan = lessonPlans[i];
       const periodDisplayName = lessonPlan.schedule.grade.degree.period.displayName;
@@ -34,24 +35,52 @@ export class StudentTaskScheduleService {
         const studentName = currentStudent.user.displayName;
         const studentEmail = currentStudent.user.email;
         const validateLessonPlanEmail = new StudentValidateLessonPlanEmail(periodDisplayName, studentName, subjectName, teacherName, spanishLessonPlanDate, spanishDeadlineDate);
-        this.emailService.sendEmail(validateLessonPlanEmail, studentEmail);
+        // this.emailService.sendEmail(validateLessonPlanEmail, studentEmail);
       }
     }
   }
 
+  /**
+   * Take into account: Deactivate the lesson plan to validate.
+   */
   // Every day at 8 am.
+  // @Cron('0 8 * * *')
   async studentEndDateToValidateLessonPlanNotification () {
-    const endDateToValidateLessonPlanEmail = new StudentEndDateToValidateLessonPlanEmail('', '', '', '', '');
-    this.emailService.sendEmail(endDateToValidateLessonPlanEmail, 'email');
+    const lessonPlans = await this.lessonPlanService.getLessonPlansByDeadlineValidation();
+    for (let i = 0; i < lessonPlans.length; i++) {
+      const lessonPlan = lessonPlans[i];
+      const periodDisplayName = lessonPlan.schedule.grade.degree.period.displayName;
+      const subjectName = lessonPlan.schedule.subject.name;
+      const teacherName = lessonPlan.schedule.teacher?.user.displayName;
+      const lessonPlanDate = new Date(lessonPlan.date);
+      const spanishLessonPlanDate = convertToSpanishDate(lessonPlanDate);
+      const validationsTracking = lessonPlan.validationsTracking;
+      for (const validationTracking of validationsTracking) {
+        const currentStudent = validationTracking.student;
+        const studentName = currentStudent.user.displayName;
+        const studentEmail = currentStudent.user.email;
+        const endDateToValidateLessonPlanEmail = new StudentEndDateToValidateLessonPlanEmail(periodDisplayName, studentName, subjectName, teacherName, spanishLessonPlanDate);
+        this.emailService.sendEmail(endDateToValidateLessonPlanEmail, studentEmail);
+      }
+    }
   }
 
+  // @Cron('0 18 * * *')
   async studentDeadlineValidationHasExpired () {
-    const deadlineValidationHasExpiredEmail = new StudentDeadlineValidationExpiredEmail('', '', '', '');
-    this.emailService.sendEmail(deadlineValidationHasExpiredEmail, 'email');
-  }
-
-  @Cron('45 * * * * *')
-  async test() {
-    console.log('Hey there, this is a testing for cron');
+    const lessonPlans = await this.lessonPlanService.getLessonPlansByDeadlineValidation();
+    for (let i = 0; i < lessonPlans.length; i++) {
+      const lessonPlan = lessonPlans[i];
+      const periodDisplayName = lessonPlan.schedule.grade.degree.period.displayName;
+      const subjectName = lessonPlan.schedule.subject.name;
+      const teacherName = lessonPlan.schedule.teacher?.user.displayName;
+      const validationsTracking = lessonPlan.validationsTracking;
+      for (const validationTracking of validationsTracking) {
+        const currentStudent = validationTracking.student;
+        const studentName = currentStudent.user.displayName;
+        const studentEmail = currentStudent.user.email;
+        const deadlineValidationHasExpiredEmail = new StudentDeadlineValidationExpiredEmail(periodDisplayName, studentName, subjectName, teacherName);
+        this.emailService.sendEmail(deadlineValidationHasExpiredEmail, studentEmail);
+      }
+    }
   }
 }

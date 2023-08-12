@@ -298,7 +298,7 @@ export class LessonPlansService {
     return await this.lessonPlansRepository.validateLessonPlan(id);
   }
 
-  async getStudentsToNotify() {
+  async getLessonPlansToNotify() {
     const currentDate = new Date().setHours(0, 0, 0, 0);
     const lessonPlans = await this.lessonPlansRepository.findAllWithAdittionalData();
     const matchingLessonPlans = [];
@@ -307,6 +307,21 @@ export class LessonPlansService {
       const notificationDate = new Date(lessonPlan.notificationDate).setHours(0, 0, 0, 0);
       const areTheSameDates = new Date(currentDate).getTime() === new Date(notificationDate).getTime();
       if (areTheSameDates) {
+        matchingLessonPlans.push(lessonPlan);
+      }
+    }
+    return matchingLessonPlans;
+  }
+
+  async getLessonPlansByDeadlineValidation() {
+    const currentDate = new Date().setHours(0, 0, 0, 0);
+    const lessonPlans = await this.lessonPlansRepository.findAllWithAdittionalData();
+    const matchingLessonPlans = [];
+    for (let i = 0; i < lessonPlans.length; i++) {
+      const lessonPlan = lessonPlans[i];
+      const deadline = new Date(lessonPlan.maximumValidationDate).setHours(0, 0, 0, 0);
+      const areDeadlinesSame = new Date(currentDate).getTime() === new Date(deadline).getTime();
+      if (areDeadlinesSame) {
         matchingLessonPlans.push(lessonPlan);
       }
     }
