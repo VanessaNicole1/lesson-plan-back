@@ -50,7 +50,7 @@ export class ReportsService {
     };
   };
 
-  async mergePDFs(pdfPaths, outputPath) {
+  async mergePDFs(pdfPaths) {
     const mergedPdf = await PDFDocument.create();
 
     for (const pdfPath of pdfPaths) {
@@ -62,7 +62,6 @@ export class ReportsService {
 
     const mergedPdfBytes = await mergedPdf.save();
     return mergedPdfBytes;
-    await fs.promises.writeFile(outputPath, mergedPdfBytes);
   }
 
   async generateSingleLessonPlanReport(lessonPlan: any) {
@@ -116,8 +115,7 @@ export class ReportsService {
 
       await browser.close();
 
-      const outputPath = `${generateUniqueIdentifier()}-merged.pdf`;
-      const file = await this.mergePDFs(singleReporPaths, outputPath);
+      const file = await this.mergePDFs(singleReporPaths);
 
       this.deleteFiles(singleReporPaths);
 
@@ -157,8 +155,7 @@ export class ReportsService {
 
       await browser.close();
 
-      const outputPath = `${generateUniqueIdentifier()}-merged.pdf`;
-      const file = await this.mergePDFs(singleReporPaths, outputPath);
+      const file = await this.mergePDFs(singleReporPaths);
 
       this.deleteFiles(singleReporPaths);
 

@@ -18,8 +18,10 @@ export class TeacherTaskScheduleService {
     private emailService: SendEmailServiceWrapper
   ) {}
   
-  
-  @CronService.ProdCron('0 8 * * *') // Every day at 8am, after 3 days of period creation
+  /**
+   * Cron job executed every dat at 8m after 3 days of period creation.
+   */
+  @CronService.ProdCron('0 8 * * *')
   async teacherScheduleNotFilledNotification() {
     const teachersWithEmptySchedulesConfig = await this.teacherService.findTeachersWithEmptySchedulesConfigInActivePeriods();
 
@@ -36,7 +38,9 @@ export class TeacherTaskScheduleService {
     }
   }
 
-  // Every day at 8 AM, after 3 days of period creation.
+  /**
+   * Cron job executed every dat at 8m after 3 days of period creation.
+   */
   @CronService.ProdCron('0 8 * * *')
   async teacherAD2NotFilledNotification() {
     const teachersWithEmptyAD2OrCustomNotification = await this.teacherService.findTeachersWithEmptyAD2OrCustomNotificationsInActivePeriods();
@@ -55,13 +59,19 @@ export class TeacherTaskScheduleService {
     }
   }
 
-  // Every Friday at 8 AM.
+
+  /**
+   * Every Monday at 8am.
+   */
+  @CronService.ProdCron("0 8 * * 1")
   async teacherNotLessonPlanForAWeekNotification() {
-    // TODO: Do not forget to put all the necessary logic here!
+
+
     const notLessonPlanForAWeekEmail = new TeacherNotLessonPlanForAWeekEmail('', '');
     this.emailService.sendEmail(notLessonPlanForAWeekEmail, 'email')
   }
 
+  
   // Every day 
   async teacherMissingStudentsToGradedLessonPlanNotification() {
     const missingStudentsToGradedLessonPlanEmail = new TeacherMissingStudentsToValidateLessonPlanEmail(

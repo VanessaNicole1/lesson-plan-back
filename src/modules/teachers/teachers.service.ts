@@ -184,6 +184,66 @@ export class TeachersService {
     return this.teachersRepository.findTeachersEvents(teacher.id);
   }
 
+  async findTeacherPeriodsByUser(
+    userId: string,
+    i18nContext: I18nContext = undefined,
+  ) {
+    const i18n = i18nContext || this.i18nService;
+    const user = await this.usersService.findOne(userId);
+    await this.findTeachersByUser(userId, i18nContext);
+
+    const periods = await this.periodService.findAll();
+    const periodsIds = periods.map((activePeriod) => activePeriod.id);
+    const periodsByTeacher =
+      await this.teachersRepository.findTeacherActivePeriodsByUser(
+        periodsIds,
+        user.id,
+      );
+
+    if (!periodsByTeacher) {
+      throw new BadRequestException(
+        i18n.t(
+          `${this.baseI18nKey}.findTeacherActivePeriodsByUser.NOT_TEACHERS_IN_ACTIVE_PERIODS`,
+        ),
+      );
+    }
+
+    const activePeriodsIdsByTeacher = periodsByTeacher.map(
+      (activePeriod) => activePeriod.periodId,
+    );
+    const periodsInformation = this.periodService.findManyByPeriodIds(
+      activePeriodsIdsByTeacher,
+    );
+
+    return periodsInformation;
+  }
+
+  updateTeacherEventConfig(
+    id: string,
+    updateTeacherEventConfigDto: UpdateTeacherEventConfigDto,
+  ) {
+    return this.teachersRepository.updateTeacherEventConfig(
+      id,
+      updateTeacherEventConfigDto,
+    );
+  }
+
+  removeTeachersByPeriod(idPeriod: string) {
+    return this.teachersRepository.removeTeachersByPeriod(idPeriod);
+  }
+
+  getEmptyEventsConfig(eventsConfig) {
+    return eventsConfig.filter((eventConfig) => {
+      if (!eventConfig.metadata) {
+        return true;
+      }
+
+      if ((eventConfig.metadata as any).days.length === 0) {
+        return true;
+      }
+    });
+  }
+
   validateTeacherEmail(
     createTeacherDto: CreateTeacherDto,
     i18nContext: I18nContext,
@@ -264,65 +324,5 @@ export class TeachersService {
     }
 
     return duplicatedInfo;
-  }
-
-  updateTeacherEventConfig(
-    id: string,
-    updateTeacherEventConfigDto: UpdateTeacherEventConfigDto,
-  ) {
-    return this.teachersRepository.updateTeacherEventConfig(
-      id,
-      updateTeacherEventConfigDto,
-    );
-  }
-
-  removeTeachersByPeriod(idPeriod: string) {
-    return this.teachersRepository.removeTeachersByPeriod(idPeriod);
-  }
-
-  getEmptyEventsConfig(eventsConfig) {
-    return eventsConfig.filter((eventConfig) => {
-      if (!eventConfig.metadata) {
-        return true;
-      }
-
-      if ((eventConfig.metadata as any).days.length === 0) {
-        return true;
-      }
-    });
-  }
-
-  async findTeacherPeriodsByUser(
-    userId: string,
-    i18nContext: I18nContext = undefined,
-  ) {
-    const i18n = i18nContext || this.i18nService;
-    const user = await this.usersService.findOne(userId);
-    await this.findTeachersByUser(userId, i18nContext);
-
-    const periods = await this.periodService.findAll();
-    const periodsIds = periods.map((activePeriod) => activePeriod.id);
-    const periodsByTeacher =
-      await this.teachersRepository.findTeacherActivePeriodsByUser(
-        periodsIds,
-        user.id,
-      );
-
-    if (!periodsByTeacher) {
-      throw new BadRequestException(
-        i18n.t(
-          `${this.baseI18nKey}.findTeacherActivePeriodsByUser.NOT_TEACHERS_IN_ACTIVE_PERIODS`,
-        ),
-      );
-    }
-
-    const activePeriodsIdsByTeacher = periodsByTeacher.map(
-      (activePeriod) => activePeriod.periodId,
-    );
-    const periodsInformation = this.periodService.findManyByPeriodIds(
-      activePeriodsIdsByTeacher,
-    );
-
-    return periodsInformation;
   }
 }
