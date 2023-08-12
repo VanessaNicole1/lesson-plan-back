@@ -300,10 +300,11 @@ export class LessonPlansService {
 
   async getLessonPlansToNotify() {
     const currentDate = new Date().setHours(0, 0, 0, 0);
-    const lessonPlans = await this.lessonPlansRepository.findAllWithAdittionalData();
+    const lessonPlans = await this.lessonPlansRepository.findAllLessonPlansWithAdittionalData();
+    const currentLessonPlans = lessonPlans.filter((lessonPlan) => lessonPlan.notification === 'no');
     const matchingLessonPlans = [];
-    for (let i = 0; i < lessonPlans.length; i++) {
-      const lessonPlan = lessonPlans[i];
+    for (let i = 0; i < currentLessonPlans.length; i++) {
+      const lessonPlan = currentLessonPlans[i];
       const notificationDate = new Date(lessonPlan.notificationDate).setHours(0, 0, 0, 0);
       const areTheSameDates = new Date(currentDate).getTime() === new Date(notificationDate).getTime();
       if (areTheSameDates) {
@@ -315,16 +316,20 @@ export class LessonPlansService {
 
   async getLessonPlansByDeadlineValidation() {
     const currentDate = new Date().setHours(0, 0, 0, 0);
-    const lessonPlans = await this.lessonPlansRepository.findAllWithAdittionalData();
+    const lessonPlans = await this.lessonPlansRepository.findAllLessonPlansWithAdittionalData();
     const matchingLessonPlans = [];
     for (let i = 0; i < lessonPlans.length; i++) {
       const lessonPlan = lessonPlans[i];
       const deadline = new Date(lessonPlan.maximumValidationDate).setHours(0, 0, 0, 0);
-      const areDeadlinesSame = new Date(currentDate).getTime() === new Date(deadline).getTime();
-      if (areDeadlinesSame) {
+      const areSameDeadlines = new Date(currentDate).getTime() === new Date(deadline).getTime();
+      if (areSameDeadlines) {
         matchingLessonPlans.push(lessonPlan);
       }
     }
     return matchingLessonPlans;
+  }
+  
+  expireLessonPlan(lessonPlanId: string) {
+    return this.lessonPlansRepository.expireLessonPlan(lessonPlanId);
   }
 }

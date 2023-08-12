@@ -6,6 +6,7 @@ import { SendEmailServiceWrapper } from '../common/services/send-email-wrapper.s
 import { Cron } from '@nestjs/schedule';
 import { LessonPlansService } from '../lesson-plans/lesson-plans.service';
 import { convertToSpanishDate } from 'src/utils/date.utils';
+import { CronService } from '../common/services/cron.service';
 
 @Injectable()
 export class StudentTaskScheduleService {
@@ -15,9 +16,11 @@ export class StudentTaskScheduleService {
     private lessonPlanService: LessonPlansService,
   ) {}
   
-  // Every day at 8 am.
-  // Just one time only if the lesson plan has the option notify later.
-  // @Cron('0 8 * * *')
+  /**
+   * Every day at 8 a.m
+   * Just one time only if the lesson plan has the option notify later.
+   */
+  @CronService.ProdCron('0 8 * * *')
   async studentValidateLessonPlanNotification() {
     const lessonPlans = await this.lessonPlanService.getLessonPlansToNotify();
     for (let i = 0; i < lessonPlans.length; i++) {
@@ -35,16 +38,15 @@ export class StudentTaskScheduleService {
         const studentName = currentStudent.user.displayName;
         const studentEmail = currentStudent.user.email;
         const validateLessonPlanEmail = new StudentValidateLessonPlanEmail(periodDisplayName, studentName, subjectName, teacherName, spanishLessonPlanDate, spanishDeadlineDate);
-        // this.emailService.sendEmail(validateLessonPlanEmail, studentEmail);
+        this.emailService.sendEmail(validateLessonPlanEmail, studentEmail);
       }
     }
   }
 
   /**
-   * Take into account: Deactivate the lesson plan to validate.
+   * Every day at 8 a.m
    */
-  // Every day at 8 am.
-  // @Cron('0 8 * * *')
+  @CronService.ProdCron('0 8 * * *')
   async studentEndDateToValidateLessonPlanNotification () {
     const lessonPlans = await this.lessonPlanService.getLessonPlansByDeadlineValidation();
     for (let i = 0; i < lessonPlans.length; i++) {
@@ -65,11 +67,16 @@ export class StudentTaskScheduleService {
     }
   }
 
-  // @Cron('0 18 * * *')
-  async studentDeadlineValidationHasExpired () {
+  /**
+   * Notify the expiration of the deadline to validate the lesson plan.
+   * Every day to 18 p.m
+   */
+  @CronService.ProdCron('0 18 * * *')
+  async studentDeadlineValidateLessonPlanHasExpiredNotification () {
     const lessonPlans = await this.lessonPlanService.getLessonPlansByDeadlineValidation();
     for (let i = 0; i < lessonPlans.length; i++) {
       const lessonPlan = lessonPlans[i];
+      this.lessonPlanService.expireLessonPlan(lessonPlan.id);
       const periodDisplayName = lessonPlan.schedule.grade.degree.period.displayName;
       const subjectName = lessonPlan.schedule.subject.name;
       const teacherName = lessonPlan.schedule.teacher?.user.displayName;
