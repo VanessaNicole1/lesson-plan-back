@@ -7,7 +7,8 @@ RUN apk add --no-cache \
       ca-certificates \
       ttf-freefont \
       nodejs \
-      yarn
+      yarn \
+      tzdata
 
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 RUN addgroup -S pptruser && adduser -S -G pptruser pptruser
@@ -21,4 +22,5 @@ RUN npm install
 COPY --chown=pptruser:pptruser . .
 RUN npx prisma generate
 RUN npm run build
+ENV TZ=America/Guayaquil
 CMD ["npm", "run", "start:prod"]
