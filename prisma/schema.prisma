@@ -117,6 +117,7 @@ model LessonPlan {
   validationsTracking   LessonPlanValidationTracking[]
   periodId              String
   createdAt             DateTime                       @default(now())
+  validationExpired     Boolean?                       @default(false)
 }
 
 model LessonPlanValidationTracking {
