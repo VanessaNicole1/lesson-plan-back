@@ -94,7 +94,6 @@ export class TeacherTaskScheduleService {
    * It will notify teachers to remember to fill out a Lesson plan.
    */
   @CronService.ProdCron("30 7-18/1 * * 1-5")
-  @CronService.DevCron("*/10 * * * * *")
   async notifyToFillOutLessonPlan() {
     const activePeriods = await this.periodService.findActivePeriods();
     const periodsIds = activePeriods.map(period => period.id);
