@@ -14,6 +14,7 @@ import { UsersService } from '../users/users.service';
 import { PeriodsService } from '../periods/periods.service';
 import { UpdateTeacherEventConfigDto } from './dto/update-teacher-config.dto';
 import { SchedulesService } from '../schedules/schedules.service';
+import { LessonPlansService } from '../lesson-plans/lesson-plans.service';
 
 @Injectable()
 export class TeachersService {
@@ -27,6 +28,8 @@ export class TeachersService {
     private i18nService: I18nService,
     @Inject(forwardRef(() => SchedulesService))
     private schedulesService: SchedulesService,
+    @Inject(forwardRef(() => LessonPlansService))
+    private lessonPlanService: LessonPlansService
   ) {}
 
   async findTeachersWithEmptyAD2OrCustomNotificationsInActivePeriods() {
@@ -64,6 +67,11 @@ export class TeachersService {
     return teachersInformation;
   }
 
+  async findTeachersEventsConfigByPeriodIds(periodIds: string[]) {
+    const eventsConfig = await this.teachersRepository.findTeacherEventsConfigByPeriodIds(periodIds);
+    return this.getNotEmptyEventsConfig(eventsConfig);
+  }
+
   async findTeachersWithEmptySchedulesConfigInActivePeriods() {
     const activePeriods = await this.periodService.findActivePeriods();
     const activePeriodIds = activePeriods.map(
@@ -95,6 +103,10 @@ export class TeachersService {
     });
 
     return teachersInformation;
+  }
+
+  findTeachersByPeriodIds (periodIds: string[]) {
+    return this.teachersRepository.findTeachersByPeriodIds(periodIds);
   }
 
   findAll(filterTeacherDto?: FilterTeacherDto) {
@@ -218,6 +230,19 @@ export class TeachersService {
     return periodsInformation;
   }
 
+  async findTeachersWithEmptyLessonPlansBetweenDates(
+    from: Date,
+    to: Date,
+    periodIds: string[]
+  ) {
+    const teachers = await this.findTeachersByPeriodIds(periodIds);
+    const teacherIds = teachers.map(teacher => teacher.id);
+    const lessonPlans = await this.lessonPlanService.findLessonPlansBetweenDatesByTeachers(from, to, teacherIds);
+    const lessonPlanTeacherIds = lessonPlans.map(lessonPlan => lessonPlan.schedule.teacherId);
+    const teachersWithEmptyLessonPlans = teachers.filter(({ id }) => !lessonPlanTeacherIds.includes(id));
+    return teachersWithEmptyLessonPlans;
+  }
+
   updateTeacherEventConfig(
     id: string,
     updateTeacherEventConfigDto: UpdateTeacherEventConfigDto,
@@ -241,6 +266,13 @@ export class TeachersService {
       if ((eventConfig.metadata as any).days.length === 0) {
         return true;
       }
+    });
+  }
+
+  getNotEmptyEventsConfig(eventsConfig) {
+    return eventsConfig.filter((eventConfig) => {
+      const eventInformation: any = eventConfig.metadata;
+      return eventInformation && eventInformation.days.length > 0;
     });
   }
 

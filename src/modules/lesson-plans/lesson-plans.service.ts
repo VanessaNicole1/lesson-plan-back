@@ -1,7 +1,9 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan.dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan.dto';
@@ -24,8 +26,10 @@ export class LessonPlansService {
     private lessonPlansRepository: LessonPlansRepository,
     private scheduleService: SchedulesService,
     private lessonPlansTrackingService: LessonPlansTrackingService,
+    @Inject(forwardRef(() => PeriodsService))
     private periodService: PeriodsService,
     private emailService: SendEmailServiceWrapper,
+    @Inject(forwardRef(() => TeachersService))
     private teacherService: TeachersService,
     private reportService: ReportsService,
   ) {}
@@ -260,6 +264,18 @@ export class LessonPlansService {
     } catch (error) {
       console.warn("ERROR - Generate teacher lesson plan report", error);
     }
+  }
+
+  findLessonPlansBetweenDatesByTeachers(
+    from: Date,
+    to: Date,
+    teacherIds: string[]
+  ) {
+    return this.lessonPlansRepository.findLessonPlansByTeacherIdsBetweenDates(
+      from,
+      to,
+      teacherIds
+    );
   }
 
   async generateLessonPlanReport(
