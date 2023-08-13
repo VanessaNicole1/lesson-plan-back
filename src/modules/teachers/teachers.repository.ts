@@ -64,6 +64,19 @@ export class TeachersRepository {
     });
   }
 
+  findTeachersByPeriodIds(periodIds: string[]) {
+    return this.prisma.teacher.findMany({
+      where: {
+        periodId: {
+          in: periodIds
+        }
+      },
+      include: {
+        user: true
+      }
+    });
+  }
+
   findTeachersByUser(userId: string) {
     return this.prisma.teacher.findMany({
       where: {
@@ -92,6 +105,13 @@ export class TeachersRepository {
       where: {
         periodId: {
           in: periodIds
+        }
+      },
+      include: {
+        teacher: {
+          include: {
+            user: true
+          }
         }
       }
     })

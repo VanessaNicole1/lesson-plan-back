@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { LessonPlansService } from './lesson-plans.service';
 import { LessonPlansController } from './lesson-plans.controller';
 import { LessonPlansRepository } from './lesson-plans.repository';
@@ -11,8 +11,8 @@ import { TeachersModule } from '../teachers/teachers.module';
   imports: [
     SchedulesModule,
     LessonPlanValidationTrackingModule,
-    PeriodsModule,
-    TeachersModule
+    forwardRef(() => PeriodsModule),
+    forwardRef(() => TeachersModule)
   ],
   controllers: [LessonPlansController],
   providers: [LessonPlansService, LessonPlansRepository],

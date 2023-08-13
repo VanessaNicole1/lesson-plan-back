@@ -23,3 +23,28 @@ export const hasPassedAmountOfDays = (dateToCompare: Date, amountOfDays: number,
 
   return daysDifference > amountOfDays;
 }
+
+export const getLastWeekFromMondayDay = () => {
+  /**
+   * Should be executed just on mondays.
+   */
+  const currentDate = new Date("2023-08-14");
+
+  const oneDayInMiliseconds = 24 * 60 * 60 * 1000;
+  const sevenDaysInMiliseconds = oneDayInMiliseconds * 7;
+  const threeDaysInMiliseconds = oneDayInMiliseconds * 3;
+
+  const lastMonday = new Date(currentDate);
+  lastMonday.setTime(lastMonday.getTime() - sevenDaysInMiliseconds);
+
+  const lastFriday = new Date(currentDate);
+  lastFriday.setTime(lastFriday.getTime() - threeDaysInMiliseconds);
+
+  return { from: lastMonday, to: lastFriday }
+};
+
+export const convertToSpanishDate = (currrentDate: Date) => {
+  const dateToConvert = new Date(currrentDate);
+  const spanishDate = dateToConvert.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  return spanishDate;
+}

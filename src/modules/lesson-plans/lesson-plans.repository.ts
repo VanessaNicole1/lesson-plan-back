@@ -277,4 +277,33 @@ export class LessonPlansRepository {
       }
     })
   }
+
+  findLessonPlansByTeacherIdsBetweenDates(from: Date, to: Date, teacherIds: string[]) {
+    return this.prisma.lessonPlan.findMany({
+      where: {
+        schedule: {
+          teacher: {
+            id: {
+              in: teacherIds
+            }
+          }
+        },
+        date: {
+          gte: from,
+          lte: to
+        }
+      },
+      include: {
+        schedule: {
+          include: {
+            teacher: {
+              include: {
+                user: true
+              }
+            }
+          }
+        },
+      }
+    });
+  }
 }
