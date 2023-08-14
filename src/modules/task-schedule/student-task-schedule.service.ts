@@ -20,7 +20,7 @@ export class StudentTaskScheduleService {
    * Every day at 8 a.m
    * Just one time only if the lesson plan has the option notify later.
    */
-  @CronService.ProdCron('0 8 * * *')
+  @CronService.ProdCron('0 8 * * 1-5')
   async studentValidateLessonPlanNotification() {
     const lessonPlans = await this.lessonPlanService.getLessonPlansToNotify();
     for (let i = 0; i < lessonPlans.length; i++) {
@@ -46,7 +46,7 @@ export class StudentTaskScheduleService {
   /**
    * Every day at 8 a.m
    */
-  @CronService.ProdCron('0 8 * * *')
+  @CronService.ProdCron('0 8 * * 1-5')
   async studentEndDateToValidateLessonPlanNotification () {
     const lessonPlans = await this.lessonPlanService.getLessonPlansByDeadlineValidation();
     for (let i = 0; i < lessonPlans.length; i++) {
@@ -71,7 +71,7 @@ export class StudentTaskScheduleService {
    * Notify the expiration of the deadline to validate the lesson plan.
    * Every day to 18 p.m
    */
-  @CronService.ProdCron('0 18 * * *')
+  @CronService.ProdCron('0 18 * * 1-5')
   async studentDeadlineValidateLessonPlanHasExpiredNotification () {
     const lessonPlans = await this.lessonPlanService.getLessonPlansByDeadlineValidation();
     for (let i = 0; i < lessonPlans.length; i++) {
