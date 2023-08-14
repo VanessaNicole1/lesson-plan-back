@@ -332,4 +332,44 @@ export class LessonPlansService {
   expireLessonPlan(lessonPlanId: string) {
     return this.lessonPlansRepository.expireLessonPlan(lessonPlanId);
   }
+
+  async findStudentsPendingValidationLessonPlans() {
+    const oneDayInMilliseconds = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
+    const currentDate = new Date();
+    const currentDateDay = currentDate.getDate();
+    const currentDateMonth = currentDate.getMonth() + 1;
+    const currentDateYear = currentDate.getFullYear();
+    const lessonPlans = await this.lessonPlansRepository.findAllLessonPlansWithAdittionalData();
+    const pendingLessonPlans = [];
+    for (const lessonPlan of lessonPlans) {
+      const deadline = lessonPlan.maximumValidationDate;
+      const currentDeadline = new Date(deadline);
+      const milisecondsDifference = currentDeadline.getTime() - oneDayInMilliseconds;
+      const newDate = new Date(milisecondsDifference);
+      const deadlineDay = newDate.getDate();
+      const deadlineMonth = newDate.getMonth() + 1;
+      const deadlineYear = newDate.getFullYear();
+      const isSameDay = currentDateDay === deadlineDay;
+      const isSameMonth = currentDateMonth === deadlineMonth;
+      const isSameYear = currentDateYear === deadlineYear;
+      if (isSameDay && isSameMonth && isSameYear) {
+        if (!lessonPlan.hasQualified) {
+          const validationsTracking = lessonPlan.validationsTracking;
+          const currentValidationsTracking = validationsTracking.filter((validation) => !validation.isValidated);
+          const students = currentValidationsTracking.map((validationTracking) => validationTracking.student.user.displayName);
+          const currentLessonPlan = {
+            periodDisplayName: lessonPlan.schedule?.grade?.degree.period.displayName,
+            teacherName: lessonPlan.schedule?.teacher?.user.displayName,
+            teacherEmail: lessonPlan.schedule?.teacher?.user.email,
+            subjectName: lessonPlan.schedule?.subject.name,
+            deadline: lessonPlan.maximumValidationDate,
+            students,
+            lessonPlanId: lessonPlan.id,
+          }
+          pendingLessonPlans.push(currentLessonPlan);
+        }
+      }
+    }
+    return pendingLessonPlans;
+  }
 }

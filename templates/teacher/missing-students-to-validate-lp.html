@@ -188,17 +188,16 @@ table, td { color: #000000; } #u_body a { color: #0000ee; text-decoration: under
     <tr>
       <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:5px 50px 10px;font-family:'Raleway',sans-serif;" align="left">
         
-  <div style="font-size: 16px; line-height: 140%; text-align: justify; word-wrap: break-word;">
-    <p style="line-height: 140%;"><span style="color: #000000; text-align: center; background-color: #ffffff; float: none; display: inline; line-height: 19.6px;">Es un gusto saludarlo <b>Ing. {{teacherName}}</b>, 
-      los siguientes estudiantes aún no han calificado el plan de clase de la materia {{subjectName}} con fecha de {{lessonPlanDate}}.</span><span style="color: #000000; text-align: center; background-color: #ffffff; float: none; display: inline; line-height: 19.6px;"></span></p>
-<ul>
-  {{#each students}}
-  <li style="line-height: 19.6px;"><span style="color: #000000; text-align: center; background-color: #ffffff; float: none; display: inline; line-height: 19.6px;">{{student.displayName}}</span></li>
-  {{/each}}
-</ul>
-<p style="line-height: 140%;"><span style="color: #000000; text-align: center; background-color: #ffffff; float: none; display: inline; line-height: 19.6px;"><span style="color: #000000; text-align: center; background-color: #ffffff; float: none; display: inline; line-height: 19.6px;">La fecha de finalización para calificar el plan de clase es: {{maxQualifyDate}}, si usted desea extender el plazo para calificar el plan de clase, por favor haga clic en el siguiente botón.</span></span></p>
+  <div style="line-height: 140%; text-align: justify; word-wrap: break-word;">
+    <p style="line-height: 140%;">Es un gusto saludarlo Ing {{teacherName}},
+      Le recordamos que algunos de sus estudiantes aún no han validado el plan de clase de la materia {{subjectName}}, cuya fecha límite es el {{deadline}}. Los estudiantes pendientes que deben validar son los siguientes:
+      <ul>
+        {{#each students}}
+        <li style="line-height: 19.6px;"><span style="color: #000000; text-align: center; background-color: #ffffff; float: none; display: inline; line-height: 19.6px;">{{this}}</span></li>
+        {{/each}}
+      </ul>
+<p style="line-height: 140%;"><span style="color: #000000; text-align: center; background-color: #ffffff; float: none; display: inline; line-height: 19.6px;"><span style="color: #000000; text-align: center; background-color: #ffffff; float: none; display: inline; line-height: 19.6px;">La fecha límite para validar el plan de clase está programada para el {{deadline}}. Si considera necesario extender este plazo, por favor haga clic en el siguiente botón para extender el plazo.</span></span></p>
   </div>
-
       </td>
     </tr>
   </tbody>
