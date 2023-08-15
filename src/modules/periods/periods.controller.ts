@@ -31,6 +31,12 @@ export class PeriodsController {
     return this.periodsService.findOne(id, i18nContext);
   }
 
+  @Get(':id/weeks')
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  getPeriodWeeks(@Param('id') id: string) {
+    return this.periodsService.getPeriodWeeks(id);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.periodsService.remove(id);
