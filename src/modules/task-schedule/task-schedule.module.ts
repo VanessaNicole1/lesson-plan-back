@@ -4,9 +4,10 @@ import { TeachersModule } from "../teachers/teachers.module";
 import { PeriodsModule } from "../periods/periods.module";
 import { StudentTaskScheduleService } from "./student-task-schedule.service";
 import { LessonPlansModule } from "../lesson-plans/lesson-plans.module";
+import { PeriodTaskScheduleService } from "./period-task-schedule.service";
 
 @Module({
   imports: [TeachersModule, PeriodsModule, LessonPlansModule],
-  providers: [TeacherTaskScheduleService, StudentTaskScheduleService]
+  providers: [TeacherTaskScheduleService, StudentTaskScheduleService, PeriodTaskScheduleService]
 })
 export class TaskScheduleModule {}
