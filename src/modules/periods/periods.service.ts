@@ -74,6 +74,41 @@ export class PeriodsService {
     return periodDeleted;
   }
 
+  async getPeriodWeeks(id: string) {
+    const period = await this.findOne(id);
+    const endDate = period.isActive ? new Date(): period.endDate;
+    return this.getWeeksBetweenDates(period.startDate, endDate);
+  }
+
+  getWeeksBetweenDates(startDate: Date, endDate: Date): Week[] {
+    const weeks: Week[] = [];
+    let currentDate = new Date(startDate);
+    currentDate.setDate(currentDate.getDate() - (currentDate.getDay() + 6) % 7);
+
+    let weekId = 1;
+    while (currentDate <= endDate) {
+        const weekStartDate = new Date(currentDate);
+        const weekEndDate = new Date(currentDate);
+        weekEndDate.setDate(weekEndDate.getDate() + 4);
+
+        const weekRange = `${weekStartDate.toLocaleDateString()} - ${weekEndDate.toLocaleDateString()}`;
+        const weekName = `Semana ${weekId}`;
+
+        weeks.push({
+          id: weekId,
+          name: weekName,
+          range: weekRange,
+          from: weekStartDate,
+          to: weekEndDate
+        });
+
+        currentDate.setDate(currentDate.getDate() + 7);
+        weekId++;
+    }
+
+    return weeks;
+  }
+
   validateDates(createPeriodDto: CreatePeriodDto, i18nContext: I18nContext) {
     const { startDate, endDate } = createPeriodDto;
 
