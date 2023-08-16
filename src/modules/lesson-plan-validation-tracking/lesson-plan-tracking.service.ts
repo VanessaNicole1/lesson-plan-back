@@ -1,14 +1,17 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { LessonPlansTrackingRepository } from './lesson-plan-tracking.repository';
 import { CreateLessonPlanTrackingDto } from './dto/validate-lesson-plan.dto';
 import { Exception } from 'handlebars';
 import { UpdateLessonPlanTrackingDto } from './dto/update-lesson-plan-tracking.dto';
+import { LessonPlansService } from '../lesson-plans/lesson-plans.service';
 
 // TODO: Handle i18n
 @Injectable()
 export class LessonPlansTrackingService {
   constructor(
     private lessonPlansTrackingRepository: LessonPlansTrackingRepository,
+    @Inject(forwardRef(() => LessonPlansService))
+    private lessonPlanService: LessonPlansService,
   ) {}
 
   async findOne(id: string) {
@@ -27,10 +30,17 @@ export class LessonPlansTrackingService {
 
   async update(id: string, lessonPlanTrackingDto: UpdateLessonPlanTrackingDto) {
     const lessonPlanTracking = await this.findOne(id);
-    return this.lessonPlansTrackingRepository.update(
+    const lessonPlanId = lessonPlanTracking.lessonPlan.id;
+    const updatedLessonPlanTracking = await this.lessonPlansTrackingRepository.update(
       lessonPlanTracking.id,
       lessonPlanTrackingDto,
     );
+    const currentLessonPlansTracking = await this.findLessonPlanTrackingByLessonPlanId(lessonPlanId);
+    const currentValidatedLessonPlansTracking = currentLessonPlansTracking.filter((lessonPlanTracking) => !lessonPlanTracking.isValidated);
+    if (currentValidatedLessonPlansTracking.length === 0) {
+      await this.lessonPlanService.validateLessonPlan(lessonPlanId);
+    }
+    return updatedLessonPlanTracking;
   }
 
   getLessonPlansByStudentsAndPeriods(

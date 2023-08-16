@@ -11,6 +11,9 @@ export class LessonPlansTrackingRepository {
     return this.prisma.lessonPlanValidationTracking.findUnique({
       where: {
         id
+      },
+      include: {
+        lessonPlan: true,
       }
     })
   };

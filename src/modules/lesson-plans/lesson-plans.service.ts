@@ -25,6 +25,7 @@ export class LessonPlansService {
   constructor(
     private lessonPlansRepository: LessonPlansRepository,
     private scheduleService: SchedulesService,
+    @Inject(forwardRef(() => LessonPlansTrackingService))
     private lessonPlansTrackingService: LessonPlansTrackingService,
     @Inject(forwardRef(() => PeriodsService))
     private periodService: PeriodsService,
@@ -295,5 +296,9 @@ export class LessonPlansService {
     } catch (error) {
       console.warn("ERROR - Generate teacher lesson plan report", error);
     }
+  }
+
+  async validateLessonPlan(id: string) {
+    return await this.lessonPlansRepository.validateLessonPlan(id);
   }
 }
