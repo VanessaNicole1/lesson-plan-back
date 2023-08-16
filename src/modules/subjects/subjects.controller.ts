@@ -6,6 +6,9 @@ import {
   Patch,
   Param,
   Delete,
+  UsePipes,
+  ValidationPipe,
+  Query,
 } from '@nestjs/common';
 import { SubjectsService } from './subjects.service';
 import { CreateSubjectDto } from './dto/create-subject.dto';
@@ -16,8 +19,9 @@ import { FilterSubjectDto } from './dto/filter-subject.dto';
 export class SubjectsController {
   constructor(private readonly subjectsService: SubjectsService) {}
 
-  @Post()
-  findAll(@Body() filterSubjectDto?: FilterSubjectDto) {
+  @Get()
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  findAll(@Query() filterSubjectDto?: FilterSubjectDto) {
     return this.subjectsService.findAll(filterSubjectDto);
   }
 

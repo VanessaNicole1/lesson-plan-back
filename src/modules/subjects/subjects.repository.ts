@@ -77,7 +77,7 @@ export class SubjectsRepository {
 
   async update(id: string, updateSubjectDto: UpdateSubjectDto) {
     const { name, periodId } = updateSubjectDto;
-    const currentSubject = await this.prisma.subject.findFirst({
+    const currentSubject = await this.prisma.subject.findMany({
       where: {
         name: {
           equals: name,
