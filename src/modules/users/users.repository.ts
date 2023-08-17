@@ -15,6 +15,7 @@ export class UsersRepository {
     return {
       include: {
         roles: true,
+        registerConfig: true
       },
     };
   }

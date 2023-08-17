@@ -117,4 +117,13 @@ export class UsersService {
     const role = await this.rolesService.findOne(roleId);
     return this.usersRepository.assignRole(userId, role);
   }
+
+  async findUnregisteredUsers() {
+    const currentUsers = await this.findAll();
+    const registerConfigUsers = currentUsers.filter((currentUser) => currentUser.registerConfig);
+    const unregisteredUsers = registerConfigUsers.filter((currentUser) => !currentUser.registerConfig.isRegistered);
+    for (const unregisteredUser of unregisteredUsers) {
+      // const currentUnregisteredUser = 
+    }
+  }
 }
