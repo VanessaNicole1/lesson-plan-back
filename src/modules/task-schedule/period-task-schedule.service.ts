@@ -33,7 +33,7 @@ export class PeriodTaskScheduleService {
    * Every day at 18 p.m
    * Deactivate the process for the current period when the end date expires.
    */
-  @Cron('0 18 * * 1-5')
+  @CronService.ProdCron('0 18 * * 1-5')
   async deactivatePeriodAction() {
     const activePeriods = await this.periodService.getPeriodToDeactivate();
     for (const period of activePeriods) {
