@@ -11,6 +11,7 @@ import {
   Res,
   Query,
   Header,
+  BadRequestException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { LessonPlansService } from './lesson-plans.service';
@@ -39,11 +40,15 @@ export class LessonPlansController {
     @Query() lessonPlanReportDto: LessonPlanReportDto,
     @Res() res: Response,
   ) {
-    const report =
-      await this.lessonPlansService.generateTeacherLessonPlanReport(
-        userId,
-        lessonPlanReportDto,
-      );
+    const report = await this.lessonPlansService.generateTeacherLessonPlanReport(
+      userId,
+      lessonPlanReportDto,
+    );
+
+    if (!report) {
+      throw new BadRequestException();
+    }
+
     const buffer = Buffer.from(report.buffer);
 
     res.set({
