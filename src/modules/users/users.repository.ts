@@ -41,7 +41,7 @@ export class UsersRepository {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    const { phoneNumber, city, identificationCard, name, lastName, roleIds } = updateUserDto;
+    const { phoneNumber, city, identificationCard, name, lastName, roles: roleIds } = updateUserDto;
     const disconnectRoles = [];
     const currentRoles = await this.rolesService.findAll();
     const currentRolesIds = currentRoles.map((role) => role.id);

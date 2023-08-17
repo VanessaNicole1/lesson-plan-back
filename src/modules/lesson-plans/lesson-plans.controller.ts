@@ -149,11 +149,13 @@ export class LessonPlansController {
   @Get('unique-report/:lessonPlanId')
   @Header('Content-Type', 'application/pdf')
   @Header('Content-Disposition', 'attachment; filename="report.pdf"')
-  async generateLessonPlanReport(@Param('lessonPlanId') lessonPlanId: string, @Res() res: Response) {
-    const report =
-      await this.lessonPlansService.generateLessonPlanReport(
-        lessonPlanId,
-      );
+  async generateLessonPlanReport(
+    @Param('lessonPlanId') lessonPlanId: string,
+    @Res() res: Response,
+  ) {
+    const report = await this.lessonPlansService.generateLessonPlanReport(
+      lessonPlanId,
+    );
     const buffer = Buffer.from(report.buffer);
 
     res.set({

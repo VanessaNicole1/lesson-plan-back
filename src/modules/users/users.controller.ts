@@ -7,6 +7,9 @@ import {
   Param,
   Delete,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -39,7 +42,8 @@ export class UsersController {
   }
 
   @Get()
-  findAll(@Body() filterUserDto?: FilterUserDto) {
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  findAll(@Query() filterUserDto?: FilterUserDto) {
     return this.usersService.findAll(filterUserDto);
   }
 

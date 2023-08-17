@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { hashPassword } from '../../utils/password.utils';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -56,8 +56,23 @@ export class UsersService {
     return user;
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    return this.usersRepository.update(id, updateUserDto);
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const { roles } = updateUserDto;
+    const rolesName = roles.map((role) => role.name);
+    const currentUser = await this.findOne(id);
+    const userRoles = currentUser.roles.map((role) => role.name);
+
+    if (userRoles.includes('STUDENT')) {
+      if (rolesName.includes('TEACHER') || rolesName.includes('MANAGER')) {
+        throw new BadRequestException(`El usuario ${currentUser.displayName} es estudiante y no puede desempeñar el rol de docente o director`);
+      }
+    } else {
+      if (rolesName.includes('STUDENT')) {
+        throw new BadRequestException(`El usuario ${currentUser.displayName} es docente o director y no puede ser estudiante`);
+      }
+    }
+    const currentRoles = roles.map((role) => role.id);
+    return this.usersRepository.update(id, {...updateUserDto, roles: currentRoles});
   }
 
   async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto, i18nContext: I18nContext) {

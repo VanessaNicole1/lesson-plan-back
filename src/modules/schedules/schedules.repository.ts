@@ -82,7 +82,7 @@ export class SchedulesRepository {
         ? (hasQualified === 'true' && true) ||
           (hasQualified === 'false' && false)
         : undefined;
-
+      
     if (currentHasQualified) {
       return this.prisma.schedule.findMany({
         where: {
@@ -131,7 +131,11 @@ export class SchedulesRepository {
           gradeId,
         },
         include: {
-          lessonPlans: true,
+          lessonPlans:{
+            where: {
+              hasQualified: currentHasQualified,
+            },
+          },
           teacher: {
             include: {
               user: true,

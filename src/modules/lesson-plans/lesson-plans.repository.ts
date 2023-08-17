@@ -340,4 +340,15 @@ export class LessonPlansRepository {
       }
     });
   }
+
+  validateLessonPlan(lessonPlanId: string) {
+    return this.prisma.lessonPlan.update({
+      where: {
+        id: lessonPlanId
+      },
+      data: {
+        hasQualified: true,
+      }
+    }) 
+  }
 }
