@@ -10,7 +10,6 @@ import { convertToSpanishDate, getLastWeekFromMondayDay, hasPassedAmountOfDays }
 import { TecaherAd2Notification } from '../common/strategies/email/teacher/ad2-notification.strategy';
 import { SendEmailServiceWrapper } from '../common/services/send-email-wrapper.service';
 import { LessonPlansService } from '../lesson-plans/lesson-plans.service';
-import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class TeacherTaskScheduleService {
