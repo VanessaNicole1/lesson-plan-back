@@ -152,7 +152,9 @@ export class InitialProcessRepository {
                     connect: { id: studentRoleId },
                   },
                   registerConfig: {
-                    create: {},
+                    create: {
+                      periodId: createdPeriod.id,
+                    },
                   },
                 },
                 include: {
@@ -207,7 +209,9 @@ export class InitialProcessRepository {
                     connect: { id: teacherRoleId },
                   },
                   registerConfig: {
-                    create: {},
+                    create: {
+                      periodId: createdPeriod.id,
+                    },
                   },
                 },
                 include: {
