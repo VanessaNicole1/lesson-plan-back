@@ -202,27 +202,61 @@ export class LessonPlansRepository {
     });
   }
 
-  findLessonPlansForTeacherReport(from: Date, to: Date, periodId: string, subjectId: string, teacherId: string, gradeId: string) {
-    // TODO: Check for just qualified lessonPlans
-    return this.prisma.lessonPlan.findMany({
-      where: {
-        periodId,
+  findLessonPlansForTeacherReport(
+    from: Date,
+    to: Date,
+    periodId: string,
+    teacherId: string, 
+    subjectId: string, 
+    gradeId: string
+  ) {
+    const additionalScheduleFilters: any = {};
+
+    if (subjectId) {
+      additionalScheduleFilters.subject = {
+        id: subjectId
+      }
+    }
+
+    if (gradeId) {
+      additionalScheduleFilters.grade = {
+        id: gradeId
+      }
+    }
+
+    const whereCondition = {
+      periodId,
         schedule: {
-          subject: {
-            id: subjectId
-          },
           teacher: {
             id: teacherId
           },
-          grade: {
-            id: gradeId
-          }
+          ...additionalScheduleFilters
         },
-        createdAt: {
+        date: {
           gte: from,
           lte: to
         }
-      },
+    }
+    
+    // TODO: Check for just qualified lessonPlans
+    return this.prisma.lessonPlan.findMany({
+      orderBy: [
+        {
+          schedule: {
+            grade: {
+              number: 'asc'
+            }
+          }
+        },
+        {
+          schedule: {
+            grade: {
+              parallel: 'asc'
+            }
+          }
+        }
+      ],
+      where: whereCondition,
       include: {
         schedule: {
           include: {

@@ -1,4 +1,4 @@
-import { IsDateString, IsNotEmpty, IsUUID } from "class-validator";
+import { IsDateString, IsNotEmpty, IsOptional, IsUUID } from "class-validator";
 
 // TODO: Add i18n
 export class LessonPlanReportDto {
@@ -14,11 +14,11 @@ export class LessonPlanReportDto {
   @IsUUID()
   periodId: string
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsUUID()
-  subjectId: string
+  subjectId?: string
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsUUID()
-  gradeId: string
+  gradeId?: string
 }

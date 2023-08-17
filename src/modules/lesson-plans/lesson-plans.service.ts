@@ -5,11 +5,11 @@ import {
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
+import * as fs from 'fs';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan.dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan.dto';
 import { LessonPlansRepository } from './lesson-plans.repository';
 import { SchedulesService } from '../schedules/schedules.service';
-import * as fs from 'fs';
 import { LessonPlansTrackingService } from '../lesson-plan-validation-tracking/lesson-plan-tracking.service';
 import { DeleteResourceDto } from './dto/delete-resource.dto';
 import { StudentValidateLessonPlanEmail } from '../common/strategies/email/student/validate-lesson-plan.strategy';
@@ -248,8 +248,8 @@ export class LessonPlansService {
           new Date(from),
           new Date(to),
           periodId,
-          subjectId,
           teacher.id,
+          subjectId,
           gradeId,
         );
 
