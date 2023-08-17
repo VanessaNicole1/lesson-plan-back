@@ -122,8 +122,6 @@ export class UsersService {
     const currentUsers = await this.findAll();
     const registerConfigUsers = currentUsers.filter((currentUser) => currentUser.registerConfig);
     const unregisteredUsers = registerConfigUsers.filter((currentUser) => !currentUser.registerConfig.isRegistered);
-    for (const unregisteredUser of unregisteredUsers) {
-      // const currentUnregisteredUser = 
-    }
+    return unregisteredUsers;
   }
 }
