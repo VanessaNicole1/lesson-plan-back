@@ -162,6 +162,7 @@ model RegisterConfig {
   isRegistered  Boolean? @default(false)
   user          User     @relation(fields: [userId], references: [id])
   userId        String   @unique
+  periodId      String?
 }
 
 model PeriodConfig {
