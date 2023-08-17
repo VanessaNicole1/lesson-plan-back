@@ -8,8 +8,8 @@ export class TeacherMissingStudentsToValidateLessonPlanEmail implements EmailStr
     private readonly teacherName: string,
     private readonly subjectName: string,
     private readonly students: any[],
-    private readonly lessonPlanDate: string,
-    private readonly maxQualifyDate: string,
+    private readonly deadline: string,
+    private readonly lessonPlanId: string,
   ) {}
   
   getData() {
@@ -18,9 +18,8 @@ export class TeacherMissingStudentsToValidateLessonPlanEmail implements EmailStr
       teacherName: this.teacherName,
       subjectName: this.subjectName,
       students: this.students,
-      lessonPlanDate: this.lessonPlanDate,
-      maxQualifyDate: this.maxQualifyDate,
-      url: ''
+      deadline: this.deadline,
+      url:  `${process.env.FRONTEND}/dashboard/lesson-plan/${this.lessonPlanId}/edit`,
     }
     return data;
   }

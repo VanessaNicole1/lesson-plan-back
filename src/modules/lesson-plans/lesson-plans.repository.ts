@@ -46,6 +46,12 @@ export class LessonPlansRepository {
     return this.prisma.lessonPlan.findMany();
   }
 
+  findAllLessonPlansWithAdittionalData() {
+    return this.prisma.lessonPlan.findMany({
+      ...this.getAdittionalData()
+    });
+  }
+
   findOne(id: string) {
     return this.prisma.lessonPlan.findUnique({
       where: {
@@ -309,7 +315,18 @@ export class LessonPlansRepository {
           }
         }
       }
-    })
+    });
+  }
+
+  expireLessonPlan(lessonPlanId: string) {
+    return this.prisma.lessonPlan.update({
+      where: {
+        id: lessonPlanId
+      },
+      data: {
+        validationExpired: true,
+      }
+    });
   }
 
   findLessonPlansByTeacherIdsBetweenDates(from: Date, to: Date, teacherIds: string[]) {

@@ -66,6 +66,10 @@ export class PeriodsService {
     return period;
   }
 
+  async findActivePeriodsWithAdditionalData() {
+    return await this.periodsRepository.findActivePeriodsWithAdditionalData();
+  }
+
   async remove(id: string) {
     const periodDeleted =  await this.periodsRepository.remove(id);
     await this.teacherService.removeTeachersByPeriod(id);
@@ -117,5 +121,69 @@ export class PeriodsService {
         i18nContext.t(`${this.baseI18nKey}.validateDates.GREATER_END_DATE`),
       );
     }
+  }
+
+  async deactivatePeriod(periodId: string) {
+    return await this.periodsRepository.deactivatePeriod(periodId);
+  }
+
+  async getPeriodsToNotify() {
+    const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
+    const periods = await this.findActivePeriodsWithAdditionalData();
+    const currentDate = new Date();
+    const currentDay = currentDate.getDate();
+    const currentMonth = currentDate.getMonth() + 1;
+    const currentYear = currentDate.getFullYear();
+    const activePeriods = [];
+    for (const period of periods) {
+      const endDate = new Date(period.endDate);
+      const milisecondsDifference = endDate.getTime() - oneDayInMilliseconds;
+      const newDate = new Date(milisecondsDifference);
+      const endDateDay = newDate.getUTCDate();
+      const endDateMonth = newDate.getMonth() + 1;
+      const endDateYear = newDate.getFullYear();
+      const areSameDay = currentDay === endDateDay;
+      const areSameMonth = currentMonth === endDateMonth;
+      const areSameYear = currentYear === endDateYear;
+      if (areSameDay && areSameMonth && areSameYear) {
+          const activePeriod = {
+            periodDisplayName: period.displayName,
+            managerName: period.degree.manager?.user.displayName,
+            managerEmail: period.degree.manager?.user.email,
+            endDate: period.endDate,
+          }
+          activePeriods.push(activePeriod);
+      }
+    }
+    return activePeriods;
+  }
+
+  areDatesEqual(firstDate: Date, secondDate: Date) {
+    return (
+      firstDate.getFullYear() === secondDate.getFullYear() &&
+      firstDate.getMonth() + 1 === secondDate.getMonth() + 1 &&
+      firstDate.getDate() === secondDate.getDate()
+    );
+  }
+
+  async getPeriodToDeactivate() {
+    const periods = await this.findActivePeriodsWithAdditionalData();
+    const currentDate = new Date('2023-08-01');
+    const periodsToDeactivate = [];
+    for (const period of periods) {
+      const endDate = new Date(period.endDate);
+      const areSameDates = this.areDatesEqual(currentDate, endDate);
+      if (areSameDates) {
+        const currentPeriod = {
+          periodId: period.id,
+          periodDisplayName: period.displayName,
+          managerName: period.degree?.manager?.user.displayName,
+          managerEmail: period.degree.manager?.user.email,
+          endDate: period.endDate
+        }
+        periodsToDeactivate.push(currentPeriod);
+      }
+    }
+    return periodsToDeactivate;
   }
 }

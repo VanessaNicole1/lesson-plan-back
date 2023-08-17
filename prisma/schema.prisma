@@ -117,6 +117,7 @@ model LessonPlan {
   validationsTracking   LessonPlanValidationTracking[]
   periodId              String
   createdAt             DateTime                       @default(now())
+  validationExpired     Boolean?                       @default(false)
 }
 
 model LessonPlanValidationTracking {
@@ -161,6 +162,7 @@ model RegisterConfig {
   isRegistered  Boolean? @default(false)
   user          User     @relation(fields: [userId], references: [id])
   userId        String   @unique
+  periodId      String?
 }
 
 model PeriodConfig {

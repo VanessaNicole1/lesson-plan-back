@@ -131,11 +131,7 @@ export class LessonPlansService {
         );
         this.emailService.sendEmail(validateLessonPlanEmail, lessonPlanTracking.student.user.email);
       }
-    } else {
-      // TODO: Notify students with the specific date
-      // return;
     }
-
     return lessonPlanCreated;
   }
 
@@ -300,5 +296,80 @@ export class LessonPlansService {
 
   async validateLessonPlan(id: string) {
     return await this.lessonPlansRepository.validateLessonPlan(id);
+  }
+
+  async getLessonPlansToNotify() {
+    const currentDate = new Date().setHours(0, 0, 0, 0);
+    const lessonPlans = await this.lessonPlansRepository.findAllLessonPlansWithAdittionalData();
+    const currentLessonPlans = lessonPlans.filter((lessonPlan) => lessonPlan.notification === 'no');
+    const matchingLessonPlans = [];
+    for (let i = 0; i < currentLessonPlans.length; i++) {
+      const lessonPlan = currentLessonPlans[i];
+      const notificationDate = new Date(lessonPlan.notificationDate).setHours(0, 0, 0, 0);
+      const areTheSameDates = new Date(currentDate).getTime() === new Date(notificationDate).getTime();
+      if (areTheSameDates) {
+        matchingLessonPlans.push(lessonPlan);
+      }
+    }
+    return matchingLessonPlans;
+  }
+
+  async getLessonPlansByDeadlineValidation() {
+    const currentDate = new Date().setHours(0, 0, 0, 0);
+    const lessonPlans = await this.lessonPlansRepository.findAllLessonPlansWithAdittionalData();
+    const matchingLessonPlans = [];
+    for (let i = 0; i < lessonPlans.length; i++) {
+      const lessonPlan = lessonPlans[i];
+      const deadline = new Date(lessonPlan.maximumValidationDate).setHours(0, 0, 0, 0);
+      const areSameDeadlines = new Date(currentDate).getTime() === new Date(deadline).getTime();
+      if (areSameDeadlines) {
+        matchingLessonPlans.push(lessonPlan);
+      }
+    }
+    return matchingLessonPlans;
+  }
+  
+  expireLessonPlan(lessonPlanId: string) {
+    return this.lessonPlansRepository.expireLessonPlan(lessonPlanId);
+  }
+
+  async findStudentsPendingValidationLessonPlans() {
+    const oneDayInMilliseconds = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
+    const currentDate = new Date();
+    const currentDateDay = currentDate.getDate();
+    const currentDateMonth = currentDate.getMonth() + 1;
+    const currentDateYear = currentDate.getFullYear();
+    const lessonPlans = await this.lessonPlansRepository.findAllLessonPlansWithAdittionalData();
+    const pendingLessonPlans = [];
+    for (const lessonPlan of lessonPlans) {
+      const deadline = lessonPlan.maximumValidationDate;
+      const currentDeadline = new Date(deadline);
+      const milisecondsDifference = currentDeadline.getTime() - oneDayInMilliseconds;
+      const newDate = new Date(milisecondsDifference);
+      const deadlineDay = newDate.getDate();
+      const deadlineMonth = newDate.getMonth() + 1;
+      const deadlineYear = newDate.getFullYear();
+      const isSameDay = currentDateDay === deadlineDay;
+      const isSameMonth = currentDateMonth === deadlineMonth;
+      const isSameYear = currentDateYear === deadlineYear;
+      if (isSameDay && isSameMonth && isSameYear) {
+        if (!lessonPlan.hasQualified) {
+          const validationsTracking = lessonPlan.validationsTracking;
+          const currentValidationsTracking = validationsTracking.filter((validation) => !validation.isValidated);
+          const students = currentValidationsTracking.map((validationTracking) => validationTracking.student.user.displayName);
+          const currentLessonPlan = {
+            periodDisplayName: lessonPlan.schedule?.grade?.degree.period.displayName,
+            teacherName: lessonPlan.schedule?.teacher?.user.displayName,
+            teacherEmail: lessonPlan.schedule?.teacher?.user.email,
+            subjectName: lessonPlan.schedule?.subject.name,
+            deadline: lessonPlan.maximumValidationDate,
+            students,
+            lessonPlanId: lessonPlan.id,
+          }
+          pendingLessonPlans.push(currentLessonPlan);
+        }
+      }
+    }
+    return pendingLessonPlans;
   }
 }

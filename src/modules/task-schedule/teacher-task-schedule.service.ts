@@ -7,8 +7,9 @@ import { TeacherNotLessonPlanForAWeekEmail } from '../common/strategies/email/te
 import { TeacherMissingStudentsToValidateLessonPlanEmail } from '../common/strategies/email/teacher/missing-students-to-graded-lp.strategy';
 import { CronService } from '../common/services/cron.service';
 import { convertToSpanishDate, getLastWeekFromMondayDay, hasPassedAmountOfDays } from '../../utils/date.utils';
-import { SendEmailServiceWrapper } from '../common/services/send-email-wrapper.service';
 import { TecaherAd2Notification } from '../common/strategies/email/teacher/ad2-notification.strategy';
+import { SendEmailServiceWrapper } from '../common/services/send-email-wrapper.service';
+import { LessonPlansService } from '../lesson-plans/lesson-plans.service';
 
 @Injectable()
 export class TeacherTaskScheduleService {
@@ -16,7 +17,8 @@ export class TeacherTaskScheduleService {
   constructor(
     private teacherService: TeachersService,
     private periodService: PeriodsService,
-    private emailService: SendEmailServiceWrapper
+    private emailService: SendEmailServiceWrapper,
+    private lessonPlanService: LessonPlansService,
   ) {}
   
   /**
@@ -130,7 +132,7 @@ export class TeacherTaskScheduleService {
         5: "VIERNES",
       };
 
-      const currentDate = new Date("2023-08-10T07:30:00.943");
+      const currentDate = new Date();
       const currentTime = `${currentDate.getHours()}:30`;
       const currentDay = daysMapping[currentDate.getDay()];
       const currentEventDay = mainEvent.metadata.days.find(day => day.name === currentDay);
@@ -151,16 +153,25 @@ export class TeacherTaskScheduleService {
     }
   }
 
-  // Every day 
+  /**
+   * One day before the deadline at 8 a.m
+   * Notify teacher which students have not validated the lesson plan created.
+   */
+  @CronService.ProdCron('0 8 * * 1-5')
   async teacherMissingStudentsToGradedLessonPlanNotification() {
-    const missingStudentsToGradedLessonPlanEmail = new TeacherMissingStudentsToValidateLessonPlanEmail(
-      '',
-      '',
-      '',
-      [],
-      '',
-      ''
-    );
-    this.emailService.sendEmail(missingStudentsToGradedLessonPlanEmail, 'email');
+    const lessonPlansToNotify = await this.lessonPlanService.findStudentsPendingValidationLessonPlans();
+    for (const lessonPlan of lessonPlansToNotify) {
+      const { periodDisplayName, teacherName, teacherEmail, subjectName, deadline, students, lessonPlanId } = lessonPlan;
+      const convertedDeadline = convertToSpanishDate(deadline);
+      const missingStudentsToGradedLessonPlanEmail = new TeacherMissingStudentsToValidateLessonPlanEmail(
+        periodDisplayName,
+        teacherName,
+        subjectName,
+        students,
+        convertedDeadline,
+        lessonPlanId,
+      );
+      this.emailService.sendEmail(missingStudentsToGradedLessonPlanEmail, teacherEmail);
+    }
   }
 }

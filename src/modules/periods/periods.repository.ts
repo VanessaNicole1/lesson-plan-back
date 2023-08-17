@@ -6,6 +6,22 @@ import { FilterPeriodDto } from './dto/filter-period.dto';
 export class PeriodsRepository {
   constructor(private prisma: PrismaService) {}
 
+  private getAdittionalData() {
+    return {
+      include: {
+        degree: {
+          include: {
+            manager: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
+      },
+    };
+  }
+
   findActivePeriodById(periodId: string) {
     return this.prisma.period.findFirst({
       where: {
@@ -73,6 +89,15 @@ export class PeriodsRepository {
     });
   }
 
+  findActivePeriodsWithAdditionalData() {
+    return this.prisma.period.findMany({
+      where: {
+        isActive: true,
+      },
+      ...this.getAdittionalData(),
+    });
+  }
+
   findByPeriodIds(periodIds: string[]) {
     return this.prisma.period.findMany({
       where: {
@@ -80,6 +105,17 @@ export class PeriodsRepository {
           in: periodIds,
         },
       },
+    });
+  }
+
+  deactivatePeriod(periodId: string) {
+    return this.prisma.period.update({
+      where: {
+        id: periodId
+      },
+      data : {
+        isActive: false,
+      }
     });
   }
 }
