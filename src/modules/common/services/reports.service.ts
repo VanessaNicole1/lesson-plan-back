@@ -7,7 +7,8 @@ import * as puppeteer from 'puppeteer';
 import * as handlebars from 'handlebars';
 import * as fs from 'fs';
 import { PDFDocument } from 'pdf-lib';
-import { generateUniqueIdentifier } from 'src/utils/number-generator.utils';
+import { generateUniqueIdentifier } from '../../../utils/number-generator.utils';
+import { convertToSpanishDate } from '../../../utils/date.utils';
 
 @Injectable()
 export class ReportsService {
@@ -17,7 +18,7 @@ export class ReportsService {
     return `data:image/jpeg;base64,${base64Image}`;
   }
 
-  getReportDataByLessonPlan = (lessonPlan) => {
+  getReportDataByLessonPlan = (lessonPlan, period) => {      
     const {
       validationsTracking,
       schedule: { teacher, subject, grade },
@@ -26,24 +27,21 @@ export class ReportsService {
     return {
       unlImageURL: this.getImageDataURI('./reports/images/unl-black.png'),
       cisImageURL: this.getImageDataURI('./reports/images/cis.png'),
+      period: period.displayName,
       subjectName: subject.name,
       code: 'E2C1A1/UNESCO: 1203.99',
       cicle: grade.number,
       parallel: `"${grade.parallel}"`,
-      date: 'CLASE 1: 8 DE OCTUBRE DE 2019',
+      date: convertToSpanishDate(new Date(lessonPlan.date)),
       teacherName: teacher.user.displayName,
       topic: lessonPlan.topic,
       bibContent: lessonPlan.bibliography,
-      objectives:
-        'Evaluar los conocimientos que tienen acerca de la Auditoria \n Determinar Conceptos básicos de la asigntatura y su campo de aplicación',
-      results: lessonPlan.purposeOfClass,
+      objectives: lessonPlan.purposeOfClass,
+      results: lessonPlan.evaluation,
       activities: lessonPlan.content,
-      resources:
-        'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classica',
-      evaluations:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget magna nulla. Mauris elementum odio ipsum',
-      observations:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget magna nulla. Mauris elementum odio ipsum',
+      resources: lessonPlan.materials,
+      evaluations: lessonPlan.evaluation,
+      observations: lessonPlan.comments,
       students: validationsTracking.map((validationTracking) => ({
         displayName: validationTracking.student.user.displayName,
       })),
@@ -64,7 +62,7 @@ export class ReportsService {
     return mergedPdfBytes;
   }
 
-  async generateSingleLessonPlanReport(lessonPlan: any) {
+  async generateSingleLessonPlanReport(lessonPlan: any, period) {
     const templatePath = './reports/template.html';
     const template = fs.readFileSync(templatePath, 'utf-8');
     const compiledTemplate = handlebars.compile(template);
@@ -72,7 +70,7 @@ export class ReportsService {
     const browser = await puppeteer.launch({ executablePath: process.env.CHROMIUM_PATH, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
     const page = await browser.newPage();
 
-    const data = this.getReportDataByLessonPlan(lessonPlan);
+    const data = this.getReportDataByLessonPlan(lessonPlan, period);
     const renderedHTML = compiledTemplate(data);
 
     await page.setContent(renderedHTML, { waitUntil: 'domcontentloaded' });
@@ -88,7 +86,7 @@ export class ReportsService {
     return reportPath;
   };
 
-  async generateMultipleLessonPlanReport(lessonPlans: any[]) {
+  async generateMultipleLessonPlanReport(lessonPlans: any[], period) {
     try {
       const singleReporPaths = [];
       const templatePath = './reports/template.html';
@@ -99,7 +97,7 @@ export class ReportsService {
       const page = await browser.newPage();
 
       for (let i = 0; i < lessonPlans.length; i++) {
-        const data = this.getReportDataByLessonPlan(lessonPlans[i]);
+        const data = this.getReportDataByLessonPlan(lessonPlans[i], period);
         const renderedHTML = compiledTemplate(data);
 
         await page.setContent(renderedHTML, { waitUntil: 'domcontentloaded' });
@@ -130,7 +128,7 @@ export class ReportsService {
     paths.forEach(path => fs.unlinkSync(path))
   }
 
-  async generateLessonPlanReport(lessonPlan: any) {
+  async generateLessonPlanReport(lessonPlan: any, period) {
     try {
       const singleReporPaths = [];
       const templatePath = './reports/template.html';
@@ -140,7 +138,7 @@ export class ReportsService {
       const browser = await puppeteer.launch({ headless: 'new' });
       const page = await browser.newPage();
       
-      const data = this.getReportDataByLessonPlan(lessonPlan);
+      const data = this.getReportDataByLessonPlan(lessonPlan, period);
       const renderedHTML = compiledTemplate(data);
 
       await page.setContent(renderedHTML, { waitUntil: 'domcontentloaded' });

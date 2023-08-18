@@ -257,6 +257,7 @@ export class LessonPlansService {
 
       const fileName = await this.reportService.generateMultipleLessonPlanReport(
         lessonPlans,
+        period
       );
       return fileName;
     } catch (error) {
@@ -281,6 +282,7 @@ export class LessonPlansService {
   ) {
     try {
       const lessonPlan = await this.lessonPlansRepository.findLessonPlanForReport(lessonPlanId);
+      const period = await this.periodService.findOne(lessonPlan.periodId);
 
       if (!lessonPlan) {
         throw new BadRequestException();
@@ -288,6 +290,7 @@ export class LessonPlansService {
 
       const fileName = await this.reportService.generateLessonPlanReport(
         lessonPlan,
+        period
       );
       return fileName;
     } catch (error) {
