@@ -9,7 +9,8 @@ export class StudentValidateLessonPlanEmail implements EmailStrategy {
     private readonly subjectName: string,
     private readonly teacherName: string,
     private readonly lessonPlanDate: string,
-    private readonly maxValidationLessonPlanDate: string
+    private readonly maxValidationLessonPlanDate: string,
+    private readonly lessonPlanId: string,
   ) {}
 
   getData() {
@@ -20,7 +21,7 @@ export class StudentValidateLessonPlanEmail implements EmailStrategy {
       teacherName: this.teacherName,
       lessonPlanDate: this.lessonPlanDate,
       maxValidationLessonPlanDate: this.maxValidationLessonPlanDate,
-      url: ''
+      url: `${process.env.FRONTEND}/dashboard/lesson-plan/student/validate/${this.lessonPlanId}`,
     }
     return data;
   }
