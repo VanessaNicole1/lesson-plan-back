@@ -260,6 +260,9 @@ export class LessonPlansRepository {
               parallel: 'asc'
             }
           }
+        },
+        {
+          date: 'asc'
         }
       ],
       where: whereCondition,
