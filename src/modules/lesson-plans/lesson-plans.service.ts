@@ -128,6 +128,7 @@ export class LessonPlansService {
           teacherName,
           spanishLessonPlanDate,
           spanishMaxValidationLessonPlanDate,
+          lessonPlanCreated.id,
         );
         this.emailService.sendEmail(validateLessonPlanEmail, lessonPlanTracking.student.user.email);
       }

@@ -37,7 +37,7 @@ export class StudentTaskScheduleService {
         const currentStudent = validationTracking.student;
         const studentName = currentStudent.user.displayName;
         const studentEmail = currentStudent.user.email;
-        const validateLessonPlanEmail = new StudentValidateLessonPlanEmail(periodDisplayName, studentName, subjectName, teacherName, spanishLessonPlanDate, spanishDeadlineDate);
+        const validateLessonPlanEmail = new StudentValidateLessonPlanEmail(periodDisplayName, studentName, subjectName, teacherName, spanishLessonPlanDate, spanishDeadlineDate, lessonPlan.id);
         this.emailService.sendEmail(validateLessonPlanEmail, studentEmail);
       }
     }
