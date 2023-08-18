@@ -16,7 +16,7 @@ export class StudentDeadlineValidationExpiredEmail implements EmailStrategy {
       studentName: this.studentName,
       subjectName: this.subjectName,
       teacherName: this.teacherName,
-      url: ''
+      url: `${process.env.FRONTEND}/dashboard`,
     }
     return data;
   }
