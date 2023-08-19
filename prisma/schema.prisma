@@ -118,6 +118,8 @@ model LessonPlan {
   periodId              String
   createdAt             DateTime                       @default(now())
   validationExpired     Boolean?                       @default(false)
+  type                  LessonPlanType                 @default(NORMAL)
+  trackingSteps         Json?
 }
 
 model LessonPlanValidationTracking {
@@ -170,4 +172,9 @@ model PeriodConfig {
   minimumStudentsToEvaluate Int
   period                    Period @relation(fields: [periodId], references: [id], onDelete: Cascade)
   periodId                  String @unique
+}
+
+enum LessonPlanType {
+  NORMAL
+  REMEDIAL
 }
