@@ -61,7 +61,7 @@ export class StudentTaskScheduleService {
         const currentStudent = validationTracking.student;
         const studentName = currentStudent.user.displayName;
         const studentEmail = currentStudent.user.email;
-        const endDateToValidateLessonPlanEmail = new StudentEndDateToValidateLessonPlanEmail(periodDisplayName, studentName, subjectName, teacherName, spanishLessonPlanDate);
+        const endDateToValidateLessonPlanEmail = new StudentEndDateToValidateLessonPlanEmail(periodDisplayName, studentName, subjectName, teacherName, spanishLessonPlanDate, lessonPlan.id);
         this.emailService.sendEmail(endDateToValidateLessonPlanEmail, studentEmail);
       }
     }
