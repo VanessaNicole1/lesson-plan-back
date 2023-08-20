@@ -142,6 +142,13 @@ export class LessonPlansService {
     files: Array<Express.Multer.File>,
   ) {
     const currentLessonPlan = await this.findOne(id);
+    const lessonPlanTracking = currentLessonPlan.validationsTracking;
+    const validatedLessonPlanTracking = lessonPlanTracking.filter((tracking) => tracking.isValidated);
+    if (validatedLessonPlanTracking.length > 0) {
+      throw new BadRequestException(
+        'El plan de clases no puede ser modificado ya que tiene una validación por parte de un estudiante',
+      );
+    }
     const { students, deadlineNotification, periodId } = updateLessonPlanDto;
     const resources = [];
     for (let i = 0; i < files.length; i++) {
@@ -208,7 +215,7 @@ export class LessonPlansService {
     );
     if (validatedLessonPlans.length > 0) {
       throw new BadRequestException(
-        'El plan de clases no puede ser eliminado ya que ya tiene una validación por parte de un estudiante',
+        'El plan de clases no puede ser eliminado ya que tiene una validación por parte de un estudiante',
       );
     }
     const resources = lessonPlan.resources as any[];
