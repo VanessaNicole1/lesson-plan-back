@@ -131,6 +131,7 @@ model LessonPlanValidationTracking {
   studentId    String
   periodId     String?
   isAgree      Boolean?
+  comment      String?
 }
 
 model User {
