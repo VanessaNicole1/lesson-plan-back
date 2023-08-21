@@ -1,14 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
-<!--[if gte mso 9]>
-<xml>
-  <o:OfficeDocumentSettings>
-    <o:AllowPNG/>
-    <o:PixelsPerInch>96</o:PixelsPerInch>
-  </o:OfficeDocumentSettings>
-</xml>
-<![endif]-->
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="x-apple-disable-message-reformatting">
@@ -220,20 +212,22 @@ table, td { color: #000000; } #u_body a { color: #0000ee; text-decoration: under
       <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:30px 10px 5px;font-family:'Raleway',sans-serif;" align="left">
         
   <h1 style="margin: 0px; color: #ba372a; line-height: 140%; text-align: center; word-wrap: break-word; font-family: 'Playfair Display',serif; font-size: 26px; "><strong>Plan de Clases {{periodDisplayName}}</strong></h1>
-
       </td>
     </tr>
   </tbody>
 </table>
-
 <table id="u_content_text_2" style="font-family:'Raleway',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
   <tbody>
     <tr>
       <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:5px 50px 10px;font-family:'Raleway',sans-serif;" align="left">
-        <div style="line-height: 140%; text-align: justify; word-wrap: break-word;">
-          <p style="line-height: 140%;">Estimado estudiante <b>{{studentName}}</b>, es un placer comunicarle que usted ha sido elegido para calificar el plan de clase de la materia {{subjectName}} impartida por el docente
-            {{teacherName}} con fecha de {{lessonPlanDate}}, por favor tomar en cuenta que usted tiene 7 días hábiles para calificar este plan de clases, la fecha máxima para validar este plan de clases es {{maxValidationLessonPlanDate}}, por favor para calificar el plan de clases haga clic en el siguiente botón.</p>
-        </div>
+        
+  <div style="line-height: 140%; text-align: justify; word-wrap: break-word;">
+    <p style="line-height: 140%;">
+      Estimado(a) Dir. <b>{{teacherName}}</b>,
+      nos complace compartirle que el reporte final del plan de clase remedial relacionado con {{remedialLessonPlanTopic}}  con fecha de creación {{createAt}} ha sido validado y aceptado por todos los involucrados. Le invitamos a revisar este reporte haciendo clic en el siguiente botón.
+      Agradecemos su dedicación y esfuerzo en este proceso.
+    </p>
+  </div>
       </td>
     </tr>
   </tbody>
@@ -243,10 +237,10 @@ table, td { color: #000000; } #u_body a { color: #0000ee; text-decoration: under
   <tbody>
     <tr>
       <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px 10px 0px;font-family:'Raleway',sans-serif;" align="left">
-        
   <div align="center">
+    <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://www.unlayer.com" style="height:37px; v-text-anchor:middle; width:162px;" arcsize="11%"  stroke="f" fillcolor="#ba372a"><w:anchorlock/><center style="color:#FFFFFF;font-family:'Raleway',sans-serif;"><![endif]-->  
       <a href="{{url}}" target="_blank" class="v-button" style="box-sizing: border-box;display: inline-block;font-family:'Raleway',sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #ba372a; border-radius: 4px;-webkit-border-radius: 4px; -moz-border-radius: 4px; width:auto; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;font-size: 14px;">
-        <span style="display:block;padding:10px 20px;line-height:120%;"><span style="line-height: 16.8px;">Calificar Plan de Clase</span></span>
+        <span style="display:block;padding:10px 20px;line-height:120%;"><span style="line-height: 16.8px;">Ver reporte</span></span>
       </a>
   </div>
       </td>
@@ -257,9 +251,14 @@ table, td { color: #000000; } #u_body a { color: #0000ee; text-decoration: under
   <!--[if (!mso)&(!IE)]><!--></div><!--<![endif]-->
   </div>
 </div>
+<!--[if (mso)|(IE)]></td><![endif]-->
+      <!--[if (mso)|(IE)]></tr></table></td></tr></table><![endif]-->
     </div>
   </div>
   </div>
+  
+
+
   
   <div class="u-row-container" style="padding: 0px;background-color: transparent">
     <div class="u-row" style="Margin: 0 auto;min-width: 320px;max-width: 600px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;">
@@ -341,6 +340,9 @@ table, td { color: #000000; } #u_body a { color: #0000ee; text-decoration: under
         </tbody>
       </table>
       <!--[if (mso)|(IE)]></td><![endif]-->
+      
+      
+      <!--[if (mso)|(IE)]></tr></table></td></tr></table><![endif]-->
     </div>
   </div>
       </td>
@@ -356,7 +358,7 @@ table, td { color: #000000; } #u_body a { color: #0000ee; text-decoration: under
     <div style="line-height: 160%; text-align: center; word-wrap: break-word;">
       <p style="font-size: 14px; line-height: 160%;">Carrera de Computación - Universidad Nacional de Loja</p>
     </div>
-  
+    <!-- Bienvenido estimado docente {{name}}, es un placer comunicarle que el Proceso de Plan de Clases ha iniciado, por favor para ingresar al sistema haga clic en el siguiente botón. -->
         </td>
       </tr>
     </tbody>
