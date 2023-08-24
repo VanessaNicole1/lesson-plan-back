@@ -23,6 +23,7 @@ import * as path from 'path';
 import { DeleteResourceDto } from './dto/delete-resource.dto';
 import { LessonPlanReportDto } from '../common/dto/lesson-plan-report.dto';
 import { FilterLessonPlanDTO } from './dto/filter-lesson-plan-dto';
+import { CreateRemedialPlanDto } from './dto/create-remedial-plan.dto';
 
 @Controller('lesson-plans')
 export class LessonPlansController {
@@ -41,10 +42,11 @@ export class LessonPlansController {
     @Query() lessonPlanReportDto: LessonPlanReportDto,
     @Res() res: Response,
   ) {
-    const report = await this.lessonPlansService.generateTeacherLessonPlanReport(
-      userId,
-      lessonPlanReportDto,
-    );
+    const report =
+      await this.lessonPlansService.generateTeacherLessonPlanReport(
+        userId,
+        lessonPlanReportDto,
+      );
 
     if (!report) {
       throw new BadRequestException();
@@ -166,5 +168,33 @@ export class LessonPlansController {
     });
 
     res.send(buffer);
+  }
+
+  @Post('remedial-plan')
+  @UseInterceptors(
+    FilesInterceptor('files', null, {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, callback) => {
+          const filename =
+            path.parse(file.originalname).name.replace(/\s/g, '') + Date.now();
+          const extension = path.parse(file.originalname).ext;
+          callback(null, `${filename}${extension}`);
+        },
+      }),
+    }),
+  )
+  createRemedialPlan(
+    @Body() createRemedialPlanDto: CreateRemedialPlanDto,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ) {
+    const currentStudents = createRemedialPlanDto.students
+      .split(',')
+      .map(String);
+    createRemedialPlanDto = {
+      ...createRemedialPlanDto,
+      students: currentStudents,
+    };
+    return this.lessonPlansService.createRemedialPlan(createRemedialPlanDto, files);
   }
 }

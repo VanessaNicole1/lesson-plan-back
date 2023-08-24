@@ -2,7 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../common/services/prisma.service';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan.dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan.dto';
+import { CreateRemedialPlanDto } from './dto/create-remedial-plan.dto';
 
+enum LessonPlanType {
+  Normal = "NORMAL",
+  Remedial = "REMEDIAL",
+};
 @Injectable()
 export class LessonPlansRepository {
   constructor(private prisma: PrismaService) {}
@@ -389,5 +394,39 @@ export class LessonPlansRepository {
         hasQualified: true,
       }
     }) 
+  }
+
+  createRemedialPlan(createRemedialPlanDto: CreateRemedialPlanDto) {
+    const {
+      periodId,
+      scheduleId,
+      date,
+      topic,
+      description,
+      content,
+      purposeOfClass,
+      bibliography,
+      materials,
+      evaluation,
+      comments,
+      resources,
+    } = createRemedialPlanDto;
+    return this.prisma.lessonPlan.create({
+      data: {
+        periodId,
+        scheduleId,
+        date: new Date(date),
+        topic,
+        content,
+        resources,
+        description,
+        purposeOfClass,
+        bibliography,
+        materials,
+        evaluation,
+        comments,
+        type: LessonPlanType.Remedial
+      },
+    });
   }
 }

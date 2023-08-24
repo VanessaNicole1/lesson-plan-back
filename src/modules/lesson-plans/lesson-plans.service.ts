@@ -20,6 +20,7 @@ import { ReportsService } from '../common/services/reports.service';
 import { SendEmailServiceWrapper } from '../common/services/send-email-wrapper.service';
 import { StudentChangeDateToValidateLessonPlanEmail } from '../common/strategies/email/student/change-date-to-validate-lesson-plan.strategy';
 import { FilterLessonPlanDTO } from './dto/filter-lesson-plan-dto';
+import { CreateRemedialPlanDto } from './dto/create-remedial-plan.dto';
 
 @Injectable()
 export class LessonPlansService {
@@ -395,5 +396,68 @@ export class LessonPlansService {
       }
     }
     return pendingLessonPlans;
+  }
+
+  async createRemedialPlan(createRemedialPlanDto: CreateRemedialPlanDto, files: Array<Express.Multer.File>) {
+
+    const { students, periodId, date } =
+    createRemedialPlanDto;
+    const resources = [];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const resource = {
+        name: file.originalname,
+        url: file.filename,
+        createdDate: new Date(),
+        size: file.size,
+      };
+      resources.push(resource);
+    }
+    createRemedialPlanDto['resources'] = resources;
+    const { scheduleId } = createRemedialPlanDto;
+    const currentSchedule = await this.scheduleService.findOne(scheduleId);
+    createRemedialPlanDto = {
+      ...createRemedialPlanDto,
+      scheduleId: currentSchedule.id,
+    };
+
+    const lessonPlanCreated = await this.lessonPlansRepository.createRemedialPlan(
+      createRemedialPlanDto,
+    );
+
+    if (lessonPlanCreated) {
+      await this.lessonPlansTrackingService.create({
+        lessonPlanId: lessonPlanCreated.id,
+        students,
+        periodId: createRemedialPlanDto.periodId,
+      });
+    }
+
+      // const currentPeriod = await this.periodService.findOne(periodId);
+      // const periodDisplayName = currentPeriod.displayName;
+      // const subjectName = currentSchedule.subject.name;
+      // const teacherName = currentSchedule.teacher.user.displayName;
+      // const lessonPlanDate = new Date(date);
+      // const spanishLessonPlanDate = lessonPlanDate.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      // const spanishMaxValidationLessonPlanDate = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      // const lessonPlansTracking = await this.lessonPlansTrackingService.findLessonPlanTrackingByLessonPlanId(
+      //   lessonPlanCreated.id,
+      // );
+      // for (let i = 0; i < lessonPlansTracking.length; i++) {
+      //   const lessonPlanTracking = lessonPlansTracking[i];
+      //   const studentDisplayName = lessonPlanTracking.student.user.displayName;
+      //   const validateLessonPlanEmail = new StudentValidateLessonPlanEmail(
+      //     periodDisplayName,
+      //     studentDisplayName,
+      //     subjectName,
+      //     teacherName,
+      //     spanishLessonPlanDate,
+      //     spanishMaxValidationLessonPlanDate,
+      //     lessonPlanCreated.id,
+      //   );
+      //   this.emailService.sendEmail(validateLessonPlanEmail, lessonPlanTracking.student.user.email);
+      // }
+    return lessonPlanCreated;
+
   }
 }
