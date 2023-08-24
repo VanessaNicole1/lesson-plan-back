@@ -103,6 +103,7 @@ model LessonPlan {
   content               String?
   description           String?
   purposeOfClass        String?
+  results               String?
   bibliography          String?
   schedule              Schedule                       @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   scheduleId            String
@@ -110,6 +111,7 @@ model LessonPlan {
   maximumValidationDate DateTime?
   notificationDate       DateTime?
   resources             Json?
+  remedialReports       Json?
   materials             String?
   evaluation            String?
   comments              String?
