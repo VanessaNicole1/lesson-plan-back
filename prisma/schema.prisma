@@ -106,20 +106,21 @@ model LessonPlan {
   bibliography          String?
   schedule              Schedule                       @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   scheduleId            String
-  notification          String?
+  notification           String?
   maximumValidationDate DateTime?
-  notificationDate      DateTime?
+  notificationDate       DateTime?
   resources             Json?
   materials             String?
   evaluation            String?
   comments              String?
-  hasQualified          Boolean                        @default(false)
+  hasQualified           Boolean                        @default(false)
   validationsTracking   LessonPlanValidationTracking[]
   periodId              String
   createdAt             DateTime                       @default(now())
   validationExpired     Boolean?                       @default(false)
   type                  LessonPlanType                 @default(NORMAL)
   trackingSteps         Json?
+  isValidatedByManager  Boolean                        @default(false)
 }
 
 model LessonPlanValidationTracking {
