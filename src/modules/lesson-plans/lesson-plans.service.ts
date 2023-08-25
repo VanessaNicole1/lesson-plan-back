@@ -36,11 +36,20 @@ export class LessonPlansService {
     private reportService: ReportsService,
   ) {}
 
-  findAll(filterLessonPlanDto: FilterLessonPlanDTO) {
-    const { isValidatedByManager: validatedByManagerValue } = filterLessonPlanDto;
-    const isValidatedByManager = validatedByManagerValue.toLowerCase() === "true";
+  async findAll(filterLessonPlanDto: FilterLessonPlanDTO) {
+    const { period, type, isValidatedByManager, userId } = filterLessonPlanDto;
+    const additionalFilters: any = {}
 
-    return this.lessonPlansRepository.findAll({ ...filterLessonPlanDto, isValidatedByManager});
+    if (isValidatedByManager && isValidatedByManager.length > 0) {
+      additionalFilters.isValidatedByManager =  isValidatedByManager.toLowerCase() === "true";
+    }
+
+    if (userId) {
+      const teacher = await this.teacherService.findTeacherByUserInActivePeriod(period, userId);
+      additionalFilters.teacherId = teacher.id;
+    }
+
+    return this.lessonPlansRepository.findAll({ period, type, ...additionalFilters });
   }
 
   async findOne(id: string) {

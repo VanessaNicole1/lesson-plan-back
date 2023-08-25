@@ -42,12 +42,24 @@ export class LessonPlansRepository {
     };
   }
 
-  findAll({ period, type, isValidatedByManager }: { period: string, type: LessonPlanType, isValidatedByManager: boolean}) {
+  findAll({ period, type, isValidatedByManager, teacherId }: { period: string, type: LessonPlanType, isValidatedByManager?: boolean, teacherId?: string }) {
+    const additionalFilters: any = {};
+
+    if (isValidatedByManager !== undefined) {
+      additionalFilters.isValidatedByManager = isValidatedByManager;
+    }
+
+    if (teacherId) {
+      additionalFilters.schedule = {
+        teacherId
+      }
+    }
+
     return this.prisma.lessonPlan.findMany({
       where: {
         periodId: period,
         type,
-        isValidatedByManager
+        ...additionalFilters
       },
       ...this.getAdittionalData()
     });
