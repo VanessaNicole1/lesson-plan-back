@@ -1,7 +1,7 @@
 import { EmailStrategy } from "../../../interfaces/email/email-strategy.interface";
 import { getEmailTemplate } from "../../../../../utils/template.utils";
 
-export class RemedialPlanManagerEmail implements EmailStrategy {
+export class ValidateRemedialPlanManagerEmail implements EmailStrategy {
 
   constructor(
     private readonly periodDisplayName: string,
@@ -25,9 +25,9 @@ export class RemedialPlanManagerEmail implements EmailStrategy {
     return data;
   }
   getTemplate(data: any) {
-    return getEmailTemplate('templates/manager/remedial-plan-created.html', data);
+    return getEmailTemplate('templates/manager/validate-remedial-plan.html', data);
   }
   getSubject(): string {
-    return `Plan de Clase Remedial - Ver Plan de Clase Remedial`;
+    return `Plan de Clase Remedial - Validar Plan de Clase Remedial`;
   }
 }

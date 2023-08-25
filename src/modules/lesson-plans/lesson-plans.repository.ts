@@ -437,8 +437,33 @@ export class LessonPlansRepository {
       data: {
         remedialReports: remedialReport,
         trackingSteps,
-      }
-    })
-
-  }
+      },
+      include: {
+        schedule: {
+          include: {
+            grade: {
+              include: {
+                degree: {
+                  include: {
+                    manager: {
+                      include: {
+                        user: true,
+                      },
+                    },
+                    period: true,
+                  },
+                },
+              },
+            },
+            teacher: {
+              include: {
+                user: true,
+              }
+            },
+            subject: true,
+          },
+        },
+      },
+    });
+  };
 }
