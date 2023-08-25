@@ -21,6 +21,7 @@ import { SendEmailServiceWrapper } from '../common/services/send-email-wrapper.s
 import { StudentChangeDateToValidateLessonPlanEmail } from '../common/strategies/email/student/change-date-to-validate-lesson-plan.strategy';
 import { FilterLessonPlanDTO } from './dto/filter-lesson-plan-dto';
 import { CreateRemedialPlanDto } from './dto/create-remedial-plan.dto';
+import { RemedialPlanManagerEmail } from '../common/strategies/email/manager/remedial-plan-created.strategy';
 
 @Injectable()
 export class LessonPlansService {
@@ -433,30 +434,24 @@ export class LessonPlansService {
       });
     }
 
-      // const currentPeriod = await this.periodService.findOne(periodId);
-      // const periodDisplayName = currentPeriod.displayName;
-      // const subjectName = currentSchedule.subject.name;
-      // const teacherName = currentSchedule.teacher.user.displayName;
-      // const lessonPlanDate = new Date(date);
-      // const spanishLessonPlanDate = lessonPlanDate.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      // const spanishMaxValidationLessonPlanDate = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      // const lessonPlansTracking = await this.lessonPlansTrackingService.findLessonPlanTrackingByLessonPlanId(
-      //   lessonPlanCreated.id,
-      // );
-      // for (let i = 0; i < lessonPlansTracking.length; i++) {
-      //   const lessonPlanTracking = lessonPlansTracking[i];
-      //   const studentDisplayName = lessonPlanTracking.student.user.displayName;
-      //   const validateLessonPlanEmail = new StudentValidateLessonPlanEmail(
-      //     periodDisplayName,
-      //     studentDisplayName,
-      //     subjectName,
-      //     teacherName,
-      //     spanishLessonPlanDate,
-      //     spanishMaxValidationLessonPlanDate,
-      //     lessonPlanCreated.id,
-      //   );
-      //   this.emailService.sendEmail(validateLessonPlanEmail, lessonPlanTracking.student.user.email);
-      // }
+    const currentPeriod = await this.periodService.findOne(periodId);
+    const periodDisplayName = currentPeriod.displayName;
+    const managerDisplayName = currentPeriod.degree.manager.user.displayName;
+    const managerEmail = currentPeriod.degree.manager.user.email;
+    const subjectName = currentSchedule.subject.name;
+    const gradeDisplayName = `${currentSchedule.grade.number} "${currentSchedule.grade.parallel}"`;
+    const executionDate = lessonPlanCreated.date;
+    const spanishRemedialPlanDate = executionDate.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const teacherName = currentSchedule.teacher.user.displayName;
+    const remedialPlanCreatedEmail = new RemedialPlanManagerEmail(
+      periodDisplayName,
+      managerDisplayName,
+      teacherName,
+      subjectName,
+      gradeDisplayName,
+      spanishRemedialPlanDate
+    );
+    this.emailService.sendEmail(remedialPlanCreatedEmail, managerEmail);
     return lessonPlanCreated;
 
   }

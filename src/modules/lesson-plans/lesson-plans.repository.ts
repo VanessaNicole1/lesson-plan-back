@@ -410,6 +410,7 @@ export class LessonPlansRepository {
       evaluation,
       comments,
       resources,
+      results
     } = createRemedialPlanDto;
     return this.prisma.lessonPlan.create({
       data: {
@@ -425,6 +426,7 @@ export class LessonPlansRepository {
         materials,
         evaluation,
         comments,
+        results,
         type: LessonPlanType.Remedial
       },
     });

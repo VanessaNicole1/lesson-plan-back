@@ -69,6 +69,15 @@ export class PeriodsRepository {
       },
       include: {
         periodConfig: true,
+        degree: {
+          include: {
+            manager: {
+              include: {
+                user: true,
+              }
+            }
+          }
+        }
       }
     });
   }

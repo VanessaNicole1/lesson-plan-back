@@ -38,9 +38,9 @@ export class CreateRemedialPlanDto {
   @IsString()
   purposeOfClass: string;
 
-  // @IsNotEmpty()
-  // @IsString()
-  // results: string;
+  @IsNotEmpty()
+  @IsString()
+  results: string;
 
   @IsNotEmpty()
   @IsString()
