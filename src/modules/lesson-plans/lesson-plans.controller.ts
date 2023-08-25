@@ -12,12 +12,13 @@ import {
   Query,
   Header,
   BadRequestException,
+  UploadedFile,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { LessonPlansService } from './lesson-plans.service';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan.dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan.dto';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'path';
 import { DeleteResourceDto } from './dto/delete-resource.dto';
@@ -195,6 +196,32 @@ export class LessonPlansController {
       ...createRemedialPlanDto,
       students: currentStudents,
     };
-    return this.lessonPlansService.createRemedialPlan(createRemedialPlanDto, files);
+    return this.lessonPlansService.createRemedialPlan(
+      createRemedialPlanDto,
+      files,
+    );
   }
+
+  @Post('signed-report-by-teacher/:remedialPlanId')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './reports',
+        filename: (req, file, callback) => {
+          const filename =
+            path.parse(file.originalname).name.replace(/\s/g, '') + Date.now();
+          const extension = path.parse(file.originalname).ext;
+          callback(null, `${filename}${extension}`);
+        },
+      }),
+    }),
+  )
+  uploadSignedReportByTeacher(
+    @Param('remedialPlanId') remedialPlanId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.lessonPlansService.uploadSignedReportByTeacher(remedialPlanId, file);
+  }
+
+
 }

@@ -61,4 +61,8 @@ export class CreateRemedialPlanDto {
   @IsOptional()
   @IsArray()
   resources?: string[];
+
+  @IsOptional()
+  @IsArray()
+  trackingSteps: any[];
 }

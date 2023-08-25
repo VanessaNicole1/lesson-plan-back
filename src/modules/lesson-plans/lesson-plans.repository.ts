@@ -405,7 +405,8 @@ export class LessonPlansRepository {
       evaluation,
       comments,
       resources,
-      results
+      results,
+      trackingSteps,
     } = createRemedialPlanDto;
     return this.prisma.lessonPlan.create({
       data: {
@@ -423,7 +424,21 @@ export class LessonPlansRepository {
         comments,
         results,
         type: 'REMEDIAL',
+        trackingSteps,
       },
     });
+  }
+
+  uploadSignedReportByTeacher(remedialPlanId: string, remedialReport: any, trackingSteps: any) {
+    return this.prisma.lessonPlan.update({
+      where: {
+        id: remedialPlanId
+      },
+      data: {
+        remedialReports: remedialReport,
+        trackingSteps,
+      }
+    })
+
   }
 }
