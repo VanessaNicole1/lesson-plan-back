@@ -11,4 +11,8 @@ export class FilterLessonPlanDTO {
   // By Query Params all attributes are string
   @IsOptional()
   isValidatedByManager: string
+
+  @IsUUID()
+  @IsOptional()
+  userId: string
 }
