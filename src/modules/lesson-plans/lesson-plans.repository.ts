@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../common/services/prisma.service';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan.dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan.dto';
-
+import { CreateRemedialPlanDto } from './dto/create-remedial-plan.dto';
 @Injectable()
 export class LessonPlansRepository {
   constructor(private prisma: PrismaService) {}
@@ -390,4 +390,80 @@ export class LessonPlansRepository {
       }
     }) 
   }
+
+  createRemedialPlan(createRemedialPlanDto: CreateRemedialPlanDto) {
+    const {
+      periodId,
+      scheduleId,
+      date,
+      topic,
+      description,
+      content,
+      purposeOfClass,
+      bibliography,
+      materials,
+      evaluation,
+      comments,
+      resources,
+      results,
+      trackingSteps,
+    } = createRemedialPlanDto;
+    return this.prisma.lessonPlan.create({
+      data: {
+        periodId,
+        scheduleId,
+        date: new Date(date),
+        topic,
+        content,
+        resources,
+        description,
+        purposeOfClass,
+        bibliography,
+        materials,
+        evaluation,
+        comments,
+        results,
+        type: 'REMEDIAL',
+        trackingSteps,
+      },
+    });
+  }
+
+  uploadSignedReportByTeacher(remedialPlanId: string, remedialReport: any, trackingSteps: any) {
+    return this.prisma.lessonPlan.update({
+      where: {
+        id: remedialPlanId
+      },
+      data: {
+        remedialReports: remedialReport,
+        trackingSteps,
+      },
+      include: {
+        schedule: {
+          include: {
+            grade: {
+              include: {
+                degree: {
+                  include: {
+                    manager: {
+                      include: {
+                        user: true,
+                      },
+                    },
+                    period: true,
+                  },
+                },
+              },
+            },
+            teacher: {
+              include: {
+                user: true,
+              }
+            },
+            subject: true,
+          },
+        },
+      },
+    });
+  };
 }
