@@ -42,8 +42,15 @@ export class LessonPlansRepository {
     };
   }
 
-  findAll() {
-    return this.prisma.lessonPlan.findMany();
+  findAll({ period, type, isValidatedByManager }: { period: string, type: LessonPlanType, isValidatedByManager: boolean}) {
+    return this.prisma.lessonPlan.findMany({
+      where: {
+        periodId: period,
+        type,
+        isValidatedByManager
+      },
+      ...this.getAdittionalData()
+    });
   }
 
   findAllLessonPlansWithAdittionalData() {
@@ -78,12 +85,12 @@ export class LessonPlansRepository {
                 },
               },
             },
+            subject: true,
             teacher: {
               include: {
                 user: true
               }
-            },
-            subject: true,
+            }
           }
         },
       },

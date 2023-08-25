@@ -22,14 +22,15 @@ import { diskStorage } from 'multer';
 import * as path from 'path';
 import { DeleteResourceDto } from './dto/delete-resource.dto';
 import { LessonPlanReportDto } from '../common/dto/lesson-plan-report.dto';
+import { FilterLessonPlanDTO } from './dto/filter-lesson-plan-dto';
 
 @Controller('lesson-plans')
 export class LessonPlansController {
   constructor(private readonly lessonPlansService: LessonPlansService) {}
 
   @Get()
-  findAll() {
-    return this.lessonPlansService.findAll();
+  findAll(@Query() filterLessonPlanDto: FilterLessonPlanDTO) {
+    return this.lessonPlansService.findAll(filterLessonPlanDto);
   }
 
   @Get('report/:userId')

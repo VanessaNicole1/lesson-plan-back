@@ -19,6 +19,7 @@ import { LessonPlanReportDto } from '../common/dto/lesson-plan-report.dto';
 import { ReportsService } from '../common/services/reports.service';
 import { SendEmailServiceWrapper } from '../common/services/send-email-wrapper.service';
 import { StudentChangeDateToValidateLessonPlanEmail } from '../common/strategies/email/student/change-date-to-validate-lesson-plan.strategy';
+import { FilterLessonPlanDTO } from './dto/filter-lesson-plan-dto';
 
 @Injectable()
 export class LessonPlansService {
@@ -35,8 +36,11 @@ export class LessonPlansService {
     private reportService: ReportsService,
   ) {}
 
-  findAll() {
-    return this.lessonPlansRepository.findAll();
+  findAll(filterLessonPlanDto: FilterLessonPlanDTO) {
+    const { isValidatedByManager: validatedByManagerValue } = filterLessonPlanDto;
+    const isValidatedByManager = validatedByManagerValue.toLowerCase() === "true";
+
+    return this.lessonPlansRepository.findAll({ ...filterLessonPlanDto, isValidatedByManager});
   }
 
   async findOne(id: string) {
