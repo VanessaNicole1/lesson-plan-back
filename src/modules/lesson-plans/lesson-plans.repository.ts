@@ -3,11 +3,6 @@ import { PrismaService } from '../common/services/prisma.service';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan.dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan.dto';
 import { CreateRemedialPlanDto } from './dto/create-remedial-plan.dto';
-
-enum LessonPlanType {
-  Normal = "NORMAL",
-  Remedial = "REMEDIAL",
-};
 @Injectable()
 export class LessonPlansRepository {
   constructor(private prisma: PrismaService) {}
@@ -427,7 +422,7 @@ export class LessonPlansRepository {
         evaluation,
         comments,
         results,
-        type: LessonPlanType.Remedial
+        type: 'REMEDIAL',
       },
     });
   }
