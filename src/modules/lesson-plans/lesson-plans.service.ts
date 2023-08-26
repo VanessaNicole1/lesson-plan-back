@@ -481,7 +481,7 @@ export class LessonPlansService {
     const remedialReportFormat = {
       name: file.originalname,
       url: file.filename,
-      createdAt: new Date(),
+      createdDate: new Date(),
       size: file.size,
       role: 'teacher'
     };
