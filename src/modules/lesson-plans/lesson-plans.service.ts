@@ -1,4 +1,3 @@
-import { RemedialPlanSteps } from './../common/enums/remedial-plan-steps.enum';
 import {
   BadRequestException,
   Inject,
@@ -579,27 +578,36 @@ export class LessonPlansService {
     };
   };
   async uploadSignedReportByManager(remedialPlanId: string, file: Express.Multer.File) {
-    const { VALIDATED_BY_MANAGER, SIGNED_BY_MANAGER, SENT_TO_TEACHER_STUDENTS, ACCEPTED_BY_STUDENTS } = RemedialPlanSteps;
-    const validatedByManagerStep = VALIDATED_BY_MANAGER;
-    const signedByManagerStep = SIGNED_BY_MANAGER;
-    const sentToManagerAndStudentsStep = SENT_TO_TEACHER_STUDENTS;
-    const acceptedByStudentsStep = ACCEPTED_BY_STUDENTS;
     const remedialPlan = await this.findOne(remedialPlanId);
+    const { VALIDATED_BY_MANAGER, SIGNED_BY_MANAGER, SENDED_TO_STUDENTS_AND_TEACHER, ACCEPTED_BY_STUDENTS  } = RemedialLessonPlanSteps;
+    let validatedByManagerStep;
+    let signedByManagerStep;
+    let sentToManagerAndStudentsStep;
+    let acceptedByStudentsStep;;
     const trackingSteps = remedialPlan.trackingSteps as any[];
     const remedialReports = remedialPlan.remedialReports as any[];
 
-    const foundValidatedByManagerStep = trackingSteps.find((validatedByManager) => validatedByManager.id === validatedByManagerStep);
-    const foundSignedByManagerStep = trackingSteps.find((signedByManager) => signedByManager.id === signedByManagerStep);
-    const foundSentToManagerAndStudentsStep = trackingSteps.find((sentToManagerAndStudents) => sentToManagerAndStudents.id === sentToManagerAndStudentsStep);
-    const foundAcceptedByStudentsStep = trackingSteps.find((acceptedByStudents) => acceptedByStudents.id === acceptedByStudentsStep);
-    const currentDate = new Date().toISOString();
-    foundValidatedByManagerStep.date = currentDate;
-    foundSignedByManagerStep.date = currentDate;
-    foundSentToManagerAndStudentsStep.date = currentDate;
-    foundValidatedByManagerStep.status = 'COMPLETED';
-    foundSignedByManagerStep.status = 'COMPLETED';
-    foundSentToManagerAndStudentsStep.status = 'COMPLETED';
-    foundAcceptedByStudentsStep.status = 'IN_PROGRESS';
+    for (const step of trackingSteps) {
+      const stepIdentifiers = {
+        [VALIDATED_BY_MANAGER]: () => { validatedByManagerStep = step },
+        [SIGNED_BY_MANAGER]: () => { signedByManagerStep = step },
+        [SENDED_TO_STUDENTS_AND_TEACHER]: () => { sentToManagerAndStudentsStep = step },
+        [ACCEPTED_BY_STUDENTS]: () => { acceptedByStudentsStep = step },
+      }
+      const assignValue = stepIdentifiers[step.id];
+      if (assignValue) {
+        assignValue();
+      }
+    }
+    const currentDate = new Date();
+    const formatedDate = currentDate.toISOString();
+    validatedByManagerStep.date = formatedDate;
+    signedByManagerStep.date = formatedDate;
+    sentToManagerAndStudentsStep.date = formatedDate;
+    validatedByManagerStep.status = 'COMPLETED';
+    signedByManagerStep.status = 'COMPLETED';
+    sentToManagerAndStudentsStep.status = 'COMPLETED';
+    acceptedByStudentsStep.status = 'IN_PROGRESS';
     const signatureDate = new Date();
     const remedialReportFormat = [
       {
