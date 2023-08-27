@@ -84,6 +84,11 @@ export class LessonPlansController {
     return res.sendFile(filename, { root: './uploads' });
   }
 
+  @Get('remedial-report/:filename')
+  uploadRemedialReport(@Param('filename') filename, @Res() res) {
+    return res.sendFile(filename, { root: './reports' });
+  }
+
   @Post()
   @UseInterceptors(
     FilesInterceptor('files', null, {
