@@ -6,7 +6,9 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  getVersion() {
+    return {
+      "Plan de Clases": "v0.0.1"
+    }
   }
 }

@@ -222,6 +222,4 @@ export class LessonPlansController {
   ) {
     return this.lessonPlansService.uploadSignedReportByTeacher(remedialPlanId, file);
   }
-
-
 }
