@@ -27,10 +27,12 @@ import { ValidateRemedialPlanManagerEmail } from '../common/strategies/email/man
 import { DigitalSignService } from '../common/services/digital-sign.service';
 import { RemedialLessonPlanSteps } from '../common/enums/remedial-lesson-plan-steps.enum';
 import { RemedialLessonPlanStepStatus } from '../common/enums/remedial-lesson-plan-step-status.enum';
-import { convertToSpanishDate } from '../../utils/date.utils';
 import { RemedialLessonPlanStepReportRole } from '../common/enums/remedial-lesson-plan-step-report-role.enum';
 import { RemedialReport } from '../common/interfaces/remedialReport';
-
+import { addWeekdays, convertToSpanishDate } from '../../utils/date.utils';
+import { RemedialPlanValidatedByManagerEmail } from '../common/strategies/email/teacher/remedial-plan-validated.strategy';
+import { AcceptRemedialPlanEmail } from '../common/strategies/email/student/accept-remedial-plan.strategy';
+import { UploadSignedRemedialPlanByManagerDTO } from './dto/upload-signed-remedial-plan-by-manager.dto';
 
 @Injectable()
 export class LessonPlansService {
@@ -200,8 +202,6 @@ export class LessonPlansService {
       id,
       updateLessonPlanDto,
     );
-
-    // TODO: Is it necessary to notify again that the teacher has updated the information?
 
     if (deadlineNotification === 'yes') {
       const currentPeriod = await this.periodService.findOne(periodId);
@@ -577,4 +577,98 @@ export class LessonPlansService {
       signedBy
     };
   };
+  async uploadSignedReportByManager(remedialPlanId: string, file: Express.Multer.File) {
+    const remedialPlan = await this.findOne(remedialPlanId);
+    const { VALIDATED_BY_MANAGER, SIGNED_BY_MANAGER, SENDED_TO_STUDENTS_AND_TEACHER, ACCEPTED_BY_STUDENTS  } = RemedialLessonPlanSteps;
+    let validatedByManagerStep;
+    let signedByManagerStep;
+    let sentToManagerAndStudentsStep;
+    let acceptedByStudentsStep;;
+    const trackingSteps = remedialPlan.trackingSteps as any[];
+    const remedialReports = remedialPlan.remedialReports as any[];
+
+    for (const step of trackingSteps) {
+      const stepIdentifiers = {
+        [VALIDATED_BY_MANAGER]: () => { validatedByManagerStep = step },
+        [SIGNED_BY_MANAGER]: () => { signedByManagerStep = step },
+        [SENDED_TO_STUDENTS_AND_TEACHER]: () => { sentToManagerAndStudentsStep = step },
+        [ACCEPTED_BY_STUDENTS]: () => { acceptedByStudentsStep = step },
+      }
+      const assignValue = stepIdentifiers[step.id];
+      if (assignValue) {
+        assignValue();
+      }
+    }
+    const currentDate = new Date();
+    const formatedDate = currentDate.toISOString();
+    validatedByManagerStep.date = formatedDate;
+    signedByManagerStep.date = formatedDate;
+    sentToManagerAndStudentsStep.date = formatedDate;
+    validatedByManagerStep.status = 'COMPLETED';
+    signedByManagerStep.status = 'COMPLETED';
+    sentToManagerAndStudentsStep.status = 'COMPLETED';
+    acceptedByStudentsStep.status = 'IN_PROGRESS';
+    const signatureDate = new Date();
+    const remedialReportFormat = [
+      {
+        name: file.originalname,
+        url: file.filename,
+        createdDate: signatureDate,
+        size: file.size,
+        role: 'manager',
+      }
+    ];
+    let remedialReportsUpdated = [];
+    if (remedialReports && remedialReports.length > 0) {
+      remedialReportsUpdated = [...remedialReports, ...remedialReportFormat];
+    }
+
+    const deadline = addWeekdays(signatureDate, 7);
+
+    const uploadSignedRemedialPlanByManagerDto: UploadSignedRemedialPlanByManagerDTO = {
+      remedialPlanId,
+      remedialReports: remedialReportsUpdated,
+      trackingSteps,
+      deadline
+    }
+    const signedRemedialReportUpdated = await this.lessonPlansRepository.uploadSignedReportByManager(uploadSignedRemedialPlanByManagerDto);
+
+    if (signedRemedialReportUpdated) {
+      const remedialPlanId = signedRemedialReportUpdated.id;
+      const remedialPlansValidationTracking = signedRemedialReportUpdated.validationsTracking;
+      const remedialPlanSchedule = signedRemedialReportUpdated.schedule;
+      const periodDisplayName = remedialPlanSchedule.grade.degree.period.displayName;
+      const subjectName = remedialPlanSchedule.subject.name;
+      const gradeDisplayName = `${remedialPlanSchedule.grade.number} "${remedialPlanSchedule.grade.parallel}"`;
+      const teacherDisplayName = remedialPlanSchedule.teacher.user.displayName;
+      const managerDisplayName = remedialPlanSchedule.grade.degree.manager.user.displayName;
+      const teacherEmail = remedialPlanSchedule.teacher.user.email;
+      const remedialPlanClassStartDate = signedRemedialReportUpdated.date;
+      const convertedClassStartDate = convertToSpanishDate(remedialPlanClassStartDate);
+      const remedialPlanValidatedEmail = new RemedialPlanValidatedByManagerEmail(
+        remedialPlanId,
+        periodDisplayName,
+        teacherDisplayName,
+        subjectName,
+        managerDisplayName,
+      );
+      this.emailService.sendEmail(remedialPlanValidatedEmail, teacherEmail);
+
+      for (const validationTracking of remedialPlansValidationTracking) {
+        const { student } = validationTracking;
+        const { user } = student;
+        const acceptRemedialPlanEmail = new AcceptRemedialPlanEmail(
+          remedialPlanId,
+          periodDisplayName,
+          user.displayName,
+          teacherDisplayName,
+          subjectName,
+          convertedClassStartDate,
+          managerDisplayName,
+        );
+      this.emailService.sendEmail(acceptRemedialPlanEmail, user.email);
+      }
+    }
+    return signedRemedialReportUpdated;
+  }
 }
