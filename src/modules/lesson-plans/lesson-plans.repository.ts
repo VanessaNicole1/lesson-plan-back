@@ -1,3 +1,4 @@
+import { UploadSignedRemedialPlanByManagerDTO } from './dto/upload-signed-remedial-plan-by-manager.dto';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../common/services/prisma.service';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan.dto';
@@ -466,4 +467,55 @@ export class LessonPlansRepository {
       },
     });
   };
+  
+  uploadSignedReportByManager(uploadSignedRemedialPlanByManagerDTO: UploadSignedRemedialPlanByManagerDTO) {
+    const { remedialPlanId, trackingSteps, remedialReports, deadline } = uploadSignedRemedialPlanByManagerDTO;
+    return this.prisma.lessonPlan.update({
+      where: {
+        id: remedialPlanId
+      },
+      data: {
+        remedialReports,
+        trackingSteps,
+        isValidatedByManager: true,
+        maximumValidationDate: deadline,
+      },
+      include: {
+        validationsTracking: {
+          include: {
+            student: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
+        schedule: {
+          include: {
+            grade: {
+              include: {
+                degree: {
+                  include: {
+                    manager: {
+                      include: {
+                        user: true,
+                      },
+                    },
+                    period: true,
+                  },
+                },
+              },
+            },
+            teacher: {
+              include: {
+                user: true,
+              }
+            },
+            subject: true,
+          },
+        },
+      },
+    });
+    
+  }
 }

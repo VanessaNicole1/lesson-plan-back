@@ -48,3 +48,16 @@ export const convertToSpanishDate = (currrentDate: Date) => {
   const spanishDate = dateToConvert.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   return spanishDate;
 }
+
+export const addWeekdays = (date: any, numWeekdays: number) => {
+  const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
+  const currentDate = new Date(date);
+  while (numWeekdays > 0) {
+    currentDate.setTime(currentDate.getTime() + oneDayInMilliseconds);
+    if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) {
+      // eslint-disable-next-line no-plusplus
+      numWeekdays--;
+    }
+  }
+  return currentDate;
+}

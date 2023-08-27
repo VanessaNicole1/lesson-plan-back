@@ -222,4 +222,28 @@ export class LessonPlansController {
   ) {
     return this.lessonPlansService.uploadSignedReportByTeacher(remedialPlanId, file);
   }
+
+  @Post('signed-report-by-manager/:remedialPlanId')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './reports',
+        filename: (req, file, callback) => {
+          const filename =
+            path.parse(file.originalname).name.replace(/\s/g, '') + Date.now();
+          const extension = path.parse(file.originalname).ext;
+          callback(null, `${filename}${extension}`);
+        },
+      }),
+    }),
+  )
+  uploadSignedReportByManager(
+    @Param('remedialPlanId') remedialPlanId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.lessonPlansService.uploadSignedReportByManager(
+      remedialPlanId,
+      file,
+    );
+  }
 }
