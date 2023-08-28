@@ -110,6 +110,7 @@ export class SchedulesService {
           subject,
           grade,
           hasQualified: lessonPlan.hasQualified,
+          type: lessonPlan.type,
         };
         allLessonPlans.push(currentLessonPlan);
       }
