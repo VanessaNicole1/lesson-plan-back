@@ -4,6 +4,7 @@ import { PrismaService } from '../common/services/prisma.service';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan.dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan.dto';
 import { CreateRemedialPlanDto } from './dto/create-remedial-plan.dto';
+import { LessonPlanType } from '../common/enums/lesson-plan-type.enum';
 @Injectable()
 export class LessonPlansRepository {
   constructor(private prisma: PrismaService) {}
@@ -145,6 +146,7 @@ export class LessonPlansRepository {
       notification,
       notificationDate,
       deadlineDate,
+      results
     } = createLessonPlanDto;
     return this.prisma.lessonPlan.create({
       data: {
@@ -156,6 +158,7 @@ export class LessonPlansRepository {
         resources,
         description,
         purposeOfClass,
+        results,
         maximumValidationDate: new Date(deadlineDate),
         bibliography,
         materials,
@@ -181,6 +184,7 @@ export class LessonPlansRepository {
       evaluation,
       comments,
       resources,
+      results,
       deadlineDate,
     } = updateLessonPlanDto;
     await this.findOne(id);
@@ -195,6 +199,7 @@ export class LessonPlansRepository {
         description,
         content,
         purposeOfClass,
+        results,
         bibliography,
         materials,
         evaluation,

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../common/services/prisma.service';
 import { UpdateScheduleDto } from './dto/update-schedule.dto';
 import { FilterScheduleDto } from './dto/filter-schedule.dto';
+import { LessonPlanType } from '../common/enums/lesson-plan-type.enum';
 
 @Injectable()
 export class SchedulesRepository {
@@ -76,7 +77,12 @@ export class SchedulesRepository {
   }
 
   findSchedulesByUser(userId: string, filterScheduleDto: FilterScheduleDto) {
-    const { periodId, subjectId, gradeId, hasQualified } = filterScheduleDto;
+    const { periodId, subjectId, gradeId, hasQualified, type } = filterScheduleDto;
+    const { NORMAL, REMEDIAL } = LessonPlanType;
+    const lessonPlanTypes = {
+      [NORMAL]: LessonPlanType.NORMAL,
+      [REMEDIAL]: LessonPlanType.REMEDIAL
+    }
     const currentHasQualified =
       hasQualified !== undefined
         ? (hasQualified === 'true' && true) ||
@@ -98,6 +104,7 @@ export class SchedulesRepository {
         include: {
           lessonPlans: {
             where: {
+              type: lessonPlanTypes[type],
               hasQualified: currentHasQualified,
             },
           },
@@ -133,6 +140,7 @@ export class SchedulesRepository {
         include: {
           lessonPlans:{
             where: {
+              type: lessonPlanTypes[type],
               hasQualified: currentHasQualified,
             },
           },

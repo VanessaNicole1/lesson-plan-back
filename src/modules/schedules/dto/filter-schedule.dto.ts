@@ -16,4 +16,8 @@ export class FilterScheduleDto {
   @IsOptional()
   @IsString()
   hasQualified?: string;
+
+  @IsOptional()
+  @IsString()
+  type?: string;
 }
