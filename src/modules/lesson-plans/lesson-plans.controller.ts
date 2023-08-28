@@ -86,7 +86,7 @@ export class LessonPlansController {
 
   @Get('remedial-report/:filename')
   uploadRemedialReport(@Param('filename') filename, @Res() res) {
-    return res.sendFile(filename, { root: './reports' });
+    return res.sendFile(filename, { root: './remedials' });
   }
 
   @Post()
@@ -211,7 +211,7 @@ export class LessonPlansController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './reports',
+        destination: './remedials',
         filename: (req, file, callback) => {
           const filename =
             path.parse(file.originalname).name.replace(/\s/g, '') + Date.now();
@@ -232,7 +232,7 @@ export class LessonPlansController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './reports',
+        destination: './remedials',
         filename: (req, file, callback) => {
           const filename =
             path.parse(file.originalname).name.replace(/\s/g, '') + Date.now();

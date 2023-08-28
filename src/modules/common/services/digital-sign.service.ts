@@ -14,10 +14,9 @@ export class DigitalSignService {
           signedBy: userInfo.commonName
         }
       });
-      fs.unlinkSync(filePath);
       return signaturesData;  
     } catch (error) {
-      throw new BadRequestException("No se encontraron nuevas firmas en el reporte");
+      throw new BadRequestException("No se encontró ninguna firma en el reporte");
     }
   }
 }

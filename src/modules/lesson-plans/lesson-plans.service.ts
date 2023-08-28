@@ -534,52 +534,17 @@ export class LessonPlansService {
     }
   }
 
-  validateRemedialLessonPlanSign(
-    file: Express.Multer.File,
-    remedialLessonPlan,
-    remedialReportRole: RemedialLessonPlanStepReportRole
-  ): RemedialReport {
-    const { MANAGER, TEACHER } = RemedialLessonPlanStepReportRole;
-    const roleLabels = {
-      [MANAGER]: "Director de Carrera",
-      [TEACHER]: "Docente"
-    }
-    const { path } = file;
-    const pdfSignaturesInformation = this.digitalSignService.validateDigitalSign(path);
-    const remedialReports = remedialLessonPlan.remedialReports || [];
-    const foundRole = remedialReports.find(report => report.role === remedialReportRole);
 
-    if (foundRole) {
-      throw new BadRequestException(
-        `El Reporte ya ha sido firmado por el ${roleLabels[remedialReportRole]}`
-      );
-    }
-
-    const remedialLessonPlanSignatures = remedialReports.map((report) => report.signedBy);
-    const newUserSignature = pdfSignaturesInformation.filter(
-      ({signedBy: signature}) => !remedialLessonPlanSignatures.includes(signature)
-    )[0];
-
-    return this.getRemedialReport(file, remedialReportRole, newUserSignature.signedBy);
-  }
-  
-  getRemedialReport(
-    file: Express.Multer.File,
-    remedialReportRole: RemedialLessonPlanStepReportRole,
-    signedBy: string
-  ): RemedialReport {
-    return {
-      name: file.originalname,
-      url: file.filename,
-      createdDate: new Date(),
-      size: file.size,
-      role: remedialReportRole,
-      signedBy
-    };
-  };
   async uploadSignedReportByManager(remedialPlanId: string, file: Express.Multer.File) {
     const remedialPlan = await this.findOne(remedialPlanId);
+    const remedialReport = this.validateRemedialLessonPlanSign(
+      file,
+      remedialPlan,
+      RemedialLessonPlanStepReportRole.MANAGER
+    );
+
     const { VALIDATED_BY_MANAGER, SIGNED_BY_MANAGER, SENDED_TO_STUDENTS_AND_TEACHER, ACCEPTED_BY_STUDENTS  } = RemedialLessonPlanSteps;
+    const { COMPLETED, IN_PROGESS } = RemedialLessonPlanStepStatus;
     let validatedByManagerStep;
     let signedByManagerStep;
     let sentToManagerAndStudentsStep;
@@ -599,32 +564,24 @@ export class LessonPlansService {
         assignValue();
       }
     }
+    
     const currentDate = new Date();
     const formatedDate = currentDate.toISOString();
     validatedByManagerStep.date = formatedDate;
     signedByManagerStep.date = formatedDate;
     sentToManagerAndStudentsStep.date = formatedDate;
-    validatedByManagerStep.status = 'COMPLETED';
-    signedByManagerStep.status = 'COMPLETED';
-    sentToManagerAndStudentsStep.status = 'COMPLETED';
-    acceptedByStudentsStep.status = 'IN_PROGRESS';
+    validatedByManagerStep.status = COMPLETED;
+    signedByManagerStep.status = COMPLETED;
+    sentToManagerAndStudentsStep.status = COMPLETED;
+    acceptedByStudentsStep.status = IN_PROGESS;
     const signatureDate = new Date();
-    const remedialReportFormat = [
-      {
-        name: file.originalname,
-        url: file.filename,
-        createdDate: signatureDate,
-        size: file.size,
-        role: 'manager',
-      }
-    ];
     let remedialReportsUpdated = [];
+
     if (remedialReports && remedialReports.length > 0) {
-      remedialReportsUpdated = [...remedialReports, ...remedialReportFormat];
+      remedialReportsUpdated = [...remedialReports, remedialReport];
     }
 
     const deadline = addWeekdays(signatureDate, 7);
-
     const uploadSignedRemedialPlanByManagerDto: UploadSignedRemedialPlanByManagerDTO = {
       remedialPlanId,
       remedialReports: remedialReportsUpdated,
@@ -671,4 +628,79 @@ export class LessonPlansService {
     }
     return signedRemedialReportUpdated;
   }
+
+  validateRemedialLessonPlanSign(
+    file: Express.Multer.File,
+    remedialLessonPlan,
+    remedialReportRole: RemedialLessonPlanStepReportRole
+  ): RemedialReport {
+    const { MANAGER, TEACHER } = RemedialLessonPlanStepReportRole;
+    const roleLabels = {
+      [MANAGER]: "Director de Carrera",
+      [TEACHER]: "Docente"
+    }
+    const { path } = file;
+    const pdfSignaturesInformation = this.digitalSignService.validateDigitalSign(path);
+    const pdfSignatures = pdfSignaturesInformation.map(pdfInformation => pdfInformation.signedBy);
+    // [VANESSA]
+
+    if (pdfSignatures.length > 2) {
+      throw new BadRequestException(
+        `El reporte solamente debe contener dos firmas, la del ${roleLabels[MANAGER]} y el ${roleLabels[TEACHER]}`  
+      );
+    }
+    
+    if (remedialReportRole === TEACHER && pdfSignatures.length !== 1) {
+      throw new BadRequestException(
+        `El reporte solamente debe estar firmado una vez por el docente`
+      );
+    };
+
+
+    if (pdfSignatures.length === 2 && remedialReportRole === MANAGER) {
+      /**
+       * Validation if manager is also teacher 
+       */
+      const [firstSignature, secondSignature] = pdfSignatures;
+
+      if (firstSignature === secondSignature) {
+        return this.getRemedialReport(file, remedialReportRole, secondSignature);
+      }
+    }
+
+    const remedialReports = remedialLessonPlan.remedialReports || [];
+    const foundRole = remedialReports.find(report => report.role === remedialReportRole);
+
+    if (foundRole) {
+      throw new BadRequestException(
+        `El Reporte ya ha sido firmado por el ${roleLabels[remedialReportRole]}`
+      );
+    }
+
+    const remedialLessonPlanSignatures = remedialReports.map((report) => report.signedBy);
+    const newUserSignature = pdfSignatures.filter(signature => !remedialLessonPlanSignatures.includes(signature))[0];
+
+    if (!newUserSignature) {
+      throw new BadRequestException(
+        "No se han encontrado firmas nuevas en el documento"
+      );
+    }
+
+    return this.getRemedialReport(file, remedialReportRole, newUserSignature);
+  }
+
+  getRemedialReport(
+    file: Express.Multer.File,
+    remedialReportRole: RemedialLessonPlanStepReportRole,
+    signedBy: string
+  ): RemedialReport {
+    return {
+      name: file.originalname,
+      url: file.filename,
+      createdDate: new Date(),
+      size: file.size,
+      role: remedialReportRole,
+      signedBy
+    };
+  };
 }
