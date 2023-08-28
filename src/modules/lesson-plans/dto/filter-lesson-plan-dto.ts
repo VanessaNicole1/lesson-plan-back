@@ -1,4 +1,5 @@
 import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { LessonPlanType } from '../../../modules/common/enums/lesson-plan-type.enum';
 
 export class FilterLessonPlanDTO {
   @IsUUID()

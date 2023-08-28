@@ -4,6 +4,7 @@ import { PrismaService } from '../common/services/prisma.service';
 import { CreateLessonPlanDto } from './dto/create-lesson-plan.dto';
 import { UpdateLessonPlanDto } from './dto/update-lesson-plan.dto';
 import { CreateRemedialPlanDto } from './dto/create-remedial-plan.dto';
+import { LessonPlanType } from '../common/enums/lesson-plan-type.enum';
 @Injectable()
 export class LessonPlansRepository {
   constructor(private prisma: PrismaService) {}
