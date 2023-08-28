@@ -40,6 +40,10 @@ export class CreateLessonPlanDto {
 
   @IsNotEmpty()
   @IsString()
+  results: string;
+
+  @IsNotEmpty()
+  @IsString()
   bibliography: string;
 
   @IsNotEmpty()

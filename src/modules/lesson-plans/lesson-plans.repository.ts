@@ -146,6 +146,7 @@ export class LessonPlansRepository {
       notification,
       notificationDate,
       deadlineDate,
+      results
     } = createLessonPlanDto;
     return this.prisma.lessonPlan.create({
       data: {
@@ -157,6 +158,7 @@ export class LessonPlansRepository {
         resources,
         description,
         purposeOfClass,
+        results,
         maximumValidationDate: new Date(deadlineDate),
         bibliography,
         materials,
@@ -182,6 +184,7 @@ export class LessonPlansRepository {
       evaluation,
       comments,
       resources,
+      results,
       deadlineDate,
     } = updateLessonPlanDto;
     await this.findOne(id);
@@ -196,6 +199,7 @@ export class LessonPlansRepository {
         description,
         content,
         purposeOfClass,
+        results,
         bibliography,
         materials,
         evaluation,
