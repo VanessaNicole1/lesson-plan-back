@@ -51,7 +51,12 @@ export class SchedulesRepository {
       },
       include: {
         subject: true,
-        grade: true,
+        grade: {
+          include: {
+            students: true,
+          },
+        },
+        lessonPlans: true,
       },
     });
   }
@@ -72,6 +77,9 @@ export class SchedulesRepository {
     return this.prisma.schedule.findMany({
       where: {
         teacherId,
+      },
+      include: {
+        lessonPlans: true,
       },
     });
   }
