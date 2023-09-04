@@ -20,18 +20,18 @@ export class LessonPlansTrackingRepository {
   };
 
   update(id: string, lessonPlanTrackingDto: UpdateLessonPlanTrackingDto) {
-    const { isAgree, isValidated } = lessonPlanTrackingDto;
+    const { isAgree, isValidated, comment } = lessonPlanTrackingDto;
     return this.prisma.lessonPlanValidationTracking.update({
       where: {
         id
       },
       data: {
         isValidated,
-        isAgree
+        isAgree,
+        comment
       }
     });
   }
-
 
   getLessonPlanTrackingByLessonPlanIdAndPeriod(lessonPlanId: string, periodId: string) {
     return this.prisma.lessonPlanValidationTracking.findFirst({

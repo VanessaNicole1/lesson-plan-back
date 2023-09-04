@@ -1,6 +1,5 @@
-import { IsBoolean, IsDefined } from "class-validator";
+import { IsBoolean, IsDefined, IsOptional, IsString } from "class-validator";
 
-// TODO: Handle i18n
 export class UpdateLessonPlanTrackingDto {
   @IsBoolean()
   @IsDefined()
@@ -9,4 +8,8 @@ export class UpdateLessonPlanTrackingDto {
   @IsBoolean()
   @IsDefined()
   isAgree: boolean;
+
+  @IsOptional()
+  @IsString()
+  comment: string;
 }
