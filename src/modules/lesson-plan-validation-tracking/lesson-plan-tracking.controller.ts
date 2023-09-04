@@ -2,7 +2,6 @@ import { Controller, Body, Patch, Param } from '@nestjs/common';
 import { LessonPlansTrackingService } from './lesson-plan-tracking.service';
 import { UpdateLessonPlanTrackingDto } from './dto/update-lesson-plan-tracking.dto';
 
-// TODO: Handle i18n
 @Controller('lesson-plans-tracking')
 export class LessonPlansTrackingController {
   constructor(
