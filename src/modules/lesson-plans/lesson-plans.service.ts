@@ -79,6 +79,10 @@ export class LessonPlansService {
     return this.lessonPlansRepository.findAll({ period, type, ...additionalFilters });
   }
 
+  async findAllLessonPlanTypes() {
+    return this.lessonPlansRepository.findAllLessonPlanTypes();
+  }
+
   async findOne(id: string) {
     const lessonPlan = await this.lessonPlansRepository.findOne(id);
 

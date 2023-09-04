@@ -36,6 +36,11 @@ export class LessonPlansController {
     return this.lessonPlansService.findAll(filterLessonPlanDto);
   }
 
+  @Get('all-types')
+  findAllLessonPlanTypes() {
+    return this.lessonPlansService.findAllLessonPlanTypes();
+  }
+
   @Get('report/:userId')
   @Header('Content-Type', 'application/pdf')
   @Header('Content-Disposition', 'attachment; filename="report.pdf"')

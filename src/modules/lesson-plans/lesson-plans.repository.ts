@@ -105,6 +105,12 @@ export class LessonPlansRepository {
     });
   }
 
+  findAllLessonPlanTypes() {
+    return this.prisma.lessonPlan.findMany({
+      ...this.getAdittionalData(),
+    })
+  }
+
   findAllLessonPlansWithAdittionalData() {
     return this.prisma.lessonPlan.findMany({
       ...this.getAdittionalData(),

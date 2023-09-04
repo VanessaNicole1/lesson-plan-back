@@ -35,6 +35,7 @@ export class SubjectsRepository {
                 },
               },
             },
+            lessonPlans: true,
             teacher: {
               include: {
                 user: true,
