@@ -36,7 +36,7 @@ export class LessonPlansRepository {
             teacher: {
               include: {
                 user: true,
-              }
+              },
             },
           },
         },
@@ -44,7 +44,21 @@ export class LessonPlansRepository {
     };
   }
 
-  findAll({ period, type, isValidatedByManager, teacherId }: { period: string, type: LessonPlanType, isValidatedByManager?: boolean, teacherId?: string }) {
+  findAll({
+    period,
+    type,
+    isValidatedByManager,
+    teacherId,
+    studentId,
+    isValidatedByStudent
+  }: {
+    period: string;
+    type: LessonPlanType;
+    isValidatedByManager?: boolean;
+    teacherId?: string;
+    studentId?: string;
+    isValidatedByStudent?: boolean
+  }) {
     const additionalFilters: any = {};
 
     if (isValidatedByManager !== undefined) {
@@ -53,7 +67,31 @@ export class LessonPlansRepository {
 
     if (teacherId) {
       additionalFilters.schedule = {
-        teacherId
+        teacherId,
+      };
+    }
+
+    if (studentId) {
+      const scheduleFilters = { ...additionalFilters.schedule };
+      additionalFilters.schedule = {
+        grade: {
+          students: {
+            some: {
+              id: studentId,
+            },
+          },
+        },
+        ...scheduleFilters,
+      };
+      
+
+      if (isValidatedByStudent !== undefined) {
+        additionalFilters.validationsTracking = {
+          some: {
+            isValidated: isValidatedByStudent,
+            studentId: studentId
+          }
+        };
       }
     }
 
@@ -61,15 +99,15 @@ export class LessonPlansRepository {
       where: {
         periodId: period,
         type,
-        ...additionalFilters
+        ...additionalFilters,
       },
-      ...this.getAdittionalData()
+      ...this.getAdittionalData(),
     });
   }
 
   findAllLessonPlansWithAdittionalData() {
     return this.prisma.lessonPlan.findMany({
-      ...this.getAdittionalData()
+      ...this.getAdittionalData(),
     });
   }
 
@@ -102,10 +140,10 @@ export class LessonPlansRepository {
             subject: true,
             teacher: {
               include: {
-                user: true
-              }
-            }
-          }
+                user: true,
+              },
+            },
+          },
         },
       },
     });
@@ -146,7 +184,7 @@ export class LessonPlansRepository {
       notification,
       notificationDate,
       deadlineDate,
-      results
+      results,
     } = createLessonPlanDto;
     return this.prisma.lessonPlan.create({
       data: {
@@ -237,58 +275,58 @@ export class LessonPlansRepository {
     from: Date,
     to: Date,
     periodId: string,
-    teacherId: string, 
-    subjectId: string, 
-    gradeId: string
+    teacherId: string,
+    subjectId: string,
+    gradeId: string,
   ) {
     const additionalScheduleFilters: any = {};
 
     if (subjectId) {
       additionalScheduleFilters.subject = {
-        id: subjectId
-      }
+        id: subjectId,
+      };
     }
 
     if (gradeId) {
       additionalScheduleFilters.grade = {
-        id: gradeId
-      }
+        id: gradeId,
+      };
     }
 
     const whereCondition = {
       periodId,
-        schedule: {
-          teacher: {
-            id: teacherId
-          },
-          ...additionalScheduleFilters
+      schedule: {
+        teacher: {
+          id: teacherId,
         },
-        date: {
-          gte: from,
-          lte: to
-        }
-    }
-    
+        ...additionalScheduleFilters,
+      },
+      date: {
+        gte: from,
+        lte: to,
+      },
+    };
+
     // TODO: Check for just qualified lessonPlans
     return this.prisma.lessonPlan.findMany({
       orderBy: [
         {
           schedule: {
             grade: {
-              number: 'asc'
-            }
-          }
+              number: 'asc',
+            },
+          },
         },
         {
           schedule: {
             grade: {
-              parallel: 'asc'
-            }
-          }
+              parallel: 'asc',
+            },
+          },
         },
         {
-          date: 'asc'
-        }
+          date: 'asc',
+        },
       ],
       where: whereCondition,
       include: {
@@ -296,24 +334,24 @@ export class LessonPlansRepository {
           include: {
             teacher: {
               include: {
-                user: true
-              }
+                user: true,
+              },
             },
             subject: true,
-            grade: true
-          }
+            grade: true,
+          },
         },
         validationsTracking: {
           include: {
             student: {
               include: {
-                user: true
-              }
-            }
-          }
-        }
-      }
-    })
+                user: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 
   findLessonPlanForReport(id: string) {
@@ -326,75 +364,79 @@ export class LessonPlansRepository {
           include: {
             teacher: {
               include: {
-                user: true
-              }
+                user: true,
+              },
             },
             subject: true,
-            grade: true
-          }
+            grade: true,
+          },
         },
         validationsTracking: {
           include: {
             student: {
               include: {
-                user: true
-              }
-            }
-          }
-        }
-      }
+                user: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 
   expireLessonPlan(lessonPlanId: string) {
     return this.prisma.lessonPlan.update({
       where: {
-        id: lessonPlanId
+        id: lessonPlanId,
       },
       data: {
         validationExpired: true,
-      }
+      },
     });
   }
 
-  findLessonPlansByTeacherIdsBetweenDates(from: Date, to: Date, teacherIds: string[]) {
+  findLessonPlansByTeacherIdsBetweenDates(
+    from: Date,
+    to: Date,
+    teacherIds: string[],
+  ) {
     return this.prisma.lessonPlan.findMany({
       where: {
         schedule: {
           teacher: {
             id: {
-              in: teacherIds
-            }
-          }
+              in: teacherIds,
+            },
+          },
         },
         date: {
           gte: from,
-          lte: to
-        }
+          lte: to,
+        },
       },
       include: {
         schedule: {
           include: {
             teacher: {
               include: {
-                user: true
-              }
-            }
-          }
+                user: true,
+              },
+            },
+          },
         },
-      }
+      },
     });
   }
 
   validateLessonPlan(lessonPlanId: string) {
     return this.prisma.lessonPlan.update({
       where: {
-        id: lessonPlanId
+        id: lessonPlanId,
       },
       data: {
         hasQualified: true,
-      }
-    }) 
+      },
+    });
   }
 
   createRemedialPlan(createRemedialPlanDto: CreateRemedialPlanDto) {
@@ -435,10 +477,14 @@ export class LessonPlansRepository {
     });
   }
 
-  uploadSignedReportByTeacher(remedialPlanId: string, remedialReport: any, trackingSteps: any) {
+  uploadSignedReportByTeacher(
+    remedialPlanId: string,
+    remedialReport: any,
+    trackingSteps: any,
+  ) {
     return this.prisma.lessonPlan.update({
       where: {
-        id: remedialPlanId
+        id: remedialPlanId,
       },
       data: {
         remedialReports: remedialReport,
@@ -464,20 +510,23 @@ export class LessonPlansRepository {
             teacher: {
               include: {
                 user: true,
-              }
+              },
             },
             subject: true,
           },
         },
       },
     });
-  };
-  
-  uploadSignedReportByManager(uploadSignedRemedialPlanByManagerDTO: UploadSignedRemedialPlanByManagerDTO) {
-    const { remedialPlanId, trackingSteps, remedialReports, deadline } = uploadSignedRemedialPlanByManagerDTO;
+  }
+
+  uploadSignedReportByManager(
+    uploadSignedRemedialPlanByManagerDTO: UploadSignedRemedialPlanByManagerDTO,
+  ) {
+    const { remedialPlanId, trackingSteps, remedialReports, deadline } =
+      uploadSignedRemedialPlanByManagerDTO;
     return this.prisma.lessonPlan.update({
       where: {
-        id: remedialPlanId
+        id: remedialPlanId,
       },
       data: {
         remedialReports,
@@ -514,13 +563,23 @@ export class LessonPlansRepository {
             teacher: {
               include: {
                 user: true,
-              }
+              },
             },
             subject: true,
           },
         },
       },
     });
-    
+  }
+
+  updateRemedialLessonPlanTrackingSteps(id: string, trackingSteps: any) {
+    return this.prisma.lessonPlan.update({
+      where: {
+        id
+      },
+      data: {
+        trackingSteps
+      }
+    })
   }
 }

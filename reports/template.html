@@ -59,10 +59,12 @@
   </div>
 
   <div class="period">
+    {{#if lessonPlanNumber}}
     <div>
       <b>PLAN DE CLASE NRO:</b>
-      <span style="border: 1px solid black; padding-left: 20px; padding-right: 20px; margin-left: 5px;">01</span>
+      <span style="border: 1px solid black; padding-left: 20px; padding-right: 20px; margin-left: 5px;">{{lessonPlanNumber}}</span>
     </div>
+    {{/if}}
     <div>
       <b>PERIODO ACADÉMICO:</b>
       <span style="border: 1px solid black; padding-left: 10px; padding-right: 10px; margin-left: 5px;">{{period}}</span>

@@ -16,4 +16,11 @@ export class FilterLessonPlanDTO {
   @IsUUID()
   @IsOptional()
   userId: string
+
+  @IsUUID()
+  @IsOptional()
+  studentId: string
+
+  @IsOptional()
+  isValidatedByStudent: string
 }

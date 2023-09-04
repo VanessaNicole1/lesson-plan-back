@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -62,34 +61,15 @@ export class ReportsService {
     return mergedPdfBytes;
   }
 
-  async generateSingleLessonPlanReport(lessonPlan: any, period) {
-    const templatePath = './reports/template.html';
-    const template = fs.readFileSync(templatePath, 'utf-8');
-    const compiledTemplate = handlebars.compile(template);
-
-    const browser = await puppeteer.launch({ executablePath: process.env.CHROMIUM_PATH, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-    const page = await browser.newPage();
-
-    const data = this.getReportDataByLessonPlan(lessonPlan, period);
-    const renderedHTML = compiledTemplate(data);
-
-    await page.setContent(renderedHTML, { waitUntil: 'domcontentloaded' });
-    const reportPath = `${generateUniqueIdentifier()}.pdf`;
-    await page.pdf({
-      path: reportPath,
-      format: 'A4',
-      printBackground: true,
-      landscape: true,
-    });
-
-    await browser.close();
-    return reportPath;
-  };
-
-  async generateMultipleLessonPlanReport(lessonPlans: any[], period) {
+  async generateMultipleLessonPlanReport(
+    lessonPlans: any[],
+    period: any,
+    templateName: string = 'template.html',
+    managerName: string = ''
+  ) {
     try {
       const singleReporPaths = [];
-      const templatePath = './reports/template.html';
+      const templatePath = `./reports/${templateName}`;
       const template = fs.readFileSync(templatePath, 'utf-8');
       const compiledTemplate = handlebars.compile(template);
 
@@ -97,7 +77,7 @@ export class ReportsService {
       const page = await browser.newPage();
 
       for (let i = 0; i < lessonPlans.length; i++) {
-        const data = this.getReportDataByLessonPlan(lessonPlans[i], period);
+        const data = {...this.getReportDataByLessonPlan(lessonPlans[i], period), managerName, lessonPlanNumber: i + 1 };
         const renderedHTML = compiledTemplate(data);
 
         await page.setContent(renderedHTML, { waitUntil: 'domcontentloaded' });
@@ -128,17 +108,22 @@ export class ReportsService {
     paths.forEach(path => fs.unlinkSync(path))
   }
 
-  async generateLessonPlanReport(lessonPlan: any, period) {
+  async generateLessonPlanReport(
+    lessonPlan: any,
+    period: any,
+    templateName: string = 'template.html',
+    managerName = ''
+  ) {
     try {
       const singleReporPaths = [];
-      const templatePath = './reports/template.html';
+      const templatePath = `./reports/${templateName}`;
       const template = fs.readFileSync(templatePath, 'utf-8');
       const compiledTemplate = handlebars.compile(template);
 
       const browser = await puppeteer.launch({ headless: 'new' });
       const page = await browser.newPage();
       
-      const data = this.getReportDataByLessonPlan(lessonPlan, period);
+      const data = {...this.getReportDataByLessonPlan(lessonPlan, period), managerName };
       const renderedHTML = compiledTemplate(data);
 
       await page.setContent(renderedHTML, { waitUntil: 'domcontentloaded' });
