@@ -6,13 +6,15 @@ import { SchedulesModule } from '../schedules/schedules.module';
 import { LessonPlanValidationTrackingModule } from '../lesson-plan-validation-tracking/lesson-plan-tracking.module';
 import { PeriodsModule } from '../periods/periods.module';
 import { TeachersModule } from '../teachers/teachers.module';
+import { StudentsModule } from '../students/students.module';
 
 @Module({
   imports: [
     SchedulesModule,
     LessonPlanValidationTrackingModule,
     forwardRef(() => PeriodsModule),
-    forwardRef(() => TeachersModule)
+    forwardRef(() => TeachersModule),
+    forwardRef(() => StudentsModule),
   ],
   controllers: [LessonPlansController],
   providers: [LessonPlansService, LessonPlansRepository],

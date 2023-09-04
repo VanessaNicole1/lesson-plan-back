@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { I18nContext, I18nService } from 'nestjs-i18n';
 import { Exception } from 'handlebars';
 import {
@@ -24,9 +24,11 @@ export class StudentsService {
   
   constructor(
     private studentsRepository: StudentsRepository,
+    @Inject(forwardRef(() => PeriodsService))
     private periodService: PeriodsService,
     private usersService: UsersService,
     private lessonPlanTrackingService: LessonPlansTrackingService,
+    @Inject(forwardRef(() => LessonPlansService))
     private lessonPlanService: LessonPlansService,
     private i18nService: I18nService,
   ) {}

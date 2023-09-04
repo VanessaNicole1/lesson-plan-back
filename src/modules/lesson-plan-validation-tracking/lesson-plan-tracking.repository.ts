@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../common/services/prisma.service';
 import { CreateLessonPlanTrackingDto } from './dto/validate-lesson-plan.dto';
 import { UpdateLessonPlanTrackingDto } from './dto/update-lesson-plan-tracking.dto';
+import { LessonPlanType } from '../common/enums/lesson-plan-type.enum';
 
 @Injectable()
 export class LessonPlansTrackingRepository {
@@ -56,6 +57,9 @@ export class LessonPlansTrackingRepository {
           isValidated: {
             equals: isValidated
           }
+        },
+        lessonPlan: {
+          type: LessonPlanType.NORMAL
         }
       },
       include: {

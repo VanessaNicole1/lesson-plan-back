@@ -25,6 +25,7 @@ import { DeleteResourceDto } from './dto/delete-resource.dto';
 import { LessonPlanReportDto } from '../common/dto/lesson-plan-report.dto';
 import { FilterLessonPlanDTO } from './dto/filter-lesson-plan-dto';
 import { CreateRemedialPlanDto } from './dto/create-remedial-plan.dto';
+import { UpdateLessonPlanTrackingDto } from '../lesson-plan-validation-tracking/dto/update-lesson-plan-tracking.dto';
 
 @Controller('lesson-plans')
 export class LessonPlansController {
@@ -176,6 +177,28 @@ export class LessonPlansController {
     res.send(buffer);
   }
 
+  @Get('remedial/report/:lessonPlanId')
+  @Header('Content-Type', 'application/pdf')
+  @Header('Content-Disposition', 'attachment; filename="report.pdf"')
+  async generateRemedialLessonPlanReport(
+    @Param('lessonPlanId') lessonPlanId: string,
+    @Res() res: Response,
+  ) {
+    const report = await this.lessonPlansService.generateRemedialLessonPlanReport(
+      lessonPlanId,
+    );
+    const buffer = Buffer.from(report.buffer);
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Length': report.length,
+      'Content-Disposition': 'attachment; filename=generated.pdf',
+    });
+
+    res.send(buffer);
+  }
+
+
   @Post('remedial-plan')
   @UseInterceptors(
     FilesInterceptor('files', null, {
@@ -250,5 +273,13 @@ export class LessonPlansController {
       remedialPlanId,
       file,
     );
+  }
+
+  @Patch(':id/accept')
+  acceptRemedialLessonPlanByStudent(
+    @Param('id') id: string,
+    @Body() updateLessonPlanTrackingDto: UpdateLessonPlanTrackingDto,
+  ) {
+    return this.lessonPlansService.acceptRemedialLessonPlanByStudent(id, updateLessonPlanTrackingDto);
   }
 }

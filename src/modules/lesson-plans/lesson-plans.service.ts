@@ -33,6 +33,8 @@ import { addWeekdays, convertToSpanishDate } from '../../utils/date.utils';
 import { RemedialPlanValidatedByManagerEmail } from '../common/strategies/email/teacher/remedial-plan-validated.strategy';
 import { AcceptRemedialPlanEmail } from '../common/strategies/email/student/accept-remedial-plan.strategy';
 import { UploadSignedRemedialPlanByManagerDTO } from './dto/upload-signed-remedial-plan-by-manager.dto';
+import { StudentsService } from '../students/students.service';
+import { UpdateLessonPlanTrackingDto } from '../lesson-plan-validation-tracking/dto/update-lesson-plan-tracking.dto';
 
 @Injectable()
 export class LessonPlansService {
@@ -47,11 +49,13 @@ export class LessonPlansService {
     @Inject(forwardRef(() => TeachersService))
     private teacherService: TeachersService,
     private reportService: ReportsService,
-    private digitalSignService: DigitalSignService
+    private digitalSignService: DigitalSignService,
+    @Inject(forwardRef(() => StudentsService))
+    private studentsService: StudentsService
   ) {}
 
   async findAll(filterLessonPlanDto: FilterLessonPlanDTO) {
-    const { period, type, isValidatedByManager, userId } = filterLessonPlanDto;
+    const { period, type, isValidatedByManager, userId, studentId, isValidatedByStudent} = filterLessonPlanDto;
     const additionalFilters: any = {}
 
     if (isValidatedByManager && isValidatedByManager.length > 0) {
@@ -61,6 +65,15 @@ export class LessonPlansService {
     if (userId) {
       const teacher = await this.teacherService.findTeacherByUserInActivePeriod(period, userId);
       additionalFilters.teacherId = teacher.id;
+    }
+
+    if (studentId) {
+      const student = await this.studentsService.getStudentsByUserInActivePeriod(studentId, period);
+      additionalFilters.studentId = student[0].id;
+
+      if (isValidatedByStudent && isValidatedByStudent.length > 0) {
+        additionalFilters.isValidatedByStudent = isValidatedByStudent.toLowerCase() === "true";
+      }
     }
 
     return this.lessonPlansRepository.findAll({ period, type, ...additionalFilters });
@@ -161,6 +174,13 @@ export class LessonPlansService {
       }
     }
     return lessonPlanCreated;
+  }
+
+  async updateRemedialLessonPlanTrackingSteps(
+    id: string,
+    trackingSteps: any
+  ) {
+    return this.lessonPlansRepository.updateRemedialLessonPlanTrackingSteps(id, trackingSteps);
   }
 
   async update(
@@ -323,6 +343,29 @@ export class LessonPlansService {
       const fileName = await this.reportService.generateLessonPlanReport(
         lessonPlan,
         period
+      );
+      return fileName;
+    } catch (error) {
+      console.warn("ERROR - Generate teacher lesson plan report", error);
+    }
+  }
+
+  async generateRemedialLessonPlanReport(
+    lessonPlanId: string,
+  ) {
+    try {
+      const lessonPlan = await this.lessonPlansRepository.findLessonPlanForReport(lessonPlanId);
+      const period = await this.periodService.findOne(lessonPlan.periodId);
+
+      if (!lessonPlan) {
+        throw new BadRequestException();
+      }
+
+      const fileName = await this.reportService.generateLessonPlanReport(
+        lessonPlan,
+        period,
+        'remedialTemplate.html',
+        period.degree.manager.user.displayName
       );
       return fileName;
     } catch (error) {
@@ -628,6 +671,27 @@ export class LessonPlansService {
     }
     return signedRemedialReportUpdated;
   }
+
+  async acceptRemedialLessonPlanByStudent(lessonPlanTrackingId: string, updateLessonPlanTrackingDto: UpdateLessonPlanTrackingDto) {
+    const updatedLessonPlanTracking = await this.lessonPlansTrackingService.update(lessonPlanTrackingId, updateLessonPlanTrackingDto);
+    const lessonPlan = await this.findOne(updatedLessonPlanTracking.lessonPlanId);
+    const lessonPlanTrackingSteps: any[] = Array.from(lessonPlan.trackingSteps as any);
+
+    for (const step of lessonPlanTrackingSteps) {
+      const {
+        ACCEPTED_BY_STUDENTS,
+        REPORT_SENDED_TO_MANAGER_AND_TEACHER,
+        FINISHED
+      } = RemedialLessonPlanSteps;
+      const stepsToUpdate = [ACCEPTED_BY_STUDENTS, REPORT_SENDED_TO_MANAGER_AND_TEACHER, FINISHED]; 
+      
+      if (stepsToUpdate.includes(step.id)) {
+        step.status = RemedialLessonPlanStepStatus.COMPLETED
+      }
+    }
+
+    await this.updateRemedialLessonPlanTrackingSteps(updatedLessonPlanTracking.lessonPlanId, lessonPlanTrackingSteps);
+  };
 
   validateRemedialLessonPlanSign(
     file: Express.Multer.File,
