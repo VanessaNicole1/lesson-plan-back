@@ -292,11 +292,7 @@ export class InitialProcessRepository {
               {
                 eventName: 'AD2',
                 periodId: periodId,
-              },
-              {
-                eventName: 'Notificaciones Personalizadas',
-                periodId: periodId,
-              },
+              }
             ],
           },
         },

@@ -115,14 +115,11 @@ export class TeacherTaskScheduleService {
     }
 
     for (const eventConfig of teacherEventsConfigGroupedByTeacher) {
-      const mainEventName = "Notificaciones Personalizadas";
       const alternativeEventName = "AD2";
 
       const checkEventByName = (eventName) => event => event.eventName.toLowerCase() === eventName.toLowerCase();
 
-      const mainEvent = 
-        eventConfig.events.find(checkEventByName(mainEventName)) ||
-        eventConfig.events.find(checkEventByName(alternativeEventName));
+      const mainEvent = eventConfig.events.find(checkEventByName(alternativeEventName));
 
       const daysMapping = {
         1: "LUNES",

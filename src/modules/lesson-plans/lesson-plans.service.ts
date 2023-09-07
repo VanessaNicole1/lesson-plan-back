@@ -22,7 +22,7 @@ import { StudentChangeDateToValidateLessonPlanEmail } from '../common/strategies
 import { FilterLessonPlanDTO } from './dto/filter-lesson-plan-dto';
 import { CreateRemedialPlanDto } from './dto/create-remedial-plan.dto';
 import { RemedialPlanManagerEmail } from '../common/strategies/email/manager/remedial-plan-created.strategy';
-import { trackingSteps } from '../common/data/tracking-steps';
+import { getTrackingSteps } from '../common/data/tracking-steps';
 import { ValidateRemedialPlanManagerEmail } from '../common/strategies/email/manager/validate-remedial-plan.strategy';
 import { DigitalSignService } from '../common/services/digital-sign.service';
 import { RemedialLessonPlanSteps } from '../common/enums/remedial-lesson-plan-steps.enum';
@@ -35,6 +35,10 @@ import { AcceptRemedialPlanEmail } from '../common/strategies/email/student/acce
 import { UploadSignedRemedialPlanByManagerDTO } from './dto/upload-signed-remedial-plan-by-manager.dto';
 import { StudentsService } from '../students/students.service';
 import { UpdateLessonPlanTrackingDto } from '../lesson-plan-validation-tracking/dto/update-lesson-plan-tracking.dto';
+import { FinalRemedialLessonPlanReportEmail } from '../common/strategies/email/manager/final-remedial-lesson-plan-report.strategy';
+import { 
+  FinalRemedialLessonPlanReportEmail as FinalRemedialLessonPlanReportEmailForTeacher
+} from '../common/strategies/email/teacher/final-remedial-lesson-plan-report.strategy';
 
 @Injectable()
 export class LessonPlansService {
@@ -473,7 +477,9 @@ export class LessonPlansService {
     createRemedialPlanDto['resources'] = resources;
     const { scheduleId } = createRemedialPlanDto;
     const currentSchedule = await this.scheduleService.findOne(scheduleId);
-    const currentTrackingSteps = trackingSteps
+    const currentTrackingSteps = getTrackingSteps();
+
+
     createRemedialPlanDto = {
       ...createRemedialPlanDto,
       scheduleId: currentSchedule.id,
@@ -679,7 +685,10 @@ export class LessonPlansService {
   async acceptRemedialLessonPlanByStudent(lessonPlanTrackingId: string, updateLessonPlanTrackingDto: UpdateLessonPlanTrackingDto) {
     const updatedLessonPlanTracking = await this.lessonPlansTrackingService.update(lessonPlanTrackingId, updateLessonPlanTrackingDto);
     const lessonPlan = await this.findOne(updatedLessonPlanTracking.lessonPlanId);
+    const lessonPlanPeriod = await this.periodService.findOne(lessonPlan.periodId);
     const lessonPlanTrackingSteps: any[] = Array.from(lessonPlan.trackingSteps as any);
+    const manager = lessonPlanPeriod.degree.manager;
+    const teacher = lessonPlan.schedule.teacher;
 
     for (const step of lessonPlanTrackingSteps) {
       const {
@@ -691,8 +700,27 @@ export class LessonPlansService {
       
       if (stepsToUpdate.includes(step.id)) {
         step.status = RemedialLessonPlanStepStatus.COMPLETED
+        step.date = new Date().toISOString()
       }
     }
+
+    const finalRemedialLessonPlanReportEmailforManager = new FinalRemedialLessonPlanReportEmail(
+      updatedLessonPlanTracking.lessonPlanId,
+      lessonPlanPeriod.displayName,
+      manager.user.displayName,
+      lessonPlan.topic,
+      teacher.user.displayName
+    );
+
+    const finalRemedialLessonPlanReportEmailForTeacher = new FinalRemedialLessonPlanReportEmailForTeacher(
+      updatedLessonPlanTracking.lessonPlanId,
+      lessonPlanPeriod.displayName,
+      teacher.user.displayName,
+      lessonPlan.topic
+    )
+    
+    this.emailService.sendEmail(finalRemedialLessonPlanReportEmailforManager, manager.user.email);
+    this.emailService.sendEmail(finalRemedialLessonPlanReportEmailForTeacher, teacher.user.email);
 
     await this.updateRemedialLessonPlanTrackingSteps(updatedLessonPlanTracking.lessonPlanId, lessonPlanTrackingSteps);
   };
@@ -710,7 +738,6 @@ export class LessonPlansService {
     const { path } = file;
     const pdfSignaturesInformation = this.digitalSignService.validateDigitalSign(path);
     const pdfSignatures = pdfSignaturesInformation.map(pdfInformation => pdfInformation.signedBy);
-    // [VANESSA]
 
     if (pdfSignatures.length > 2) {
       throw new BadRequestException(

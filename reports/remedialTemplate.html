@@ -59,12 +59,6 @@
   </div>
 
   <div class="period">
-    {{#if lessonPlanNumber}}
-    <div>
-      <b>PLAN DE CLASE NRO:</b>
-      <span style="border: 1px solid black; padding-left: 20px; padding-right: 20px; margin-left: 5px;">{{lessonPlanNumber}}</span>
-    </div>
-    {{/if}}
     <div>
       <b>PERIODO ACADÉMICO:</b>
       <span style="border: 1px solid black; padding-left: 10px; padding-right: 10px; margin-left: 5px;">{{period}}</span>
@@ -128,32 +122,26 @@
       <tr>
         <th colspan="2">ESTUDIANTES</th>
         <td colspan="6">
-          {{#if areTherestudentsWhoQualified}}
-          <div>
-            <b>Estudiantes que han calificado:</b>
-            <ul>
-              {{#each studentsWhoQualified}}
-                <li>
-                  {{this.displayName}} (<b>{{this.decision}}</b>) {{#if this.hasComment}}- {{this.comment}}{{/if}}
-                </li>
-              {{/each}}
-            </ul>
-          </div>
-          {{/if}}
-          
-          {{#if areThereStudentsPendingToQualify}}
-          <div>
-            <b>Estudiantes pendientes de calificar:</b>
-            <ul>
-              {{#each studentsPendingToQualify}}
-                <li>{{this.displayName}}</li>
-              {{/each}}
-            </ul>
-          </div>
-          {{/if}}
+          <ul>
+            {{#each students}}
+              <li>{{this.displayName}}</li>
+            {{/each}}
+          </ul>
         </td>
       </tr>
     </table>
+    
+    <div style="display: flex; flex-direction: row; justify-content: space-around; margin-top: 90px">
+        <div style="display: flex; flex-direction: column; align-items: center">
+          <hr style="width: 150px">
+            {{teacherName}}
+        </div>
+        
+        <div style="display: flex; flex-direction: column; align-items: center">
+          <hr style="width: 150px">
+          {{managerName}}
+        </div>
+    </div>
   </div>
 </body>
 </html>
