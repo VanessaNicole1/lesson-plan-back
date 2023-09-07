@@ -5,7 +5,6 @@ import { Exception } from 'handlebars';
 import { UpdateLessonPlanTrackingDto } from './dto/update-lesson-plan-tracking.dto';
 import { LessonPlansService } from '../lesson-plans/lesson-plans.service';
 
-// TODO: Handle i18n
 @Injectable()
 export class LessonPlansTrackingService {
   constructor(
@@ -66,10 +65,7 @@ export class LessonPlansTrackingService {
       );
 
     if (!lessonPlanTracking) {
-      // TODO: Add i18n
-      throw new Exception(
-        'There is not a lesson plan with the request parameters',
-      );
+      throw new Exception('No hay un plan de clase con los parámetros especificados');
     }
 
     return lessonPlanTracking;

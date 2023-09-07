@@ -23,6 +23,21 @@ export class ReportsService {
       schedule: { teacher, subject, grade },
     } = lessonPlan;
 
+    const studentsWhoQualified = validationsTracking.filter((element) => element.isValidated).map((validationTracking) => ({
+      displayName: validationTracking.student.user.displayName,
+      decision: validationTracking.isAgree ? "Si": "No",
+      comment: validationTracking.comment,
+      hasComment: validationTracking.isAgree === false && validationTracking.comment && validationTracking.comment.length > 0
+    }));
+
+    const studentsPendingToQualify = validationsTracking.filter((element) => !element.isValidated).map((validationTracking) => ({
+      displayName: validationTracking.student.user.displayName
+    }));
+
+    const students = validationsTracking.map((validationTracking) => ({
+      displayName: validationTracking.student.user.displayName
+    }));
+
     return {
       unlImageURL: this.getImageDataURI('./reports/images/unl-black.png'),
       cisImageURL: this.getImageDataURI('./reports/images/cis.png'),
@@ -41,9 +56,11 @@ export class ReportsService {
       resources: lessonPlan.materials,
       evaluations: lessonPlan.evaluation,
       observations: lessonPlan.comments,
-      students: validationsTracking.map((validationTracking) => ({
-        displayName: validationTracking.student.user.displayName,
-      })),
+      students, 
+      studentsWhoQualified,
+      studentsPendingToQualify,
+      areTherestudentsWhoQualified: studentsWhoQualified.length > 0,
+      areThereStudentsPendingToQualify: studentsPendingToQualify.length > 0
     };
   };
 
