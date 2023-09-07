@@ -12,7 +12,7 @@ export class SendEmailServiceWrapper implements EmailSender {
   ) {}
 
   getEmailService() : EmailSender {
-    const isProd = process.env.ENV.toUpperCase() === 'DEV';
+    const isProd = process.env.ENV.toUpperCase() === 'PROD';
     return isProd ? this.sendEmailService : this.sendFakeEmailService;
   }
   
