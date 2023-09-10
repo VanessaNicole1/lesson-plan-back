@@ -107,7 +107,7 @@ table, td { color: #000000; } #u_body a { color: #0000ee; text-decoration: under
 </head>
 
 <body class="clean-body u_body" style="margin: 0;padding: 0;-webkit-text-size-adjust: 100%;background-color: #ecf0f1;color: #000000">
-  <div class="ie-container">
+  [if IE]><div class="ie-container"><![endif]
   <!--[if mso]><div class="mso-container"><![endif]-->
   <table id="u_body" style="border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;min-width: 320px;Margin: 0 auto;background-color: #ecf0f1;width:100%" cellpadding="0" cellspacing="0">
   <tbody>
@@ -229,11 +229,13 @@ table, td { color: #000000; } #u_body a { color: #0000ee; text-decoration: under
 <table id="u_content_text_2" style="font-family:'Raleway',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
   <tbody>
     <tr>
-      <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:5px 50px 10px;font-family:'Raleway',sans-serif;" align="left">
+      <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:5px 50px 10px;font-family:'Raleway',sans-serif;" align="left">sla
         
   <div style="line-height: 140%; text-align: justify; word-wrap: break-word;">
     <p style="line-height: 140%;">
-      Estimado(a) Dir. {{managerName}}, el docente {{teacherName}} ha elaborado un nuevo plan remedial para la materia {{subjectName}} que imparte al grado {{gradeDisplayName}} para la ejecución de esta clase el {{classDate}}, Para su revisión y validación, le invitamos a hacer clic en el siguiente botón. Muchas gracias por su atención.
+      Estimado(a) Dir. {{managerName}}, el docente <b> {{teacherName}} </b> ha elaborado un
+      nuevo plan remedial para la materia <b>"{{subjectName}}"</b>, la cual se impartirá al grado <b> {{gradeDisplayName}} </b>.
+      Este plan se llevará a cabo en la próxima clase programada para el {{remedialPlanDate}}, Para su revisión y validación, le invitamos a hacer clic en el siguiente botón. Muchas gracias por su atención.
     </p>
   </div>
 
