@@ -10,6 +10,7 @@ export class ValidateRemedialPlanManagerEmail implements EmailStrategy {
     private readonly subjectName: string,
     private readonly gradeDisplayName: string,
     private readonly classDate: string,
+    private readonly planRemedialId: string,
   ) {}
 
   getData() {
@@ -19,8 +20,8 @@ export class ValidateRemedialPlanManagerEmail implements EmailStrategy {
       teacherName: this.teacherName,
       subjectName: this.subjectName,
       gradeDisplayName: this.gradeDisplayName,
-      remedialPlanDate: this.classDate
-    //   url: `${process.env.FRONTEND}`,
+      remedialPlanDate: this.classDate,
+      url: `${process.env.FRONTEND}/dashboard/lesson-plan-remedial/manager/view/${this.planRemedialId}`,
     }
     return data;
   }

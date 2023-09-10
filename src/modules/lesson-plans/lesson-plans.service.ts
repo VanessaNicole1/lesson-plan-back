@@ -21,7 +21,6 @@ import { SendEmailServiceWrapper } from '../common/services/send-email-wrapper.s
 import { StudentChangeDateToValidateLessonPlanEmail } from '../common/strategies/email/student/change-date-to-validate-lesson-plan.strategy';
 import { FilterLessonPlanDTO } from './dto/filter-lesson-plan-dto';
 import { CreateRemedialPlanDto } from './dto/create-remedial-plan.dto';
-import { RemedialPlanManagerEmail } from '../common/strategies/email/manager/remedial-plan-created.strategy';
 import { getTrackingSteps } from '../common/data/tracking-steps';
 import { ValidateRemedialPlanManagerEmail } from '../common/strategies/email/manager/validate-remedial-plan.strategy';
 import { DigitalSignService } from '../common/services/digital-sign.service';
@@ -497,25 +496,6 @@ export class LessonPlansService {
         periodId: createRemedialPlanDto.periodId,
       });
     }
-
-    const currentPeriod = await this.periodService.findOne(periodId);
-    const periodDisplayName = currentPeriod.displayName;
-    const managerDisplayName = currentPeriod.degree.manager.user.displayName;
-    const managerEmail = currentPeriod.degree.manager.user.email;
-    const subjectName = currentSchedule.subject.name;
-    const gradeDisplayName = `${currentSchedule.grade.number} "${currentSchedule.grade.parallel}"`;
-    const executionDate = lessonPlanCreated.date;
-    const spanishRemedialPlanDate = convertToSpanishDate(executionDate);
-    const teacherName = currentSchedule.teacher.user.displayName;
-    const remedialPlanCreatedEmail = new RemedialPlanManagerEmail(
-      periodDisplayName,
-      managerDisplayName,
-      teacherName,
-      subjectName,
-      gradeDisplayName,
-      spanishRemedialPlanDate
-    );
-    this.emailService.sendEmail(remedialPlanCreatedEmail, managerEmail);
     return lessonPlanCreated;
   }
 
@@ -577,7 +557,8 @@ export class LessonPlansService {
         teacherName,
         subjectName,
         gradeDisplayName,
-        spanishRemedialPlanDate
+        spanishRemedialPlanDate,
+        remedialPlanUpdated.id
       );
       this.emailService.sendEmail(remedialPlanCreatedEmail, managerEmail);
     }
