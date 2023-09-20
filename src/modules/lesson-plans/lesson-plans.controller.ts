@@ -95,6 +95,11 @@ export class LessonPlansController {
     return res.sendFile(filename, { root: './remedials' });
   }
 
+  @Get('manuals/:filename')
+  uploadManual(@Param('filename') filename, @Res() res) {
+    return res.sendFile(filename, { root: './manuals' });
+  }
+
   @Post()
   @UseInterceptors(
     FilesInterceptor('files', null, {
@@ -189,9 +194,10 @@ export class LessonPlansController {
     @Param('lessonPlanId') lessonPlanId: string,
     @Res() res: Response,
   ) {
-    const report = await this.lessonPlansService.generateRemedialLessonPlanReport(
-      lessonPlanId,
-    );
+    const report =
+      await this.lessonPlansService.generateRemedialLessonPlanReport(
+        lessonPlanId,
+      );
     const buffer = Buffer.from(report.buffer);
 
     res.set({
@@ -252,7 +258,10 @@ export class LessonPlansController {
     @Param('remedialPlanId') remedialPlanId: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.lessonPlansService.uploadSignedReportByTeacher(remedialPlanId, file);
+    return this.lessonPlansService.uploadSignedReportByTeacher(
+      remedialPlanId,
+      file,
+    );
   }
 
   @Post('signed-report-by-manager/:remedialPlanId')
@@ -284,6 +293,9 @@ export class LessonPlansController {
     @Param('id') id: string,
     @Body() updateLessonPlanTrackingDto: UpdateLessonPlanTrackingDto,
   ) {
-    return this.lessonPlansService.acceptRemedialLessonPlanByStudent(id, updateLessonPlanTrackingDto);
+    return this.lessonPlansService.acceptRemedialLessonPlanByStudent(
+      id,
+      updateLessonPlanTrackingDto,
+    );
   }
 }

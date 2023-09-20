@@ -21,7 +21,7 @@ export class AcceptRemedialPlanEmail implements EmailStrategy {
       subjectName: this.subjectName,
       managerName: this.managerName,
       startDate: this.classStartDate,
-      url: `${process.env.FRONTEND}/dashboard/lesson-plan-remedial/student/view/${this.remedialPlanId}`,
+      url: `${process.env.FRONTEND}/dashboard/lesson-plan-remedial/student/validate/${this.remedialPlanId}`,
     }
     return data;
   }
