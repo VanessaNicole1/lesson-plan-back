@@ -20,28 +20,14 @@ export const getDuplicatedEmails = (emails: string[]) => {
   return duplicatedEmails;
 };
 
-export const getTransporter = () => {
-  const host : any = process.env.EMAIL_HOST; 
-  const port : any = process.env.EMAIL_PORT; 
-  const authType : any = process.env.AUTH_TYPE;
-  const account : any = process.env.EMAIL_ACCOUNT;
-  const clientId : any= process.env.EMAIL_CLIENT_ID;
-  const clientSecret : any = process.env.EMAIL_CLIENT_SECRET;
-  const refreshToken : any = process.env.EMAIL_REFRESH_TOKEN;
-  const accessToken : any = process.env.EMAIL_ACCESS_TOKEN;
-
+export const getTransporter = ({ host, port, account, password }) => {
   let transporter = nodemailer.createTransport({
     host,
     port,
     secure: true,
     auth: {
-      type:  authType,
       user: account,
-      clientId,
-      clientSecret,
-      refreshToken,
-      accessToken,
-      expires: 1484314697598
+      pass: password
     }
   });
 
