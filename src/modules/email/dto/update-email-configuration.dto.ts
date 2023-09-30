@@ -1,8 +1,8 @@
 import { IsNumber, IsString } from "class-validator";
 
 export class UpdateEmailConfigurationDto {
-  @IsNumber()
-  host: number
+  @IsString()
+  host: string
 
   @IsNumber()
   port: number;

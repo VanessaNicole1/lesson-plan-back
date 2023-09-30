@@ -180,7 +180,7 @@ model PeriodConfig {
 
 model Setting {
   id       String @id @default(uuid())
-  host     Int
+  host     String
   port     Int
   user     String
   sender   String

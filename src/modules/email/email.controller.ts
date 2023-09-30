@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post } from "@nestjs/common";
 import { EmailService } from "./email.service";
 import { UpdateEmailConfigurationDto } from "./dto/update-email-configuration.dto";
 import { CreateEmailConfigurationDto } from "./dto/create-email-configuration.dto";
@@ -6,6 +6,11 @@ import { CreateEmailConfigurationDto } from "./dto/create-email-configuration.dt
 @Controller('email')
 export class EmailController {
   constructor(private readonly emailService: EmailService) {}
+
+  @Get()
+  find() {
+    return this.emailService.find();
+  }
 
   @Post()
   create(@Body() createEmailConfigurationDto: CreateEmailConfigurationDto) {
