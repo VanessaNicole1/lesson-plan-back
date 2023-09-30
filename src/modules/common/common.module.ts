@@ -5,9 +5,13 @@ import { SendFakeEmailService } from './services/send-fake-email.service';
 import { ReportsService } from './services/reports.service';
 import { SendEmailServiceWrapper } from './services/send-email-wrapper.service';
 import { DigitalSignService } from './services/digital-sign.service';
+import { EmailModule } from '../email/email.module';
 
 @Global()
 @Module({
+  imports: [
+    EmailModule
+  ],
   providers: [
     PrismaService,
     SendEmailService,
