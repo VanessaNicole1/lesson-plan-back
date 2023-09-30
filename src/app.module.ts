@@ -20,6 +20,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { RegisterConfigModule } from './modules/register-config/register-config.module';
 import { SchedulesModule } from './modules/schedules/schedules.module';
 import { TaskScheduleModule } from './modules/task-schedule/task-schedule.module';
+import { EmailModule } from './modules/email/email.module';
 
 @Module({
   imports: [
@@ -49,7 +50,8 @@ import { TaskScheduleModule } from './modules/task-schedule/task-schedule.module
     TeachersModule,
     AuthModule,
     RegisterConfigModule,
-    TaskScheduleModule
+    TaskScheduleModule,
+    EmailModule
   ],
   controllers: [AppController],
   providers: [AppService],

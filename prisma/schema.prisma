@@ -107,15 +107,15 @@ model LessonPlan {
   bibliography          String?
   schedule              Schedule                       @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   scheduleId            String
-  notification           String?
+  notification          String?
   maximumValidationDate DateTime?
-  notificationDate       DateTime?
+  notificationDate      DateTime?
   resources             Json?
   remedialReports       Json?
   materials             String?
   evaluation            String?
   comments              String?
-  hasQualified           Boolean                        @default(false)
+  hasQualified          Boolean                        @default(false)
   validationsTracking   LessonPlanValidationTracking[]
   periodId              String
   createdAt             DateTime                       @default(now())
@@ -176,6 +176,15 @@ model PeriodConfig {
   minimumStudentsToEvaluate Int
   period                    Period @relation(fields: [periodId], references: [id], onDelete: Cascade)
   periodId                  String @unique
+}
+
+model Setting {
+  id       String @id @default(uuid())
+  host     Int
+  port     Int
+  user     String
+  sender   String
+  password String
 }
 
 enum LessonPlanType {
