@@ -1,7 +1,9 @@
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../common/services/prisma.service";
 import { CreateEmailConfigurationDto } from "./dto/create-email-configuration.dto";
 import { UpdateEmailConfigurationDto } from "./dto/update-email-configuration.dto";
 
+@Injectable()
 export class EmailRepository {
   constructor(private prisma: PrismaService) {}
 
