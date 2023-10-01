@@ -6,11 +6,16 @@ import { ReportsService } from './services/reports.service';
 import { SendEmailServiceWrapper } from './services/send-email-wrapper.service';
 import { DigitalSignService } from './services/digital-sign.service';
 import { EmailModule } from '../email/email.module';
+import { HttpModule } from '@nestjs/axios';
+import { AuthenticationService } from './services/authentication.service';
+import { UsersModule } from '../users/users.module';
 
 @Global()
 @Module({
   imports: [
-    EmailModule
+    HttpModule,
+    EmailModule,
+    UsersModule
   ],
   providers: [
     PrismaService,
@@ -18,7 +23,8 @@ import { EmailModule } from '../email/email.module';
     SendFakeEmailService,
     ReportsService,
     SendEmailServiceWrapper,
-    DigitalSignService
+    DigitalSignService,
+    AuthenticationService
   ],
   exports: [
     PrismaService,
@@ -26,7 +32,8 @@ import { EmailModule } from '../email/email.module';
     SendFakeEmailService,
     ReportsService,
     SendEmailServiceWrapper,
-    DigitalSignService
+    DigitalSignService,
+    AuthenticationService
   ],
 })
 export class CommonModule {}

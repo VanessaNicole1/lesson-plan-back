@@ -41,3 +41,5 @@ lerna-debug.log*
 # Local DB data
 postgres-data/
 
+# Keycloak
+keycloak/
