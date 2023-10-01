@@ -20,6 +20,7 @@ import { GetUser } from '../../utils/decorators/get-user.decorator';
 import { FilterUserDto } from './dto/filter-user.dto';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { AuthenticationGuard } from '../common/guards/authentication.guard';
 
 @Controller('users')
 export class UsersController {
@@ -30,7 +31,7 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthenticationGuard)
   @Get('my-account')
   getMyAccount(@GetUser() user) {
     return user;
