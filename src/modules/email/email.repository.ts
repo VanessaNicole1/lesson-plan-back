@@ -1,7 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../common/services/prisma.service";
-import { CreateEmailConfigurationDto } from "./dto/create-email-configuration.dto";
-import { UpdateEmailConfigurationDto } from "./dto/update-email-configuration.dto";
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../common/services/prisma.service';
+import { CreateEmailConfigurationDto } from './dto/create-email-configuration.dto';
+import { UpdateEmailConfigurationDto } from './dto/update-email-configuration.dto';
+import { decryptPassword, encryptPassword } from '../../utils/password.utils';
 
 @Injectable()
 export class EmailRepository {
@@ -11,33 +12,45 @@ export class EmailRepository {
     return this.prisma.setting.findFirst();
   }
 
-  create(createEmailConfigurationDto: CreateEmailConfigurationDto) {
+  async create(createEmailConfigurationDto: CreateEmailConfigurationDto) {
+    const encryptionKey = process.env.ENCRYPTION_KEY;
     const { host, port, user, sender, password } = createEmailConfigurationDto;
+    const encryptedPassword = await encryptPassword(password, encryptionKey);
     return this.prisma.setting.create({
       data: {
         host,
         port,
         user,
         sender,
-        password,
-      }
+        password: encryptedPassword,
+      },
     });
   }
 
-  update(id: string, updateEmailConfigurationDto: UpdateEmailConfigurationDto) {
-    const { host, port, user, sender, password } = updateEmailConfigurationDto;
+  async update(
+    id: string,
+    updateEmailConfigurationDto: UpdateEmailConfigurationDto,
+  ) {
+    const { host, port, user, sender } = updateEmailConfigurationDto;
 
     return this.prisma.setting.update({
       where: {
-        id
+        id,
       },
       data: {
         host,
         port,
         user,
         sender,
-        password
-      }
+      },
+    });
+  }
+
+  delete(id: string) {
+    return this.prisma.setting.delete({
+      where: {
+        id,
+      },
     });
   }
 }

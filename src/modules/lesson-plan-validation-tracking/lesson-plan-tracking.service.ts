@@ -20,7 +20,7 @@ export class LessonPlansTrackingService {
 
     if (!lessonPlanTracking) {
       throw new BadRequestException(
-        'There is not a lesson plan tracking with the requested id',
+        'No hay un seguimiento del plan de lección con el id solicitado',
       );
     }
 
