@@ -12,7 +12,11 @@ export class EmailService {
     return this.emailRepository.find();
   }
 
-  create(createEmailConfigurationDto: CreateEmailConfigurationDto) {
+  async create(createEmailConfigurationDto: CreateEmailConfigurationDto) {
+    const emailSettings = await this.find();
+    if (emailSettings) {
+      throw new BadRequestException('Ya existe una configuración activa');
+    }
     return this.emailRepository.create(createEmailConfigurationDto);
   }
 
