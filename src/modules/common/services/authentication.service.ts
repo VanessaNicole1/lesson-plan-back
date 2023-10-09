@@ -38,12 +38,15 @@ export class AuthenticationService {
       const userRoles = data.resource_access.lessonPlan.roles;
 
       if (userRoles.includes('manager')) {
-        const createManagerDto: CreateManagerUserDto = {
-          name: data.given_name,
-          lastName: data.family_name,
-          email: data.email,
-        };
-        await this.usersService.createManager(createManagerDto);
+        const currentUser = this.usersService.findByUsername(data.email);
+        if (!currentUser) {
+          const createManagerDto: CreateManagerUserDto = {
+            name: data.given_name,
+            lastName: data.family_name,
+            email: data.email,
+          };
+          await this.usersService.createManager(createManagerDto);
+        }
       }
 
       const { email } = response.data;
