@@ -1,4 +1,10 @@
-import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { hashPassword } from '../../utils/password.utils';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -9,10 +15,11 @@ import { AssignRoleDto } from './dto/assign-role.dto';
 import { FilterUserDto } from './dto/filter-user.dto';
 import { I18nContext } from 'nestjs-i18n';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-// TODO:  i18n
+import { CreateManagerUserDto } from './dto/create-manager-user.dto';
+import { Role } from 'src/utils/enums/roles.enum';
+
 @Injectable()
 export class UsersService {
-
   readonly baseI18nKey = 'users.service';
 
   constructor(
@@ -34,6 +41,15 @@ export class UsersService {
     return this.usersRepository.create(createUserDto);
   }
 
+  async createManager(createManagerDto: CreateManagerUserDto) {
+    const managerRole = await this.rolesService.findByName(Role.Manager);
+    createManagerDto = {
+      ...createManagerDto,
+      roleIds: [managerRole.id],
+    }
+    return this.usersRepository.createManager(createManagerDto);
+  }
+
   findAll(filterUserDto?: FilterUserDto) {
     return this.usersRepository.findAll(filterUserDto);
   }
@@ -46,11 +62,20 @@ export class UsersService {
     return this.usersRepository.findOne(id);
   }
 
-  async findOneByRegisteredToken(registeredToken: string, i18nContext: I18nContext) {
-    const user = await this.usersRepository.findOneByRegisteredToken(registeredToken);
+  async findOneByRegisteredToken(
+    registeredToken: string,
+    i18nContext: I18nContext,
+  ) {
+    const user = await this.usersRepository.findOneByRegisteredToken(
+      registeredToken,
+    );
 
     if (!user) {
-      throw new NotFoundException(i18nContext.t(`${this.baseI18nKey}.findOneByRegisteredToken.NOT_REGISTERED_USER`));
+      throw new NotFoundException(
+        i18nContext.t(
+          `${this.baseI18nKey}.findOneByRegisteredToken.NOT_REGISTERED_USER`,
+        ),
+      );
     }
 
     return user;
@@ -64,30 +89,50 @@ export class UsersService {
 
     if (userRoles.includes('STUDENT')) {
       if (rolesName.includes('TEACHER') || rolesName.includes('MANAGER')) {
-        throw new BadRequestException(`El usuario ${currentUser.displayName} es estudiante y no puede desempeñar el rol de docente o director`);
+        throw new BadRequestException(
+          `El usuario ${currentUser.displayName} es estudiante y no puede desempeñar el rol de docente o director`,
+        );
       }
     } else {
       if (rolesName.includes('STUDENT')) {
-        throw new BadRequestException(`El usuario ${currentUser.displayName} es docente o director y no puede ser estudiante`);
+        throw new BadRequestException(
+          `El usuario ${currentUser.displayName} es docente o director y no puede ser estudiante`,
+        );
       }
     }
     const currentRoles = roles.map((role) => role.id);
-    return this.usersRepository.update(id, {...updateUserDto, roles: currentRoles});
+    return this.usersRepository.update(id, {
+      ...updateUserDto,
+      roles: currentRoles,
+    });
   }
 
-  async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto, i18nContext: I18nContext) {
+  async updatePassword(
+    id: string,
+    updatePasswordDto: UpdatePasswordDto,
+    i18nContext: I18nContext,
+  ) {
     let { updatedPassword } = updatePasswordDto;
     updatedPassword = await hashPassword(updatedPassword);
 
     try {
       return this.usersRepository.updatePassword(id, updatedPassword);
     } catch (error) {
-      throw new InternalServerErrorException(i18nContext.t(`${this.baseI18nKey}.updatePassword.SOMETHING_WAS_WRONG`));
+      throw new InternalServerErrorException(
+        i18nContext.t(`${this.baseI18nKey}.updatePassword.SOMETHING_WAS_WRONG`),
+      );
     }
   }
 
-  async updatePasswordByRegisteredToken(registeredToken: string, updatePasswordDto: UpdatePasswordDto, i18nContext: I18nContext) {
-    const user = await this.findOneByRegisteredToken(registeredToken, i18nContext);
+  async updatePasswordByRegisteredToken(
+    registeredToken: string,
+    updatePasswordDto: UpdatePasswordDto,
+    i18nContext: I18nContext,
+  ) {
+    const user = await this.findOneByRegisteredToken(
+      registeredToken,
+      i18nContext,
+    );
     return this.updatePassword(user.id, updatePasswordDto, i18nContext);
   }
 
@@ -120,8 +165,12 @@ export class UsersService {
 
   async findUnregisteredUsers() {
     const currentUsers = await this.findAll();
-    const registerConfigUsers = currentUsers.filter((currentUser) => currentUser.registerConfig);
-    const unregisteredUsers = registerConfigUsers.filter((currentUser) => !currentUser.registerConfig.isRegistered);
+    const registerConfigUsers = currentUsers.filter(
+      (currentUser) => currentUser.registerConfig,
+    );
+    const unregisteredUsers = registerConfigUsers.filter(
+      (currentUser) => !currentUser.registerConfig.isRegistered,
+    );
     return unregisteredUsers;
   }
 }
