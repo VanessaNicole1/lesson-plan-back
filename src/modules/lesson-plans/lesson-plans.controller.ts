@@ -13,6 +13,7 @@ import {
   Header,
   BadRequestException,
   UploadedFile,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { LessonPlansService } from './lesson-plans.service';
@@ -26,6 +27,10 @@ import { LessonPlanReportDto } from '../common/dto/lesson-plan-report.dto';
 import { FilterLessonPlanDTO } from './dto/filter-lesson-plan-dto';
 import { CreateRemedialPlanDto } from './dto/create-remedial-plan.dto';
 import { UpdateLessonPlanTrackingDto } from '../lesson-plan-validation-tracking/dto/update-lesson-plan-tracking.dto';
+import { AuthenticationGuard } from '../common/guards/authentication.guard';
+import { ValidManager } from '../../utils/guards/valid-manager.guard';
+import { Roles } from '../../utils/decorators/roles.decorator';
+import { Role } from '../../utils/enums/roles.enum';
 
 @Controller('lesson-plans')
 export class LessonPlansController {
@@ -37,11 +42,14 @@ export class LessonPlansController {
   }
 
   @Get('all-types')
+  @UseGuards(AuthenticationGuard, ValidManager)
+  @Roles(Role.Manager)
   findAllLessonPlanTypes() {
     return this.lessonPlansService.findAllLessonPlanTypes();
   }
 
   @Get('report/:userId')
+  @UseGuards(AuthenticationGuard)
   @Header('Content-Type', 'application/pdf')
   @Header('Content-Disposition', 'attachment; filename="report.pdf"')
   async generateLessonPlanReportForTeacher(
@@ -71,36 +79,43 @@ export class LessonPlansController {
   }
 
   @Get(':id')
+  @UseGuards(AuthenticationGuard)
   async findOne(@Param('id') id: string) {
     return this.lessonPlansService.findOne(id);
   }
 
   @Get('period/:id')
+  @UseGuards(AuthenticationGuard)
   async findOneWithPeriod(@Param('id') id: string) {
     return this.lessonPlansService.findOneWithPeriod(id);
   }
 
   @Get('schedule/:scheduleId')
+  @UseGuards(AuthenticationGuard)
   findLessonPlanBySchedule(@Param('scheduleId') scheduleId: string) {
     return this.lessonPlansService.findLessonPlanBySchedule(scheduleId);
   }
 
   @Get('resource/:filename')
+  @UseGuards(AuthenticationGuard)
   uploadResource(@Param('filename') filename, @Res() res) {
     return res.sendFile(filename, { root: './uploads' });
   }
 
   @Get('remedial-report/:filename')
+  @UseGuards(AuthenticationGuard)
   uploadRemedialReport(@Param('filename') filename, @Res() res) {
     return res.sendFile(filename, { root: './remedials' });
   }
 
   @Get('manuals/:filename')
+  @UseGuards(AuthenticationGuard)
   uploadManual(@Param('filename') filename, @Res() res) {
     return res.sendFile(filename, { root: './manuals' });
   }
 
   @Post()
+  @UseGuards(AuthenticationGuard)
   @UseInterceptors(
     FilesInterceptor('files', null, {
       storage: diskStorage({
@@ -127,6 +142,7 @@ export class LessonPlansController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthenticationGuard)
   @UseInterceptors(
     FilesInterceptor('files', null, {
       storage: diskStorage({
@@ -154,6 +170,7 @@ export class LessonPlansController {
   }
 
   @Post('resource/:id')
+  @UseGuards(AuthenticationGuard)
   async removeResource(
     @Param('id') id: string,
     @Body() deleteResourceDto: DeleteResourceDto,
@@ -167,6 +184,7 @@ export class LessonPlansController {
   }
 
   @Get('unique-report/:lessonPlanId')
+  @UseGuards(AuthenticationGuard)
   @Header('Content-Type', 'application/pdf')
   @Header('Content-Disposition', 'attachment; filename="report.pdf"')
   async generateLessonPlanReport(
@@ -188,6 +206,7 @@ export class LessonPlansController {
   }
 
   @Get('remedial/report/:lessonPlanId')
+  @UseGuards(AuthenticationGuard)
   @Header('Content-Type', 'application/pdf')
   @Header('Content-Disposition', 'attachment; filename="report.pdf"')
   async generateRemedialLessonPlanReport(
@@ -210,6 +229,7 @@ export class LessonPlansController {
   }
 
   @Post('remedial-plan')
+  @UseGuards(AuthenticationGuard)
   @UseInterceptors(
     FilesInterceptor('files', null, {
       storage: diskStorage({
@@ -241,6 +261,7 @@ export class LessonPlansController {
   }
 
   @Post('signed-report-by-teacher/:remedialPlanId')
+  @UseGuards(AuthenticationGuard)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -265,6 +286,8 @@ export class LessonPlansController {
   }
 
   @Post('signed-report-by-manager/:remedialPlanId')
+  @UseGuards(AuthenticationGuard, ValidManager)
+  @Roles(Role.Manager)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -289,6 +312,7 @@ export class LessonPlansController {
   }
 
   @Patch(':id/accept')
+  @UseGuards(AuthenticationGuard)
   acceptRemedialLessonPlanByStudent(
     @Param('id') id: string,
     @Body() updateLessonPlanTrackingDto: UpdateLessonPlanTrackingDto,

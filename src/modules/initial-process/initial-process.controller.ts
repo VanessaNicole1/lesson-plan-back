@@ -6,18 +6,18 @@ import {
 } from '@nestjs/common';
 import { InitialProcessService } from './initial-process.service';
 import { CreateInitialProcessDto } from './dto/create-initial-process.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ValidManager } from '../../utils/guards/valid-manager.guard';
 import { Roles } from '../../utils/decorators/roles.decorator';
 import { Role } from '../../utils/enums/roles.enum';
 import { I18n, I18nContext } from 'nestjs-i18n';
+import { AuthenticationGuard } from '../common/guards/authentication.guard';
 
 @Controller('initial-process')
 export class InitialProcessController {
   constructor(private readonly initialProcessService: InitialProcessService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard, ValidManager)
+  @UseGuards(AuthenticationGuard, ValidManager)
   @Roles(Role.Manager)
   create(
     @Body() createInitialProcessDto: CreateInitialProcessDto,
