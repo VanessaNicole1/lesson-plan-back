@@ -25,6 +25,6 @@ services:
     ports:
       - 8080:8080
       - 8443:8443
-      - 8787:8787
+      - 8786:8787
     volumes:
       - ./keycloak/:/opt/keycloak/data/import

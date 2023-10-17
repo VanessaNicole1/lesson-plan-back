@@ -37,8 +37,10 @@ export class AuthenticationService {
       const { data } = response;
       const userRoles = data.resource_access.lessonPlan.roles;
 
+      console.log('userRoles', userRoles);
+
       if (userRoles.includes('manager')) {
-        const currentUser = this.usersService.findByUsername(data.email);
+        const currentUser = await this.usersService.findByUsername(data.email);
         if (!currentUser) {
           const createManagerDto: CreateManagerUserDto = {
             name: data.given_name,
@@ -51,6 +53,7 @@ export class AuthenticationService {
 
       const { email } = response.data;
       const userInformation = await this.usersService.findByUsername(email);
+      console.log('userInformation', userInformation);
       return userInformation;
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.UNAUTHORIZED);

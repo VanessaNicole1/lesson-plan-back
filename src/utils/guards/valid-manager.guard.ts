@@ -16,6 +16,7 @@ export class ValidManager implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const currentUser: User = request.user;
+
     const userRoles = currentUser.roles;
     const rolesType = userRoles.map((role) => role.name);
 
