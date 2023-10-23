@@ -21,21 +21,21 @@ export class UserTaskScheduleService {
    */
   // @Cron('*/10 * * * * *')
   // @CronService.ProdCron('*/10 * * * * *')
-  @CronService.ProdCron('0 8 * * *')
+  // @CronService.ProdCron('0 8 * * *')
   async userUnregisteredNotification() {
-    const unregisteredUsers = await this.userService.findUnregisteredUsers();
-    for (const unregisteredUser of unregisteredUsers) {
-      const { displayName, email, registerConfig } = unregisteredUser;
-      const { periodId, isRegistered, registerToken } = registerConfig;
-      const period = await this.periodService.findOne(periodId);
-      const convertedCreatedAt = convertToSpanishDate(period.createdAt);
+    // const unregisteredUsers = await this.userService.findUnregisteredUsers();
+    // for (const unregisteredUser of unregisteredUsers) {
+    //   const { displayName, email, registerConfig } = unregisteredUser;
+    //   const { periodId, isRegistered, registerToken } = registerConfig;
+    //   const period = await this.periodService.findOne(periodId);
+    //   const convertedCreatedAt = convertToSpanishDate(period.createdAt);
 
-      const hasPassed3Days = hasPassedAmountOfDays(period.createdAt, 3, 8);
+    //   const hasPassed3Days = hasPassedAmountOfDays(period.createdAt, 3, 8);
 
-      if (!isRegistered && hasPassed3Days) {
-        const unregisteredUserEmail = new UnregisteredUserEmail(registerToken, period.displayName, displayName, convertedCreatedAt);
-        this.emailService.sendEmail(unregisteredUserEmail, email);
-      }
-    }
+    //   if (!isRegistered && hasPassed3Days) {
+    //     const unregisteredUserEmail = new UnregisteredUserEmail(registerToken, period.displayName, displayName, convertedCreatedAt);
+    //     this.emailService.sendEmail(unregisteredUserEmail, email);
+    //   }
+    // }
   }
 }

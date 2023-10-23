@@ -11,7 +11,7 @@ export class LessonPlanReportDto {
   to: Date;
 
   @IsNotEmpty()
-  @IsUUID()
+  // @IsUUID()
   periodId: string
 
   @IsOptional()

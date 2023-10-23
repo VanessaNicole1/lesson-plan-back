@@ -66,14 +66,14 @@ export class InitialProcessService {
     }
 
     userStudents.forEach(createdStudent => {
-      const { displayName, email, registerConfig } = createdStudent;
-      const lessonPlanStartEmail = new StudentLessonPlanStartEmail(displayName, lessonPlanYear, registerConfig?.registerToken);
+      const { displayName, email } = createdStudent;
+      const lessonPlanStartEmail = new StudentLessonPlanStartEmail(displayName, lessonPlanYear);
       this.sendEmailService.sendEmail(lessonPlanStartEmail, email);
     });
 
     userTeachers.forEach(createdTeacher => {
-      const { displayName, email, registerConfig } = createdTeacher;
-      const lessonPlanStartEmail = new TeacherLessonPlanStartEmail(displayName, lessonPlanYear, registerConfig?.registerToken);
+      const { displayName, email } = createdTeacher;
+      const lessonPlanStartEmail = new TeacherLessonPlanStartEmail(displayName, lessonPlanYear);
       this.sendEmailService.sendEmail(lessonPlanStartEmail, email);
     });
 

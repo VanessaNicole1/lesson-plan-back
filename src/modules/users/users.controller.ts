@@ -75,10 +75,10 @@ export class UsersController {
     @Param('registeredToken') registeredToken: string,
     @I18n() i18nContext: I18nContext,
   ) {
-    return this.usersService.findOneByRegisteredToken(
-      registeredToken,
-      i18nContext,
-    );
+    // return this.usersService.findOneByRegisteredToken(
+    //   registeredToken,
+    //   i18nContext,
+    // );
   }
 
   @Patch('reset-password/:id')
@@ -96,11 +96,11 @@ export class UsersController {
     @Body() updatePasswordDto: UpdatePasswordDto,
     @I18n() I18nContext: I18nContext,
   ) {
-    return this.usersService.updatePasswordByRegisteredToken(
-      registeredToken,
-      updatePasswordDto,
-      I18nContext,
-    );
+    // return this.usersService.updatePasswordByRegisteredToken(
+    //   registeredToken,
+    //   updatePasswordDto,
+    //   I18nContext,
+    // );
   }
 
   @Patch(':id')
