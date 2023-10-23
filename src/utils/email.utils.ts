@@ -1,4 +1,5 @@
 import * as nodemailer from 'nodemailer';
+import { decryptPassword } from './password.utils';
 
 export const isEmailDomainValid = (
   email: string,
@@ -20,14 +21,20 @@ export const getDuplicatedEmails = (emails: string[]) => {
   return duplicatedEmails;
 };
 
-export const getTransporter = ({ host, port, account, password }) => {
+export const getTransporter = ({ host, port, account, password, sender }) => {
+  const encryptionKey = process.env.ENCRYPTION_KEY;
+  const decryptedPassword = decryptPassword(
+    password,
+    encryptionKey,
+  );
+
   let transporter = nodemailer.createTransport({
     host,
     port,
     secure: true,
     auth: {
-      user: account,
-      pass: password
+      user: sender,
+      pass: decryptedPassword
     }
   });
 

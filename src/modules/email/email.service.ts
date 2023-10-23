@@ -31,7 +31,7 @@ export class EmailService {
       emailSettings.password,
       encryptionKey,
     );
-
+    
     if (password === decryptedPassword) {
       return this.emailRepository.update(id, updateEmailConfigurationDto);
     } else {
