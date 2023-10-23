@@ -35,25 +35,28 @@ export class AuthenticationService {
       }
 
       const { data } = response;
-      const userRoles = data.resource_access.lessonPlan.roles;
+      const dataResourceAccess = data.resource_access;
 
-      console.log('userRoles', userRoles);
+      if (dataResourceAccess.hasOwnProperty('lessonPlan')) {
+        const userRoles = data.resource_access.lessonPlan.roles;
 
-      if (userRoles.includes('manager')) {
-        const currentUser = await this.usersService.findByUsername(data.email);
-        if (!currentUser) {
-          const createManagerDto: CreateManagerUserDto = {
-            name: data.given_name,
-            lastName: data.family_name,
-            email: data.email,
-          };
-          await this.usersService.createManager(createManagerDto);
+        if (userRoles.includes('manager')) {
+          const currentUser = await this.usersService.findByUsername(
+            data.email,
+          );
+          if (!currentUser) {
+            const createManagerDto: CreateManagerUserDto = {
+              name: data.given_name,
+              lastName: data.family_name,
+              email: data.email,
+            };
+            await this.usersService.createManager(createManagerDto);
+          }
         }
       }
 
       const { email } = response.data;
       const userInformation = await this.usersService.findByUsername(email);
-      console.log('userInformation', userInformation);
       return userInformation;
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.UNAUTHORIZED);

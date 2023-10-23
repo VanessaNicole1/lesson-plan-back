@@ -7,6 +7,6 @@ export class GetLessonPlansDto {
   @IsUUID()
   userId?: string;
 
-  @IsUUID()
+  // @IsUUID()
   periodId?: string;
 }

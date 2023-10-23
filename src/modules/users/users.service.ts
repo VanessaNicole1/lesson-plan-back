@@ -66,19 +66,19 @@ export class UsersService {
     registeredToken: string,
     i18nContext: I18nContext,
   ) {
-    const user = await this.usersRepository.findOneByRegisteredToken(
-      registeredToken,
-    );
+    // const user = await this.usersRepository.findOneByRegisteredToken(
+    //   registeredToken,
+    // );
 
-    if (!user) {
-      throw new NotFoundException(
-        i18nContext.t(
-          `${this.baseI18nKey}.findOneByRegisteredToken.NOT_REGISTERED_USER`,
-        ),
-      );
-    }
+    // if (!user) {
+    //   throw new NotFoundException(
+    //     i18nContext.t(
+    //       `${this.baseI18nKey}.findOneByRegisteredToken.NOT_REGISTERED_USER`,
+    //     ),
+    //   );
+    // }
 
-    return user;
+    // return user;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
@@ -129,11 +129,11 @@ export class UsersService {
     updatePasswordDto: UpdatePasswordDto,
     i18nContext: I18nContext,
   ) {
-    const user = await this.findOneByRegisteredToken(
-      registeredToken,
-      i18nContext,
-    );
-    return this.updatePassword(user.id, updatePasswordDto, i18nContext);
+    // const user = await this.findOneByRegisteredToken(
+    //   registeredToken,
+    //   i18nContext,
+    // );
+    // return this.updatePassword(user.id, updatePasswordDto, i18nContext);
   }
 
   remove(id: number) {
