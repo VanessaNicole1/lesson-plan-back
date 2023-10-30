@@ -44,6 +44,7 @@ export class AuthenticationService {
           const currentUser = await this.usersService.findByUsername(
             data.email,
           );
+
           if (!currentUser) {
             const createManagerDto: CreateManagerUserDto = {
               name: data.given_name,
