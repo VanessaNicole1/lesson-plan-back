@@ -208,9 +208,9 @@ export class UsersRepository {
       ...this.getAdittionalData(),
     });
 
-    if (!user) {
-      throw new NotFoundException(`Usuario con email ${email} no encontrado`);
-    }
+    // if (!user) {
+    //   throw new NotFoundException(`Usuario con email ${email} no encontrado`);
+    // }
 
     return user;
   }
