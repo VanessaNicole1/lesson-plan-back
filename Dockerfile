@@ -18,7 +18,7 @@ USER pptruser
 WORKDIR /app
 RUN mkdir uploads/
 COPY --chown=pptruser:pptruser ./package.json ./
-RUN npm install 
+RUN npm install --force
 COPY --chown=pptruser:pptruser . .
 RUN npx prisma generate
 RUN npm run build
