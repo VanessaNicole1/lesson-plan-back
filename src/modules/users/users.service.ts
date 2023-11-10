@@ -37,7 +37,7 @@ export class UsersService {
     };
 
     const { roleIds } = createUserDto;
-    await this.rolesService.validateRoles(roleIds);
+    await this.rolesService.validateRoles(roleIds!);
     return this.usersRepository.create(createUserDto);
   }
 
@@ -45,7 +45,7 @@ export class UsersService {
     const managerRole = await this.rolesService.findByName(Role.Manager);
     createManagerDto = {
       ...createManagerDto,
-      roleIds: [managerRole.id],
+      roleIds: [managerRole!.id],
     }
     return this.usersRepository.createManager(createManagerDto);
   }
@@ -151,7 +151,7 @@ export class UsersService {
     return await bcrypt.compareSync(password, currentPassword);
   }
 
-  async updateRefreshToken(id: string, refreshToken: string) {
+  async updateRefreshToken(id: string, refreshToken: string | null) {
     const user = await this.usersRepository.findOne(id);
     if (!user) throw new NotFoundException('El usuario no existe');
     return await this.usersRepository.updateRefreshToken(id, refreshToken);
@@ -169,7 +169,7 @@ export class UsersService {
       (currentUser) => currentUser.registerConfig,
     );
     const unregisteredUsers = registerConfigUsers.filter(
-      (currentUser) => !currentUser.registerConfig.isRegistered,
+      (currentUser) => !currentUser.registerConfig?.isRegistered,
     );
     return unregisteredUsers;
   }
