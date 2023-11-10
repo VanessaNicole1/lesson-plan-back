@@ -19,7 +19,7 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const { email } = loginDto;
     const user = await this.usersService.findByUsername(email);
-    const payload: JWTPayload = { username: user.email, sub: user.id };
+    const payload: JWTPayload = { username: user!.email, sub: user!.id };
     const refreshToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_REFRESH_SECRET,
       expiresIn: '7d',

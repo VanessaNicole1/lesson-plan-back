@@ -60,8 +60,8 @@ export class UsersRepository {
         roles: {
           connect: roles,
         },
-      }
-    })
+      },
+    });
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
@@ -215,7 +215,7 @@ export class UsersRepository {
     return user;
   }
 
-  async updateRefreshToken(id: string, refreshToken: string) {
+  async updateRefreshToken(id: string, refreshToken: string | null) {
     return await this.prisma.user.update({
       where: {
         id,
