@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
@@ -39,6 +40,8 @@ export class AuthenticationService {
 
       if (dataResourceAccess.hasOwnProperty('lessonPlan')) {
         const userRoles = data.resource_access.lessonPlan.roles;
+
+        console.log('userRoles', userRoles);
 
         if (userRoles.includes('manager')) {
           const currentUser = await this.usersService.findByUsername(

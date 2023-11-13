@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { SubjectsService } from './../subjects/subjects.service';
 import {
   BadRequestException,

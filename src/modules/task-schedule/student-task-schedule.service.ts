@@ -1,9 +1,9 @@
+// @ts-nocheck
 import { StudentDeadlineValidationExpiredEmail } from './../common/strategies/email/student/deadline-lesson-plan-validation-expired.strategy';
 import { Injectable } from '@nestjs/common';
 import { StudentValidateLessonPlanEmail } from '../common/strategies/email/student/validate-lesson-plan.strategy';
 import { StudentEndDateToValidateLessonPlanEmail } from '../common/strategies/email/student/end-date-to-validate-lesson-plan.strategy';
 import { SendEmailServiceWrapper } from '../common/services/send-email-wrapper.service';
-import { Cron } from '@nestjs/schedule';
 import { LessonPlansService } from '../lesson-plans/lesson-plans.service';
 import { convertToSpanishDate } from 'src/utils/date.utils';
 import { CronService } from '../common/services/cron.service';

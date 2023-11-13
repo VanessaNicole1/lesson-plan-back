@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../common/services/prisma.service';

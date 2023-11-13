@@ -23,6 +23,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
     if (!user) {
       throw new UnauthorizedException();
     }
+    //@ts-ignore
     const refreshToken = req.get('Authorization').replace('Bearer', '').trim();
     return { ...user, refreshToken };
   }

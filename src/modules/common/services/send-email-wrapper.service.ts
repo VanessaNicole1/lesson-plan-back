@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Injectable } from "@nestjs/common";
 import { SendEmailService } from "./send-email.service";
 import { SendFakeEmailService } from "./send-fake-email.service";

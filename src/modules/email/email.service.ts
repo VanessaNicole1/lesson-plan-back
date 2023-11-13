@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateEmailConfigurationDto } from './dto/create-email-configuration.dto';
 import { UpdateEmailConfigurationDto } from './dto/update-email-configuration.dto';

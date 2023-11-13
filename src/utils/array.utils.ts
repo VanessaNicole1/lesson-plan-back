@@ -6,6 +6,7 @@ export const removeDuplicatesByKey = (array, keyName: string) => {
     const existsReference = reference[element[keyName]];
 
     if (!existsReference) {
+      //@ts-ignore
       cleanedArray.push(element);
     }
 

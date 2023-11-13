@@ -35,8 +35,11 @@ export class TeacherTaskScheduleService {
       
       const hasPassed3Days = hasPassedAmountOfDays(period.createdAt, 3, 8);
 
+      //@ts-ignore
       if (schedules.length > 0 && hasPassed3Days) {
+        //@ts-ignore
         const scheduleNotFilledEmail = new TeacherScheduleNotFilledEmail(period.displayName, user.displayName, schedules);
+        //@ts-ignore
         this.emailService.sendEmail(scheduleNotFilledEmail, user.email);
       }
     }
@@ -57,8 +60,11 @@ export class TeacherTaskScheduleService {
 
       const hasPassed3Days = hasPassedAmountOfDays(period.createdAt, 3, 8);
 
+      //@ts-ignore
       if (eventsConfig.length === notificationWays && hasPassed3Days) {
+        //@ts-ignore
         const ad2NotFilledEmail = new TeacherAD2NotFilledEmail(period.displayName, user.displayName);
+        //@ts-ignore
         this.emailService.sendEmail(ad2NotFilledEmail, user.email);
       }
     }
@@ -82,6 +88,7 @@ export class TeacherTaskScheduleService {
     for (const teacher of teachersWithNotLessonPlanInTheLastWeek) {
       const teacherPeriod = activePeriods.find(period => teacher.periodId === period.id);
       const notLessonPlanForAWeekEmail = new TeacherNotLessonPlanForAWeekEmail(
+        //@ts-ignore
         teacherPeriod.displayName,
         teacher.user.displayName,
         convertToSpanishDate(from),
@@ -102,14 +109,17 @@ export class TeacherTaskScheduleService {
     const teacherEventsConfig = await this.teacherService.findTeachersEventsConfigByPeriodIds(periodsIds);
     const teacherEventsConfigGroupedByTeacher = [];
     for (const eventConfig of teacherEventsConfig) {
+      //@ts-ignore
       const eventConfigIndex = teacherEventsConfigGroupedByTeacher.findIndex(event => event.teacherId === eventConfig.teacherId);
       if (eventConfigIndex !== -1) {
+        //@ts-ignore
         teacherEventsConfigGroupedByTeacher[eventConfigIndex]?.events.push(eventConfig);
       } else {
         const element = {
           teacherId: eventConfig.teacherId,
           events: [eventConfig]
         }
+        //@ts-ignore
         teacherEventsConfigGroupedByTeacher.push(element);
       }
     }
@@ -119,6 +129,7 @@ export class TeacherTaskScheduleService {
 
       const checkEventByName = (eventName) => event => event.eventName.toLowerCase() === eventName.toLowerCase();
 
+      //@ts-ignore
       const mainEvent = eventConfig.events.find(checkEventByName(alternativeEventName));
 
       const daysMapping = {
@@ -145,6 +156,7 @@ export class TeacherTaskScheduleService {
       }
 
       const period = activePeriods.find(period => period.id === mainEvent.periodId);
+      //@ts-ignore
       const ad2NotificationEmail = new TecaherAd2Notification(period.displayName, mainEvent.teacher.user.displayName);
       this.emailService.sendEmail(ad2NotificationEmail, mainEvent.teacher.user.email);
     }

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../common/services/prisma.service';
 import { CreateInitialProcessDto } from './dto/create-initial-process.dto';

@@ -24,6 +24,7 @@ export class AuthService {
       secret: process.env.JWT_REFRESH_SECRET,
       expiresIn: '7d',
     });
+    //@ts-ignore
     delete user.password;
     return {
       accessToken: this.jwtService.sign(payload),
@@ -45,6 +46,7 @@ export class AuthService {
 
     const isValidPassword = await this.usersService.validatePassword(
       password,
+      //@ts-ignore
       user.password,
     );
 

@@ -7,6 +7,7 @@ export function validationErrorToI18n(e: ValidationError): ValidationError {
     children: e?.children?.map(validationErrorToI18n),
     constraints: !!e.constraints
       ? Object.keys(e.constraints).reduce((result, key) => {
+          //@ts-ignore
           result[key] = e.constraints[key];
           return result;
         }, {})

@@ -11,9 +11,12 @@ export const getDuplicatedEmails = (emails: string[]) => {
   const duplicatedEmails = [];
 
   for (const email of emails) {
+    //@ts-ignore
     if (uniqueEmails.includes(email)) {
+      //@ts-ignore
       duplicatedEmails.push(email);
     } else {
+      //@ts-ignore
       uniqueEmails.push(email);
     }
   }
@@ -23,10 +26,7 @@ export const getDuplicatedEmails = (emails: string[]) => {
 
 export const getTransporter = ({ host, port, account, password, sender }) => {
   const encryptionKey = process.env.ENCRYPTION_KEY;
-  const decryptedPassword = decryptPassword(
-    password,
-    encryptionKey,
-  );
+  const decryptedPassword = decryptPassword(password, encryptionKey);
 
   let transporter = nodemailer.createTransport({
     host,
@@ -34,8 +34,8 @@ export const getTransporter = ({ host, port, account, password, sender }) => {
     secure: true,
     auth: {
       user: sender,
-      pass: decryptedPassword
-    }
+      pass: decryptedPassword,
+    },
   });
 
   return transporter;

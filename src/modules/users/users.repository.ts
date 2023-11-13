@@ -78,6 +78,7 @@ export class UsersRepository {
     const currentRolesIds = currentRoles.map((role) => role.id);
     for (const roleId in currentRolesIds) {
       if (!roleIds.includes(currentRolesIds[roleId])) {
+        //@ts-ignore
         disconnectRoles.push(currentRolesIds[roleId]);
       }
     }

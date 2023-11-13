@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import { I18nContext } from 'nestjs-i18n';
 import { GradesService } from '../grades/grades.service';

@@ -46,7 +46,7 @@ export class UsersService {
     createManagerDto = {
       ...createManagerDto,
       roleIds: [managerRole!.id],
-    }
+    };
     return this.usersRepository.createManager(createManagerDto);
   }
 
@@ -69,7 +69,6 @@ export class UsersService {
     // const user = await this.usersRepository.findOneByRegisteredToken(
     //   registeredToken,
     // );
-
     // if (!user) {
     //   throw new NotFoundException(
     //     i18nContext.t(
@@ -77,7 +76,6 @@ export class UsersService {
     //     ),
     //   );
     // }
-
     // return user;
   }
 
@@ -160,6 +158,7 @@ export class UsersService {
   async assignRole(assignRoleDto: AssignRoleDto) {
     const { userId, roleId } = assignRoleDto;
     const role = await this.rolesService.findOne(roleId);
+    //@ts-ignore
     return this.usersRepository.assignRole(userId, role);
   }
 

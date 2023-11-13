@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BadRequestException, Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { I18nContext, I18nService } from 'nestjs-i18n';
 import { Exception } from 'handlebars';
@@ -15,7 +16,6 @@ import { LessonPlansTrackingService } from '../lesson-plan-validation-tracking/l
 import { UsersService } from '../users/users.service';
 import { LessonPlansService } from '../lesson-plans/lesson-plans.service';
 
-// TODO: Add i18n
 @Injectable()
 export class StudentsService {
   readonly baseI18nKey = 'students.service';

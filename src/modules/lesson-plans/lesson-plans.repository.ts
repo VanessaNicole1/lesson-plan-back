@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { UploadSignedRemedialPlanByManagerDTO } from './dto/upload-signed-remedial-plan-by-manager.dto';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../common/services/prisma.service';

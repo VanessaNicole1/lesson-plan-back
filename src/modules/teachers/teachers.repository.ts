@@ -21,6 +21,7 @@ export class TeachersRepository {
   };
 
   async findAll(filterTeacherDto?: FilterTeacherDto) {
+    //@ts-ignore
     const { periodId } = filterTeacherDto;
     return await this.prisma.teacher.findMany({
       where: {

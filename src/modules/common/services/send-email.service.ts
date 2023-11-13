@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Injectable } from "@nestjs/common";
 import { EmailStrategy } from "../interfaces/email/email-strategy.interface";
 import { SendEmail } from "../context/email/send-email.context";

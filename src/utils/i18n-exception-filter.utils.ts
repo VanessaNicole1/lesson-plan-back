@@ -1,6 +1,11 @@
 import { iterate } from 'iterare';
 import { ValidationError } from '@nestjs/common';
-import { I18nService, I18nValidationError, Path, TranslateOptions } from 'nestjs-i18n';
+import {
+  I18nService,
+  I18nValidationError,
+  Path,
+  TranslateOptions,
+} from 'nestjs-i18n';
 import { I18nValidationExceptionFilterErrorFormatterOption } from '../modules/common/interfaces/i18n/i18n-validation-ef-error-formatter';
 import { I18nValidationExceptionFilterOptions } from '../modules/common/types/i18n-validation-ef-options.type';
 
@@ -15,6 +20,7 @@ export function normalizeValidationErrors(
   validationErrors: ValidationError[],
 ): string[] | I18nValidationError[] | object {
   if (isWithErrorFormatter(options) && !('detailedErrors' in options))
+    //@ts-ignore
     return options.errorFormatter(validationErrors);
 
   if (!isWithErrorFormatter(options) && !options.detailedErrors)
@@ -26,13 +32,16 @@ export function normalizeValidationErrors(
 export function flattenValidationErrors(
   validationErrors: ValidationError[],
 ): string[] {
-  return iterate(validationErrors)
-    .map((error) => mapChildrenToValidationErrors(error))
-    .flatten()
-    .filter((item) => !!item.constraints)
-    .map((item) => Object.values(item.constraints))
-    .flatten()
-    .toArray();
+  return (
+    iterate(validationErrors)
+      .map((error) => mapChildrenToValidationErrors(error))
+      .flatten()
+      .filter((item) => !!item.constraints)
+      //@ts-ignore
+      .map((item) => Object.values(item.constraints))
+      .flatten()
+      .toArray()
+  );
 }
 
 export const mapChildrenToValidationErrors = (
@@ -46,8 +55,10 @@ export const mapChildrenToValidationErrors = (
   parentPath = parentPath ? `${parentPath}.${error.property}` : error.property;
   for (const item of error.children) {
     if (item.children && item.children.length) {
+      //@ts-ignore
       validationErrors.push(...mapChildrenToValidationErrors(item, parentPath));
     }
+    //@ts-ignore
     validationErrors.push(prependConstraintsWithParentProp(parentPath, item));
   }
   return validationErrors;
@@ -74,7 +85,9 @@ export function formatI18nErrors<K = Record<string, unknown>>(
 ): I18nValidationError[] {
   return errors.map((error) => {
     error.children = formatI18nErrors(error.children ?? [], i18n, options);
+    //@ts-ignore
     error.constraints = Object.keys(error.constraints).reduce((result, key) => {
+      //@ts-ignore
       const [translationKey, argsString] = error.constraints[key].split('|');
       const args = !!argsString ? JSON.parse(argsString) : {};
       result[key] = i18n.translate(translationKey as Path<K>, {

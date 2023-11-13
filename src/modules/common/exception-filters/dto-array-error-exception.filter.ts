@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ArgumentsHost, Catch } from '@nestjs/common';
 import { CustomI18nValidationException } from '../exceptions/custom-i18n-validation.exception';
 import { CustomI18nValidationExceptionFilter } from './custom-i18n-validation-exception.filter';

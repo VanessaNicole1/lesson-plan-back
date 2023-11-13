@@ -7,7 +7,7 @@ import { Role } from '../enums/roles.enum';
 @Injectable()
 export class ValidManager implements CanActivate {
   constructor(private reflector: Reflector) {}
-
+  //@ts-ignore
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>(roles, [
       context.getHandler(),

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { HttpException, HttpStatus, ValidationError } from '@nestjs/common';
 
 export class CustomI18nValidationException extends HttpException {

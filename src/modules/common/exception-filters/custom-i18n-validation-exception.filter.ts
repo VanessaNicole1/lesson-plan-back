@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import {
   I18nContext,

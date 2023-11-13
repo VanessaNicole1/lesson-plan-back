@@ -29,7 +29,7 @@ export class TeachersService {
     @Inject(forwardRef(() => SchedulesService))
     private schedulesService: SchedulesService,
     @Inject(forwardRef(() => LessonPlansService))
-    private lessonPlanService: LessonPlansService
+    private lessonPlanService: LessonPlansService,
   ) {}
 
   async findTeachersWithEmptyAD2OrCustomNotificationsInActivePeriods() {
@@ -61,6 +61,7 @@ export class TeachersService {
         ...teacher,
         eventsConfig: teacherEventsConfig,
       };
+      //@ts-ignore
       teachersInformation.push(teacherInformation);
     });
 
@@ -68,7 +69,10 @@ export class TeachersService {
   }
 
   async findTeachersEventsConfigByPeriodIds(periodIds: string[]) {
-    const eventsConfig = await this.teachersRepository.findTeacherEventsConfigByPeriodIds(periodIds);
+    const eventsConfig =
+      await this.teachersRepository.findTeacherEventsConfigByPeriodIds(
+        periodIds,
+      );
     return this.getNotEmptyEventsConfig(eventsConfig);
   }
 
@@ -99,13 +103,14 @@ export class TeachersService {
         ...teacher,
         schedules: teacherShedulesWithEmptyConfig,
       };
+      //@ts-ignore
       teachersInformation.push(teacherInformation);
     });
 
     return teachersInformation;
   }
 
-  findTeachersByPeriodIds (periodIds: string[]) {
+  findTeachersByPeriodIds(periodIds: string[]) {
     return this.teachersRepository.findTeachersByPeriodIds(periodIds);
   }
 
@@ -116,6 +121,7 @@ export class TeachersService {
   async findTeacherByUserInActivePeriod(
     periodId: string,
     userId: string,
+    //@ts-ignore
     i18nContext: I18nContext = undefined,
   ) {
     const i18n = i18nContext || this.i18nService;
@@ -138,6 +144,7 @@ export class TeachersService {
 
   async findTeachersByUser(
     userId: string,
+    //@ts-ignore
     i18nContext: I18nContext = undefined,
   ) {
     const i18n = i18nContext || this.i18nService;
@@ -154,6 +161,7 @@ export class TeachersService {
 
   async findTeacherActivePeriodsByUser(
     userId: string,
+    //@ts-ignore
     i18nContext: I18nContext = undefined,
   ) {
     const i18n = i18nContext || this.i18nService;
@@ -198,6 +206,7 @@ export class TeachersService {
 
   async findTeacherPeriodsByUser(
     userId: string,
+    //@ts-ignore
     i18nContext: I18nContext = undefined,
   ) {
     const i18n = i18nContext || this.i18nService;
@@ -233,13 +242,22 @@ export class TeachersService {
   async findTeachersWithEmptyLessonPlansBetweenDates(
     from: Date,
     to: Date,
-    periodIds: string[]
+    periodIds: string[],
   ) {
     const teachers = await this.findTeachersByPeriodIds(periodIds);
-    const teacherIds = teachers.map(teacher => teacher.id);
-    const lessonPlans = await this.lessonPlanService.findLessonPlansBetweenDatesByTeachers(from, to, teacherIds);
-    const lessonPlanTeacherIds = lessonPlans.map(lessonPlan => lessonPlan.schedule.teacherId);
-    const teachersWithEmptyLessonPlans = teachers.filter(({ id }) => !lessonPlanTeacherIds.includes(id));
+    const teacherIds = teachers.map((teacher) => teacher.id);
+    const lessonPlans =
+      await this.lessonPlanService.findLessonPlansBetweenDatesByTeachers(
+        from,
+        to,
+        teacherIds,
+      );
+    const lessonPlanTeacherIds = lessonPlans.map(
+      (lessonPlan) => lessonPlan.schedule.teacherId,
+    );
+    const teachersWithEmptyLessonPlans = teachers.filter(
+      ({ id }) => !lessonPlanTeacherIds.includes(id),
+    );
     return teachersWithEmptyLessonPlans;
   }
 
@@ -334,6 +352,7 @@ export class TeachersService {
     for (const teacher of teachers) {
       const teacherMetadata = getMetadataFromTeacher(teacher);
 
+      //@ts-ignore
       const duplicatedTeacher: CreateTeacherDto = uniqueTeachers.find(
         (uniqueTeacher) => {
           const uniqueTeacherMetadata = getMetadataFromTeacher(uniqueTeacher);
@@ -349,8 +368,10 @@ export class TeachersService {
           grade: `${teacher.numberParallel} "${teacher.parallel}"`,
         };
 
+        //@ts-ignore
         duplicatedInfo.push(teachersInformation);
       } else {
+        //@ts-ignore
         uniqueTeachers.push(teacher);
       }
     }

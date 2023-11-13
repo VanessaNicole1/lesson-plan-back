@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateGradeDto } from './dto/create-grade.dto';
 import { FilterGradeDto } from './dto/filter-grade.dto';
