@@ -8,6 +8,7 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalPipes(new CustomI18nValidationPipe());
   app.useGlobalFilters(new CustomI18nValidationExceptionFilter({ detailedErrors: false }));
-  await app.listen(4000);
+  const port = String(process.env.PORT_LISTEN);
+  await app.listen(port);
 }
 bootstrap();
