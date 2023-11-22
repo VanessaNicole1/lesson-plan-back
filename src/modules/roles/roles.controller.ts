@@ -26,7 +26,7 @@ export class RolesController {
   }
 
   @Get()
-  @UseGuards(AuthenticationGuard, ValidManager)
+  // @UseGuards(AuthenticationGuard, ValidManager)
   @Roles(Role.Manager)
   findAll() {
     return this.rolesService.findAll();
