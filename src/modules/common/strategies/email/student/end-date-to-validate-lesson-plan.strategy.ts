@@ -27,6 +27,6 @@ export class StudentEndDateToValidateLessonPlanEmail implements EmailStrategy {
     return getEmailTemplate('templates/student/end-date-to-validate-lesson-plan.html', data);
   }
   getSubject(): string {
-    return `Estudiante - Último día para validar Plan de Clases de la materia ${this.subjectName}`;
+    return `Estudiante - Último día para aceptar Plan de Clases de la materia ${this.subjectName}`;
   }
 }

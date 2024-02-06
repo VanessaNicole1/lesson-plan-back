@@ -24,6 +24,6 @@ export class StudentDeadlineValidationExpiredEmail implements EmailStrategy {
     return getEmailTemplate('templates/student/deadline-lesson-plan-validation-expired.html', data);
   }
   getSubject(): string {
-    return `Estudiante - El tiempo para validar el plan de clase de la materia ${this.subjectName} ha expirado.`;
+    return `Estudiante - El tiempo para aceptar el plan de clase de la materia ${this.subjectName} ha expirado.`;
   }
 }
