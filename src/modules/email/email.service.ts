@@ -25,19 +25,18 @@ export class EmailService {
     id: string,
     updateEmailConfigurationDto: UpdateEmailConfigurationDto,
   ) {
-    const { password } = updateEmailConfigurationDto;
-    const encryptionKey = process.env.ENCRYPTION_KEY;
-    const emailSettings = await this.find();
-    const decryptedPassword = decryptPassword(
-      emailSettings.password,
-      encryptionKey,
-    );
-    
-    if (password === decryptedPassword) {
+    // const { password } = updateEmailConfigurationDto;
+    // const encryptionKey = process.env.ENCRYPTION_KEY;
+    // const emailSettings = await this.find();
+    // const decryptedPassword = decryptPassword(
+    //   emailSettings.password,
+    //   encryptionKey,
+    // );
+    // if (password === decryptedPassword) {
       return this.emailRepository.update(id, updateEmailConfigurationDto);
-    } else {
-      throw new BadRequestException('Credenciales inválidas');
-    }
+    // } else {
+    //   throw new BadRequestException('Credenciales inválidas');
+    // }
   }
 
   delete(id: string) {

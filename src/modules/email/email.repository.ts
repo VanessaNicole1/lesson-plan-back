@@ -31,7 +31,9 @@ export class EmailRepository {
     id: string,
     updateEmailConfigurationDto: UpdateEmailConfigurationDto,
   ) {
-    const { host, port, user, sender } = updateEmailConfigurationDto;
+    const encryptionKey = process.env.ENCRYPTION_KEY;
+    const { host, port, user, sender, password } = updateEmailConfigurationDto;
+    const encryptedPassword = await encryptPassword(password, encryptionKey);
 
     return this.prisma.setting.update({
       where: {
@@ -42,6 +44,7 @@ export class EmailRepository {
         port,
         user,
         sender,
+        password: encryptedPassword,
       },
     });
   }
