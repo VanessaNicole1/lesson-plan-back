@@ -23,6 +23,8 @@ export class AuthenticationService {
   async authenticate(accessToken: string) {
     const url = `${this.baseURL}/realms/${this.tenant}/protocol/openid-connect/userinfo`;
 
+    console.log("URL!!!!!", url);
+
     try {
       const headers = {
         authorization: `Bearer ${accessToken}`,
@@ -36,6 +38,8 @@ export class AuthenticationService {
       }
 
       const { data } = response;
+
+      console.log("data", data);
       const dataResourceAccess = data.resource_access;
 
       if (dataResourceAccess.hasOwnProperty('lessonPlan')) {

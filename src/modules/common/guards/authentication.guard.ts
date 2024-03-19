@@ -37,6 +37,7 @@ export class AuthenticationGuard implements CanActivate {
 
     try {
       request['user'] = await this.authenticationService.authenticate(token);
+      console.log("Request", request['user']);
       return true;
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.UNAUTHORIZED);
