@@ -98,7 +98,7 @@ export class LessonPlansController {
   }
 
   @Get('resource/:filename')
-  @UseGuards(AuthenticationGuard)
+  // @UseGuards(AuthenticationGuard)
   uploadResource(@Param('filename') filename, @Res() res) {
     return res.sendFile(filename, { root: './uploads' });
   }
