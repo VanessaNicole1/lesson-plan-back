@@ -171,7 +171,7 @@ export class LessonPlansController {
   }
 
   @Post('resource/:id')
-  @UseGuards(AuthenticationGuard)
+  // @UseGuards(AuthenticationGuard)
   async removeResource(
     @Param('id') id: string,
     @Body() deleteResourceDto: DeleteResourceDto,
