@@ -11,15 +11,11 @@ RUN apk add --no-cache \
       tzdata
 
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-RUN addgroup -S pptruser && adduser -S -G pptruser pptruser
-RUN mkdir -p /app
-RUN chown -R pptruser /app
-USER pptruser
 WORKDIR /app
 RUN mkdir uploads/
-COPY --chown=pptruser:pptruser ./package.json ./
+COPY ./package.json ./
 RUN npm install --force
-COPY --chown=pptruser:pptruser . .
+COPY . .
 RUN npx prisma generate
 RUN npm run build
 ENV TZ=America/Guayaquil
