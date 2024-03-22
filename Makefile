@@ -1,8 +1,8 @@
 crear_roles:
-	curl -X POST -H "Content-Type: application/json" -d "$(body)" http://localhost:4000/roles
+	curl -X POST -H "Content-Type: application/json" -d '$(body)' http://localhost:4008/roles
 
 get_roles:
-	curl -X GET  http://localhost:4000/roles
+	curl -X GET  http://localhost:4008/roles
 
 
 crear_manager:
@@ -20,10 +20,10 @@ crear_todos:
 	@$(MAKE) crear_teacher
 
 create_email_config:
-	curl -X POST -H "Content-Type: application.json" -d "$(body)" http://localhost:4000/email
+	curl -X POST -H "Content-Type: application/json" -d '$(body)' http://localhost:4008/email
 
 create_config:
-	@$(MAKE) create_email_config body='{"host": "smtp.gmail.com", "port": "465", "user": "vanessa.iniguez@unl.edu.ec", "sender": "vanessa.iniguez@unl.edu.ec", "password": "aipt swen rvpr pzfw"}'
+	@$(MAKE) create_email_config body='{"host": "smtp.gmail.com", "port": 465, "user": "vanessa.iniguez@unl.edu.ec", "sender": "vanessa.iniguez@unl.edu.ec", "password": "aipt swen rvpr pzfw"}'
 
 create_email:
 	@$(MAKE) create_config
