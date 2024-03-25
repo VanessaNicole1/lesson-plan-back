@@ -91,7 +91,7 @@ export class ReportsService {
       const template = fs.readFileSync(templatePath, 'utf-8');
       const compiledTemplate = handlebars.compile(template);
 
-      const browser = await puppeteer.launch({ headless: 'new' });
+      const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-gpu'] });
       const page = await browser.newPage();
 
       for (let i = 0; i < lessonPlans.length; i++) {
@@ -138,7 +138,7 @@ export class ReportsService {
       const template = fs.readFileSync(templatePath, 'utf-8');
       const compiledTemplate = handlebars.compile(template);
 
-      const browser = await puppeteer.launch({ headless: 'new' });
+      const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-gpu'] });
       const page = await browser.newPage();
       
       const data = {...this.getReportDataByLessonPlan(lessonPlan, period), managerName };

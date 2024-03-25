@@ -36,12 +36,11 @@ export class AuthenticationService {
       }
 
       const { data } = response;
+
       const dataResourceAccess = data.resource_access;
 
       if (dataResourceAccess.hasOwnProperty('lessonPlan')) {
         const userRoles = data.resource_access.lessonPlan.roles;
-
-        console.log('userRoles', userRoles);
 
         if (userRoles.includes('manager')) {
           const currentUser = await this.usersService.findByUsername(

@@ -28,3 +28,18 @@ services:
       - 8686:8787
     volumes:
       - ./keycloak/:/opt/keycloak/data/import
+  backend:
+    container_name: backend
+    image: 'vanessanicole/lesson-plan-backend'
+    restart: always
+    environment:
+      - SECRET_KEY_JWT=${SECRET_KEY_JWT}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - FRONTEND=${FRONTEND-URL}
+      - ENV=${ENV}
+      - PORT_LISTEN=${PORT_LISTEN}
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
+      - AUTH_SERVICE_TENANT=${AUTH_SERVICE_TENANT}
+    ports:
+      - 4008:4008
